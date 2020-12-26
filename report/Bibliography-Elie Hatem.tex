@@ -1,0 +1,117 @@
+\documentclass{thesisreport}
+
+
+\begin{document}
+
+ \include{thesisfront}  
+ 
+  \section*{Abstract}
+Within the rapidly growing aerial robotics market, one of the most substantial challenges in the quadrotor community is performing aggressive maneuvers, especially multi-flip maneuvers.  A proper physical definition of the issue is not addressed by the current approaches in the field and several key aspects of this maneuver are still overlooked.
+It can be shown, in particular, that making a flip with a quadrotor means crossing the parallel singularity of the dynamic model. The aim of the master thesis is to explore the possibility of defining aggressive trajectories for quadrotors on the basis of their dynamic model degeneracy analysis and to adapt various strategies to control the robot in a closed loop. In addition, the possibility to perform the aggressive maneuver in constrained environments will also be investigated.
+Therefore, the analysis will be extended from the previous studied to create general feasible trajectories that will allow quadrotors to perform aggressive flip maneuvers while passing through a constrained environment and while guaranteeing a satisfactory degree of robustness to the uncertainties of the dynamic model.
+
+ 
+ \newpage
+ 
+ \section*{Acknowledgements}
+
+
+I would like to express my special thanks and gratitude to my supervisors Dr. Sébastien Briot and Dr. Isabelle Fantoni who gave me the  opportunity to work on this wonderful project which encapsulates control theory, dynamics and quadrotors. This project has allowed me to perform research on all of these topics and I am now more knowledgeable thanks to my supervisors. Moreover, I would like to thank them for believing in my capabilities and for me the confidence when I needed it. 
+
+Secondly, I would also like to thank Dr. Ina Taralova for providing me with the valuable knowledge to create a proper bibliography.
+
+
+I would also like to thank my patient and understanding girlfriend Glysa, who has put up with my sudden decision to travel and to pursue this Master degree. Thank you for all the love and support that you have given me throughout the years. I hope that this Master degree will allow us to have a better life in the future. 
+
+
+
+Thank you for all the love and support that you give me and for choosing me everyday. I am who I am today because of you.
+
+
+I would like to thank my family as well: my parents Naji and Yolla, my sister Rebecca, my uncle and his wife Fadi and Lara and my aunt Bernadette. They have provided me with the emotional and economical support from the very beginning and they gave me the opportunity to travel and study for this Master degree. They have always been proud and encouraging. I would not be here if it wasn't for them.
+
+ 
+ \newpage
+ 
+ 
+ \section*{Notations}
+ 
+ \newpage
+ 
+  \section*{Abbreviations}
+ 
+ \newpage
+ 
+ \listoffigures
+ 
+\listoftables
+ 
+ \tableofcontents
+ 
+ 
+ \chapter*{Introduction}
+ \addcontentsline{toc}{chapter}{Introduction}	 % non-numbered chapters do not appear in table of contents by default
+ 
+ 
+ \chapter{State of the art}
+ 
+ \section{First topic}
+ 
+ \section{Second topic}
+ 
+ \chapter{Actual work}
+  
+ 
+ When dealing with rectangled triangles (see Figure \ref{triangle}) I sometimes used this theorem from \cite{pythm001}:
+ \begin{equation}\label{theo}
+  a^2 + b^2 = c^2
+ \end{equation}The demonstration is in Appendix \ref{sec:prooftheorem}.
+ 
+ \begin{figure}[h]\centering
+  \includegraphics[width=.5\linewidth]{triangle1}
+  \caption{A triangle with letters} \label{triangle}
+ \end{figure}
+ 
+ 
+
+
+ 
+ 
+ \chapter{Experiments}
+ 
+ When trying to draw a rectangled triangle, my program comes up with Figure \ref{triangle2} that is neither rectangled nor a triangle.
+ 
+  \begin{figure}[h]\centering
+  \includegraphics[width=.5\linewidth]{triangle2}
+  \caption{Triangle drawn by my program. Note the 4th side.} \label{triangle2}
+ \end{figure}
+ 
+Unless there is a bug in my program, which is unlikely, this research indicates that the whole theory on triangles having 3 sides has been wrong for years, maybe decades.
+ 
+ 
+ \chapter*{Conclusion}
+ \addcontentsline{toc}{chapter}{Conclusion}
+ 
+ 
+ 
+ 
+ 
+ % switch to A-B-C chaptering
+ \appendix	
+ 
+ \chapter{Proof of theorem \ref{theo}}
+ \label{sec:prooftheorem}
+ 
+ 
+ \begin{proof}
+\eqref{theo} was already demonstrated in \cite{euclides300}.
+\end{proof}
+ 
+ \addcontentsline{toc}{chapter}{Bibliography}
+ 
+ \bibliography{../biblio}
+ 
+ 
+ 
+ 
+\end{document}
