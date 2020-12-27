@@ -1,5 +1,8 @@
 \documentclass{thesisreport}
 
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{comment}
 
 \begin{document}
 
@@ -16,16 +19,12 @@ Therefore, the analysis will be extended from the previous studied to create gen
  \section*{Acknowledgements}
 
 
-I would like to express my special thanks and gratitude to my supervisors Dr. Sébastien Briot and Dr. Isabelle Fantoni who gave me the  opportunity to work on this wonderful project which encapsulates control theory, dynamics and quadrotors. This project has allowed me to perform research on all of these topics and I am now more knowledgeable thanks to my supervisors. Moreover, I would like to thank them for believing in my capabilities and for me the confidence when I needed it. 
+I would like to express my special thanks and gratitude to my supervisors Dr. Sébastien Briot and Dr. Isabelle Fantoni who gave me the  opportunity to work on this wonderful project which encapsulates control theory, dynamics and quadrotors. This project has allowed me to perform research on all of these topics and I am now more knowledgeable thanks to my supervisors. Moreover, I would like to thank them for believing in my capabilities and for me the confidence when I needed it. \\
 
-Secondly, I would also like to thank Dr. Ina Taralova for providing me with the valuable knowledge to create a proper bibliography.
-
-
-I would also like to thank my patient and understanding girlfriend Glysa, who has put up with my sudden decision to travel and to pursue this Master degree. Thank you for all the love and support that you have given me throughout the years. I hope that this Master degree will allow us to have a better life in the future. 
+Secondly, I would also like to thank Dr. Ina Taralova for providing me with the valuable knowledge to create a proper bibliography. \\
 
 
-
-Thank you for all the love and support that you give me and for choosing me everyday. I am who I am today because of you.
+I would like to thank my patient and understanding girlfriend Glysa, who has been with me for more than 5 years. Thank you for all the love, support and comfort that you have given me in these stressful 2 years. I hope that this Master degree will allow us to have a better future together. \\
 
 
 I would like to thank my family as well: my parents Naji and Yolla, my sister Rebecca, my uncle and his wife Fadi and Lara and my aunt Bernadette. They have provided me with the emotional and economical support from the very beginning and they gave me the opportunity to travel and study for this Master degree. They have always been proud and encouraging. I would not be here if it wasn't for them.
@@ -51,8 +50,49 @@ I would like to thank my family as well: my parents Naji and Yolla, my sister Re
  
  \chapter*{Introduction}
  \addcontentsline{toc}{chapter}{Introduction}	 % non-numbered chapters do not appear in table of contents by default
+ 	The aim of this section is to provide a general summary of the robotic robotic platform that is used for this master thesis and to illustrate the main objective of the research work.
+In specific, in the sections below, quadrotors and parallel robots are briefly presented.
+
+
  
  
+\section*{The quadrotor platform}
+
+A quadrtor is a type of unmanned aerial vehicle with four rotors and six degrees of freedom. Typically, drones have a small size and low inertia which allows it to be controller by simple flight control systems. It is typically designed in a cross-configuration such that the electronics are held in the center of the platform and the rotors are placed at the borders.
+An example of a real quadrotor, namely the DJI Phantom, is shown in fig. \ref{fig:drone}. The quadrotor is typically built in a way such that a pair of opposite rotors rotate clockwise, whereas the other pair of rotors rotates in counter-clockwise.
+The attitude and the position of the drone are controlled by changing the spinning speed of the rotors. An example is shown in figure \ref{fig:propeller_directions}.
+
+
+
+\begin{figure}[h]
+     \centering
+     \begin{subfigure}[b]{0.45\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{Images/Introduction/drone}
+    \caption{A DJI Phantom quadcopter (UAV)}
+         \label{fig:drone}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.45\textwidth}
+         \centering
+         \includegraphics[width=0.6\textwidth]{Images/Introduction/propeller_direction.svg}
+         \caption{Typical quadrotor configuration The width of the arrows is proportional to the angular speed of the propellers. \cite{Bouabdalla2007}}
+         \label{fig:propeller_directions}
+     \end{subfigure}
+        \caption{A commercial quadrtotor platform, with a typical quadrotor configuration.}
+        \label{fig:three graphs}
+\end{figure}
+
+
+
+
+
+
+
+
+
+
+
  \chapter{State of the art}
  
  \section{First topic}
@@ -86,7 +126,7 @@ I would like to thank my family as well: my parents Naji and Yolla, my sister Re
   \caption{Triangle drawn by my program. Note the 4th side.} \label{triangle2}
  \end{figure}
  
-Unless there is a bug in my program, which is unlikely, this research indicates that the whole theory on triangles having 3 sides has been wrong for years, maybe decades.
+Unless there is a bug in my program, which is unlikely, this research indicates that the whole theory on triangles having 3 sides has been wrong for years, maybe decades. \cite{Bouabdalla2007}
  
  
  \chapter*{Conclusion}
@@ -95,23 +135,22 @@ Unless there is a bug in my program, which is unlikely, this research indicates 
  
  
  
- 
+
  % switch to A-B-C chaptering
  \appendix	
  
  \chapter{Proof of theorem \ref{theo}}
  \label{sec:prooftheorem}
- 
- 
+  
  \begin{proof}
-\eqref{theo} was already demonstrated in \cite{euclides300}.
+ was already demonstrated in \cite{Bouabdalla2007}.
 \end{proof}
- 
+
  \addcontentsline{toc}{chapter}{Bibliography}
+ \nocite{*}
  
  \bibliography{../biblio}
- 
- 
+
  
  
 \end{document}
