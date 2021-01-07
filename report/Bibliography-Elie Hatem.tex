@@ -33,7 +33,7 @@ I would like to thank my family as well: my parents Naji and Yolla, my sister Re
  \newpage
  
   \section*{Abbreviations}
- 
+
  \newpage
  
  \listoffigures
@@ -166,9 +166,9 @@ The rest of the bibliography is structured as follows:
 
 \begin{itemize}
 \setlength{\itemindent}{-.5in}
-	\item [] \textbf{Chapter 1} is devoted to introduce the state of the art in quadrotor control in addition to introducing the dynamics of quadrotors. Specifically, a simplified dynamic model of the quadrotor will be presented by using Euler-Lagrange formalism. Then, moving on from the simple dynamic model, a more detailed dynamic model will be presented by using the Newton-Euler formalism. Finally, the state-space model of the quadrotor will also be derived.
+	\item [] \textbf{Chapter 1} is devoted to introduce the system modeling of quadrotors. Specifically, a simplified dynamic model of the quadrotor will be presented by using Euler-Lagrange formalism. Then, moving on from the simple dynamic model, a more detailed dynamic model will be presented by using the Newton-Euler formalism. Finally, the state-space model of the quadrotor will also be derived.
 
-	\item [] \textbf{Chapter 2} provides an overview of the different potential control methods that can be used during the master thesis in order to properly control the quadrotor. 
+	\item [] \textbf{Chapter 2} provides an overview of state of the art in quadrotor control in addition to introducing the different potential control methods that can be used during the master thesis in order to properly control the quadrotor. 
 
 	\item [] \textbf{Chapter 3} provides detailed explanations of how multi-flip maneuvers can be handled. Then, the link between a quadrotor performing a flip and a parallel robot crossing a singularity will be explained. In the end, a literature review is provided in order to show how the problem is tackled by different researches.
 
@@ -178,54 +178,112 @@ The rest of the bibliography is structured as follows:
 
 \newpage
 
+\chapter{System Modeling}
+The goal of this chapter is to present the dynamic model of the quadrotor. The mathematical notation and the physics of the quadrotor platform are expressed using the Newton-Euler formalism. Then, the state-space model that will be coded on the controller of the quadrotor will be derived.
 
+\section{Concepts and Generalities}
+The dynamic model of the quadrotor will be derived based on the following assumptions:
 
+\begin{itemize}
+	\item The structure of the quadrotor is rigid.
+	\item The structure of the quadrotor is symmetrical.
+	\item The center of gravity (CoG) and the fixed frame at the center of the body are assumed to be coincident.
+	\item The proppelers of the quadrotor are assumed to be rigid.
+	\item The thrust and drag forces are assumed to be proportional to the square of the spinning speed of each propeller.
+\end{itemize}
+ 
+The helicopter is a complex mechanical system, it gathers many physical effects from the domain of mechanics and aerodynamics \cite{houston_2001}. Thus, all the significant effects including the gyroscopic effects must be considered in the modeling of the quadrotor. A small list of the most important effects that a helicopter is subject to \cite{Mullhaupt1999} are briefly described in table \ref{physical_effects}:
 
- \chapter{State of the art}
- 
-The state of the art in the control of quadrotors has changed in a drastic way in the last few years. The number of projects tackling the problem of control of quadrotors has suddenly and significantly increased. Most of the projects are being done on commercially available quadrotor toys such as the Draganflyer
- 
-\newpage
- 
-\begin{table}
+\begin{table}[h]
+\caption{The main physical effects that the helicopter is subject to. }\label{physical_effects}
 \centering
-\caption{Few quadrotor projects that have been done.\cite{Bouabdalla2007}}
-\begin{tabular}{ || c | c | c ||}
+\setlength{\tabcolsep}{10pt} % Default value: 6pt
+\renewcommand{\arraystretch}{1} % Default value: 1
+\begin{tabular}{c c c}
 \hline
- Project & University & Picture \\ 
 \hline
- Mesicopter & Standord &\includegraphics[width=0.15\textwidth]{Images/State of the art/1}  \\  
+Effect & Source & formulation \\
 \hline
- Thesis of E. Altug & Univ. Pennsylvania &\includegraphics[width=0.12\textwidth]{Images/State of the art/2}  \\   
+Aerodynamic effects & \shortstack{Rotation of propeller \\ Flapping of blades} & $C \Omega^2$\\
 \hline
- Thesis of P. Castillo & Univ. Compiègne &\includegraphics[width=0.12\textwidth]{Images/State of the art/3}  \\   
+Inertial counter torques & \shortstack{Change in propeller \\ spinning speed} & $ J \dot{\Omega}$\\
+Gravitational effect & Position of the center of mass & {} \\
 \hline
- Thesis of A. Clifton & Univ. Vanderbilt &\includegraphics[width=0.12\textwidth]{Images/State of the art/4}  \\   
-\hline
- Thesis of P. pounds & ANU &\includegraphics[width=0.12\textwidth]{Images/State of the art/5}  \\   
-\hline
- Thesis of N.Guenard & CEA &\includegraphics[width=0.12\textwidth]{Images/State of the art/6}  \\ 
+Gyroscopic effects & \shortstack{Orientation change  \\ of the rigid body} & $ I \theta \psi$\\
+ {} & \shortstack{Orientation change  \\ of the propeller plane} & $ J \Omega_r \theta,\phi$ \\
  \hline
- Starmac & Stanford &\includegraphics[width=0.12\textwidth]{Images/State of the art/7}  \\ 
- \hline
- Thesis of M. Kemper & Univ. Oldenburg &\includegraphics[width=0.12\textwidth]{Images/State of the art/8}  \\ 
-  \hline
- Thesis of P. Tournier & MIT &\includegraphics[width=0.12\textwidth]{Images/State of the art/9}  \\ 
-   \hline
- MD4-200\textregistered & microDrones GmbH &\includegraphics[width=0.12\textwidth]{Images/State of the art/10}  \\ 
- \hline
+Friction & All helicopter motions & $C \dot{\phi},\dot{\theta},\dot{\psi}$\\
+\hline
+\hline
 \end{tabular}
-
 \end{table}
 
- \pagebreak
+\newpage 
+
+ \section{Modelling with Euler-Lagrange Formalism} 
+ The dynamics of the rotation of a simple quadrotor are modeled using the Euler-Lagrange Formalism in this section. A fixed frame $E$ for the world frame and body fixed frame $B$ for the quadrotor are considered as represented in figure \ref{coordinate_system_simple}. The orientation of the quadrotor frame in space is provided by a rotation $R$ from $B$ to $E$, where $R\in SO3$ is a $3 \times 3 $ rotation matrix.
  
  
- \section{Dynamic model}
-The goal of this chapter is to present the dynamic model of the quadrotor. The mathematical notation and the physics of the quadrotor platform are expressed using the Newton-Euler formalism. Then, the state-space model that will be coded on the controller of the quadrotor will be derived.
+ \begin{figure}[h]
+ \centering
+ \includegraphics[width=0.5\textwidth]{Images/Modeling/Test_Bench}
+ \caption{Coordinate system of a quadrotor. \cite{Bouabdalla2007}}
+ \label{coordinate_system_simple}
+ \end{figure}
+
+\subsection{Kinematics} 
+ 
+ For any point of the body frame of the quadrotor expressed in the fixed world frame, the following can be written ( c: $\cos$, s: $\sin$):   
+ 
+ \begin{equation}\label{kinematics}
+ \begin{cases}
+ r_X= (c\psi c \theta ) x + ( c \psi s \theta s \phi  - s \psi c \phi) y + (c \psi s \theta c \phi + s \psi s \phi) z \\
+ r_Y= (s\psi c \theta ) x + ( s \psi s \theta s \phi  + c \psi c \phi) y + (s \psi s \theta c \phi - c \psi s \phi) z \\
+ r_Z= (-s \theta ) x + ( c \theta s \phi ) y + (c \theta c \phi) z \\
+ 
+ \end{cases}
+ \end{equation}
+
+Thus, the velocities can be derived by differentiation \ref{kinematics}
+, and the squared magnitude of the squared velocity can be expressed as follows for any point:
+
+\begin{equation}\label{velocity_magnitude}
+	v^2 = v_X^2 + v_Y^2 + v_Z^2\\
+\end{equation} 
+
+\subsection{Energy}
+
+Assuming that the matrix of inertia is diagonal, then from equation \ref{velocity_magnitude},the expression of the kinetics energy can be calculated:
+
+\begin{equation}\label{kinetic_energy}
+T = \frac{1}{2} I_{xx}(\dot{\phi}-\dot{\psi} s \theta)^2 + \frac{1}{2} I_{yy}(\dot{\theta} c \phi + \dot{\psi} s \phi c \theta)^2 + \frac{1}{2} I_{zz}(\dot{\theta} s \phi - \dot{\psi} c \phi)^2
+\end{equation}
+
+Using the formula of the potential energy, equation \ref{kinetic_energy} can be expressed in the fixed world frame as: 
+
+\begin{equation}\label{potential_energy}
+V = \int xdm(x)(-g s \theta) + \int ydm(y)(g s \phi c \theta) + \int z dm (z) (g c \phi c \theta) 
+\end{equation}
+
+\newpage
+
+\subsection{Equation of Motion}
+
+By using the Euler-Lagrange formalism:
+
+
+\begin{equation}
+L = T - V \text{\hspace{0.5cm} ,\hspace{0.5cm}} \Gamma_i = \frac{d}{dt}\bigg(\frac{\partial L}{\partial \dot{q}_i}\bigg) - \frac{\partial L}{\partial q_i}
+\end{equation}
+ 
+ Where $L$ $\Gamma_i$ and $\dot{q}_i$ are the Lagrangian, the generalized forces and the generalized coordinates respectively. Thus, the equations of motion can be expressed as follows: 
  
  
  
+ 
+ 
+\newpage  
+
  \section{State-space model}
   
   
@@ -272,6 +330,6 @@ The goal of this chapter is to present the dynamic model of the quadrotor. The m
  
  \bibliography{../biblio}
 
- 
+
  
 \end{document}
