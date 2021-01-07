@@ -148,14 +148,14 @@ Specifically, the goal of this master thesis is to study a distinct class of agg
      \begin{subfigure}[h]{0.45\textwidth}
          \centering
          \includegraphics[width=\textwidth]{Images/Introduction/constrained_environment}
-         \caption[Caption for LOF]{Quadrotor going though a loop.\protect\footnotemark}
+         \caption[Caption for LOF]{Quadrotor going though a loop.\protect\footnotemark[1]}
          \label{drone_hulahoop}
      \end{subfigure}
         \caption{Representation of the issues to be tackled in this master thesis.}
         \label{fig:three graphs}
 \end{figure}
 
-\footnotetext{\url{https://newatlas.com/drones/muscle-signals-drone-control/\#gallery:2}}
+\footnotetext[1]{\url{https://newatlas.com/drones/muscle-signals-drone-control/\#gallery:2}}
 
 \pagebreak
 
@@ -166,56 +166,97 @@ The rest of the bibliography is structured as follows:
 
 \begin{itemize}
 \setlength{\itemindent}{-.5in}
-	\item [] \textbf{Chapter 2} is devoted to the dynamics of quadrotors. Specifically, the dynamic model of the quadrotor will be presented by using the Newton-Euler formalism. In addition, the state-space model of the quadrotor will also be presented.
+	\item [] \textbf{Chapter 1} is devoted to introduce the state of the art in quadrotor control in addition to introducing the dynamics of quadrotors. Specifically, a simplified dynamic model of the quadrotor will be presented by using Euler-Lagrange formalism. Then, moving on from the simple dynamic model, a more detailed dynamic model will be presented by using the Newton-Euler formalism. Finally, the state-space model of the quadrotor will also be derived.
 
-	\item [] \textbf{Chapter 3} provides an overview of the different potential control methods that can be used during the master thesis in order to properly control the quadrotor. 
+	\item [] \textbf{Chapter 2} provides an overview of the different potential control methods that can be used during the master thesis in order to properly control the quadrotor. 
 
-	\item [] \textbf{Chapter 4} provides detailed explanations of how multi-flip maneuvers can be handled and the link between a quadrotor performing a flip and a parallel robot crossing a singularity will be given. Then, a literature review is included in order to show how the problem is tackled by different researches.
+	\item [] \textbf{Chapter 3} provides detailed explanations of how multi-flip maneuvers can be handled. Then, the link between a quadrotor performing a flip and a parallel robot crossing a singularity will be explained. In the end, a literature review is provided in order to show how the problem is tackled by different researches.
 
-	\item [] \textbf{Chapter 5} is devoted to trajectory optimization. By using trajectory optimization, it will be possible to create feasible trajectories for quadrotors to perform the maneuvers in constrained environments.
-	
-	\item [] \textbf{Chapter 6} represents the conclusion section. It explains the contributions in quadrotor control and singularity crossing which are expected during this research work.
-
-	\item [] \textbf{Bibliography} lists the different references cited in the chapters above.
+	\item [] \textbf{Chapter 4} is devoted to trajectory optimization. By using trajectory optimization, it will be possible to create feasible trajectories for quadrotors to perform the aggressive maneuvers in constrained environments.
 	
 \end{itemize}
+
+\newpage
+
 
 
 
  \chapter{State of the art}
  
- \section{First topic}
+The state of the art in the control of quadrotors has changed in a drastic way in the last few years. The number of projects tackling the problem of control of quadrotors has suddenly and significantly increased. Most of the projects are being done on commercially available quadrotor toys such as the Draganflyer
  
- \section{Second topic}
+\newpage
  
- \chapter{Actual work}
+\begin{table}
+\centering
+\caption{Few quadrotor projects that have been done.\cite{Bouabdalla2007}}
+\begin{tabular}{ || c | c | c ||}
+\hline
+ Project & University & Picture \\ 
+\hline
+ Mesicopter & Standord &\includegraphics[width=0.15\textwidth]{Images/State of the art/1}  \\  
+\hline
+ Thesis of E. Altug & Univ. Pennsylvania &\includegraphics[width=0.12\textwidth]{Images/State of the art/2}  \\   
+\hline
+ Thesis of P. Castillo & Univ. Compiègne &\includegraphics[width=0.12\textwidth]{Images/State of the art/3}  \\   
+\hline
+ Thesis of A. Clifton & Univ. Vanderbilt &\includegraphics[width=0.12\textwidth]{Images/State of the art/4}  \\   
+\hline
+ Thesis of P. pounds & ANU &\includegraphics[width=0.12\textwidth]{Images/State of the art/5}  \\   
+\hline
+ Thesis of N.Guenard & CEA &\includegraphics[width=0.12\textwidth]{Images/State of the art/6}  \\ 
+ \hline
+ Starmac & Stanford &\includegraphics[width=0.12\textwidth]{Images/State of the art/7}  \\ 
+ \hline
+ Thesis of M. Kemper & Univ. Oldenburg &\includegraphics[width=0.12\textwidth]{Images/State of the art/8}  \\ 
+  \hline
+ Thesis of P. Tournier & MIT &\includegraphics[width=0.12\textwidth]{Images/State of the art/9}  \\ 
+   \hline
+ MD4-200\textregistered & microDrones GmbH &\includegraphics[width=0.12\textwidth]{Images/State of the art/10}  \\ 
+ \hline
+\end{tabular}
+
+\end{table}
+
+ \pagebreak
+ 
+ 
+ \section{Dynamic model}
+The goal of this chapter is to present the dynamic model of the quadrotor. The mathematical notation and the physics of the quadrotor platform are expressed using the Newton-Euler formalism. Then, the state-space model that will be coded on the controller of the quadrotor will be derived.
+ 
+ 
+ 
+ \section{State-space model}
   
+  
+ \chapter{Control of quadrotors}
  
- When dealing with rectangled triangles (see Figure \ref{triangle}) I sometimes used this theorem from \cite{pythm001}:
- \begin{equation}\label{theo}
-  a^2 + b^2 = c^2
- \end{equation}The demonstration is in Appendix \ref{sec:prooftheorem}.
+ \section{General control architecture}
  
- \begin{figure}[h]\centering
-  \includegraphics[width=.5\linewidth]{triangle1}
-  \caption{A triangle with letters} \label{triangle}
- \end{figure}
+ \section{Model Predictive control}
+ 
+ \section{Lyapunov Stability Analysis}
+ 
+ \section{Sliding mode control}
+ 
+ \section{Other types of control}
+ 
+ \chapter{Multi-flips maneuver with quadrotors}
+ 
+ \subsection{Quadrotor flip physics}
+ 
+ \subsection{Link to parallel robots}
+ 
+ \subsection{Control approaches for multi-flip maneuvers}
+  
+ \chapter{Trajectory optimization}
+
  
  
 
 
  
- 
- \chapter{Experiments}
- 
- When trying to draw a rectangled triangle, my program comes up with Figure \ref{triangle2} that is neither rectangled nor a triangle.
- 
-  \begin{figure}[h]\centering
-  \includegraphics[width=.5\linewidth]{triangle2}
-  \caption{Triangle drawn by my program. Note the 4th side.} \label{triangle2}
- \end{figure}
- 
-Unless there is a bug in my program, which is unlikely, this research indicates that the whole theory on triangles having 3 sides has been wrong for years, maybe decades. \cite{Bouabdalla2007}
+
  
  
  \chapter*{Conclusion}
@@ -225,15 +266,6 @@ Unless there is a bug in my program, which is unlikely, this research indicates 
  
  
 
- % switch to A-B-C chaptering
- \appendix	
- 
- \chapter{Proof of theorem \ref{theo}}
- \label{sec:prooftheorem}
-  
- \begin{proof}
- was already demonstrated in \cite{Bouabdalla2007}.
-\end{proof}
 
  \addcontentsline{toc}{chapter}{Bibliography}
  \nocite{*}
