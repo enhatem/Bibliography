@@ -44,6 +44,8 @@ I would like to thank my family as well: my parents Naji and Yolla, my sister Re
   $C_{R_m}$ & Rolling moment coefficient \\
   $C_T$ & Thrust coefficient \\
   $H$ & Hub force\\
+  $CT$ & Continuous time \\
+  $DT$ & Discrete time \\
 
 \end{tabular}\\
  
@@ -640,12 +642,12 @@ m \ddot{y} = ( - c \psi s \phi + s \psi s \theta c \phi) \sum_{i=1}^4 T_i - \sum
 
 
  \section{State-Space Model}
-The model \ref{detailed_dynamic_model} that was developed in subsecton \ref{detail_equation_of_motin} expresses the differential equations of the system. However, for the purpose of control design, it is desirable to reduce the complexity and simplify the model to satisfy the real-time limitations of the embedded control loop. Thus, the thrust and the drag coefficients are assumed to be constant and the hub forces and rolling moments are neglected. As a result, the system can be expressed in state-space form \\ $\dot{X}=f(X,U)$ with $X$ the state vector and $U$ the control input vector.
+The model \ref{detailed_dynamic_model} that was developed in subsecton \ref{detail_equation_of_motin} expresses the differential equations of the system. However, for the purpose of control design, it is desirable to reduce the complexity and simplify the model to satisfy the real-time limitations of the embedded control loop. Thus, the thrust and the drag coefficients are assumed to be constant and the hub forces and rolling moments are neglected. As a result, the system can be expressed in state-space form \\ $\dot{\textbf{\textsc{x}}}=f(\textbf{\textsc{x}},\textbf{\textsc{u}})$ with $\textbf{\textsc{x}}$ the state vector and $\textbf{\textsc{u}}$ the control input vector.
 
 The state vector has the following form:
 
 \begin{equation}\label{state_vector}
-X = \left[\begin{array}{c c c c c c c c c c c c c}
+\textbf{\textsc{x}} = \left[\begin{array}{c c c c c c c c c c c c c}
 \phi & \dot{\phi} & \theta & \dot{\theta} & \psi & \dot{\psi} & z & \dot{z} & x & \dot{x} & y & \dot{y} 
 \end{array}\right]^{\intercal}
 \end{equation}
@@ -683,8 +685,8 @@ x_{12} = \dot{x}_{11} = \dot{y}\\
 Moreover, the control input vector has the following form: 
 
 \begin{equation}\label{control_input_vector}
-X = \left[\begin{array}{c c c c}
-U_1 & U_2 & U_3 & U_4 
+\textbf{\textsc{u}} = \left[\begin{array}{c c c c}
+u_1 & u_2 & u_3 & u_4 
 \end{array}\right]^{\intercal}
 \end{equation}
 
@@ -692,13 +694,13 @@ Where the control inputs are mapped by:
 
 \begin{equation}\label{Control_input_mapping}
 \begin{cases}
-U_1 = b(\Omega_1^2 + \Omega_2^2 + \Omega_3^2 + \Omega_4^2)\\
+u_1 = b(\Omega_1^2 + \Omega_2^2 + \Omega_3^2 + \Omega_4^2)\\
 \\
-U_2 = b(-\Omega_2^2 + \Omega_4^2)\\
+u_2 = b(-\Omega_2^2 + \Omega_4^2)\\
 \\
-U_3 = b(\Omega_1^2 - \Omega^3)\\
+u_3 = b(\Omega_1^2 - \Omega^3)\\
 \\
-U_4 = d(-\Omega_1^2 + \Omega_2^2 - \Omega_3^2 + \Omega_4^2) \\
+u_4 = d(-\Omega_1^2 + \Omega_2^2 - \Omega_3^2 + \Omega_4^2) \\
 \end{cases}
 \end{equation}
 
@@ -715,19 +717,19 @@ Simulation tests have demonstrated that this assumption is reasonable \cite{Boua
 From equations (\ref{detailed_dynamic_model}),(\ref{state_vector}),(\ref{control_input_vector}), the following expression is obtained after simplification:
 
 \begin{equation}\label{state_space_model}
-f(X,U) = \begin{pmatrix}
+f(\textbf{\textsc{x}},\textbf{\textsc{u}}) = \begin{pmatrix}
 \dot{\phi}\\
-\dot{\theta} \dot{\psi} a_1 + \dot{\theta} a_2 \Omega_r + b_1 U_2 \\
+\dot{\theta} \dot{\psi} a_1 + \dot{\theta} a_2 \Omega_r + b_1 u_2 \\
 \dot{\theta}\\
-\dot{\phi} \dot{\psi} a_3 - \dot{\phi} a_4 \Omega_r + b_2 U_3 \\
+\dot{\phi} \dot{\psi} a_3 - \dot{\phi} a_4 \Omega_r + b_2 u_3 \\
 \dot{\psi}\\
-\dot{\theta} \dot{\psi} a_5 + b_3 U_4 \\
+\dot{\theta} \dot{\psi} a_5 + b_3 u_4 \\
 \dot{z}\\
-g - (\cos \phi \cos \theta) \frac{1}{m} U_1 \\
+g - (\cos \phi \cos \theta) \frac{1}{m} u_1 \\
 \dot{x} \\
-u_x \frac{1}{m} U_1\\
+u_x \frac{1}{m} u_1\\
 \dot{y}\\
-u_y \frac{1}{m}U_1\\
+u_y \frac{1}{m}u_1\\
 \end{pmatrix}
 \end{equation}
 
@@ -773,7 +775,7 @@ It is important to note that that the angles and the derivatives of the angles d
 \end{figure}
 
  \chapter{Control of quadrotors}
-
+In the following sections of this chapter, differential flatness,  the general control architecture of a quadrotor and different potential control approaches (linear and nonlinear) that can be used to control a quadrotor are explained. 
  \section{Differential Flatness}\label{Differential_flatness}  
  
  In the quadrotor community, a well-established finding is that the dynamic model of a quadrotor is differentially flat. Moreover, the control design problem in non-linear systems will be considerably simplified. Precisely, a system with state $\textbf{\textsc{x}} \in \mathbb{R}^n$ and input $\textbf{\textsc{u}} \in \mathbb{R}^m$ is considered to be \textit{differentially flat} if there exists a set of \textit{flat outputs} $\textbf{\textsc{y}} \in \mathbb{R}^m$ which have the following form:
@@ -814,7 +816,7 @@ Consequently, the problem of generating a feasible trajectory for a quadrotor th
 		And, the outputs of this outer loop are the thrust $f=U_1$, which is sent to the motor controller, and the desired attitude $(\theta_d(t),\phi_d(t))$, which corresponds to the reference signal of the attitude controller.
 	\item [] \textbf{Attitude controller} ithas the goal of driving the errors occuring on the rotational dynamics to zero. This controller generates the inputs 
 	$\bm{\tau}=\begin{bmatrix}
-	U_2 && U_3 && U_4
+	u_2 && u_3 && u_4 \\
 	\end{bmatrix}^{\intercal}
 	$
 	that are then sent to the motor controller.
@@ -837,7 +839,7 @@ Consequently, the problem of generating a feasible trajectory for a quadrotor th
  
  \newpage 
  \section{General Control Approaches}
-In the following section, several potential control method that can be used to control quadrotors (or other types of mechanical systems) will be presented.
+
 \subsection{Method of Linearization}
 
 By using extreme assumptions, it is feasible to apply linear control techniques in order to control a quadrotor (\cite{Sabatino2015}, \cite{BouabdallahNothSiegwart2018}). Particularly, this can be made by doing a linearization of the full dynamic model around an equilibrium point $\overline{\textbf{\textsc{x}}}$ and by using the assumption that the vehicle is only capable of oscillating lightly around the hover point.
@@ -873,10 +875,43 @@ can now be linearized around the hover point $(\overline{\textbf{\textsc{x}}},\o
 
 It can be demonstrated that both matrices $\textbf{\textsc{A}}$ and $\textbf{\textsc{B}}$ can be used to determine a linear system that is both controllable and observable \cite{Sabatino2015}. Thus, any control technique that is linear can now be used on the quadrotor in order to keep it areound a desired equilibrium point, such as optimal LQR/LQG \cite{Cowling2007,Minh2010} control or simple PD or PID controller \cite{Han2012,Altug2007}.
 
-\newpage
 
- \subsection{Lyapunov Stability Analysis}
+
+ \subsection{Internal Lyapunov Stability}
  
+Before defining the \textit{Lyapunov Direct Method}, the notion of stability will be thoroughly defined first.
+
+\subsubsection{Notions of Stability}
+ 
+ For a general system without any control input
+ 
+
+
+\begin{align}
+ \dot{x}(t) = f(x(t),0,t) \hspace{1in} (CT) \\
+ \dot{x}(k+1) = f(x(k),0,k) \hspace{1in} (DT),
+\end{align}
+
+ it is said that a point $\overline{x}$ is called an \textit{equilibrium point} from time $t_0$ for the continuous system (CT) if $f(\overline{x},0,t)=0,$ $\forall t \geq t_0$. Moreover, in the discrete time (DT) case, the point $\overline{x}$ is an equilibrium point from time $k_0$ if $f(\overline{x},0,k)=0,$ $\forall k \geq k_0$.
+If the system begins from state $\overline{x}$ at time $t_0$ or $k_0$, then the system will stay there and will not change with time. It is possible for nonlinear system to have more than one equilibrium point (equilibria). There also exists another class of special solutions in the case of nonlinear systems, these solutions are called \textit{periodic} solution. However, it is outside the scope of this bibliography and interested readers are referred to \cite{Schmitt1972} for more in depth explanation. So, the focus will be on equilibria. It is desired to identify the \textit{stability} of the equilibria in some way. For instance, it is desired to know if, given some small perturbation to the system, the state would either come back to the equilibrium point, remain close to it in some sense, or it diverges.
+
+The most useful notion of stability for an equilibrium point of a nonlinear system is provided by the definition below. Assuming that the equilibrium point is at the origin, because if $\overline{x} \neq 0$, a simple translation can be done to obtain a system that is equivalent with the equilibrium at the origin. \\
+
+\textbf{Asymptotic stability}: a system is said to be \textit{asymptotically stable} about its own equilibrium point at the origin if the following two conditions are satisfied \cite{Dahleh2011}:
+
+\begin{enumerate}
+	\item For any $\epsilon > 0$, $\exists \delta_1 > 0$ such that if $\| x(t_0)\|<\delta_1$, then $\|x(t)\|<\epsilon, \forall t>t_0$.
+	\item $\exists \delta_2$ such that if $\|x(t_0)\|<\delta_2$, then $x(t)\rightarrow 0$ at $t \rightarrow \infty$.
+\end{enumerate}
+
+For the first condition, it is required that the state trajectory should be restricted to a randomly small \textit{"ball"} that is centered at the equilibrium point and has a radius $\epsilon$, when released from aa \textit{arbitrary} initial condition in a ball that has an adequately small (yet positive) radius $\delta_1$. This is referred to as \textit{stability in the sense of Lyapunov} (i.s.L.). It is also possible to have stability in the sense of Lyapunov without having asymptotic stability, in that case, it is said that the equilibrium point is \textit{marginally stable}. Moreover, there also exist nonlinear systems that satisfy the second condition without being stable in the sense of Lyapunov. Moreover, an equilibrium point that is \textit{not} stable in the sense of Lyapunov is said to be \textit{unstable}.
+
+\subsubsection{Lyapunov's Direct Method}
+
+\paragraph{Genral Idea}
+
+ 
+ \newpage
  \subsection{Model Predictive control}
  
  
