@@ -3,6 +3,12 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{comment}
+\usepackage{bm}
+\usepackage{multicol}
+\usepackage{xcolor}
+
+\setlength{\columnseprule}{1pt}
+\def\columnseprulecolor{\color{black}}
 
 \begin{document}
 
@@ -10,7 +16,7 @@
  
   \section*{Abstract}
 Within the rapidly growing aerial robotics market, one of the most substantial challenges in the quadrotor community is performing aggressive maneuvers, especially multi-flip maneuvers.  A proper physical definition of the issue is not addressed by the current approaches in the field and several key aspects of this maneuver are still overlooked.
-It can be shown, in particular, that making a flip with a quadrotor means crossing the parallel singularity of the dynamic model. The aim of the master thesis is to explore the possibility of defining aggressive trajectories for quadrotors on the basis of their dynamic model degeneracy analysis and to adapt various strategies to control the robot in a closed loop. In addition, the possibility to perform the aggressive maneuver in constrained environments will also be investigated.
+It can be shown, in particular, that making a flip with a quadrotor meanWs crossing the parallel singularity of the dynamic model. The aim of the master thesis is to explore the possibility of defining aggressive trajectories for quadrotors on the basis of their dynamic model degeneracy analysis and to adapt various strategies to control the robot in a closed loop. In addition, the possibility to perform the aggressive maneuver in constrained environments will also be investigated.
 Therefore, the analysis will be extended from the previous studied to create general feasible trajectories that will allow quadrotors to perform aggressive flip maneuvers while passing through a constrained environment and while guaranteeing a satisfactory degree of robustness to the uncertainties of the dynamic model.
 
  
@@ -29,11 +35,26 @@ I would like to thank my family as well: my parents Naji and Yolla, my sister Re
  
  
  \section*{Notations}
+ \begin{tabular}{cp{0.8\textwidth}}
+  $b$ & Thrust factor \\
+  $l$ & horizontal distance: From the center of the propeller to the CoG \\
+  $\Omega$ & Spinning speed of a propeller\\
+  $C_{R_m}$ & Rolling moment coefficient \\
+  $C_T$ & Thrust coefficient \\
+  $H$ & Hub force\\
+
+\end{tabular}\\
+ 
+ 
  
  \newpage
  
   \section*{Abbreviations}
+ \begin{tabular}{cp{0.8\textwidth}}
+  \textbf{IGE} & In Ground Effect \\
+  \textbf{OGE} & Out of Ground Effect \\
 
+\end{tabular}\\
  \newpage
  
  \listoffigures
@@ -185,10 +206,10 @@ The goal of this chapter is to present the dynamic model of the quadrotor. The m
 The dynamic model of the quadrotor will be derived based on the following assumptions:
 
 \begin{itemize}
-	\item The structure of the quadrotor is rigid.
-	\item The structure of the quadrotor is symmetrical.
+	\item The quadrotor has a rigid structure.
+	\item The quadrotor has a symmetrical structure.
 	\item The center of gravity (CoG) and the fixed frame at the center of the body are assumed to be coincident.
-	\item The proppelers of the quadrotor are assumed to be rigid.
+	\item The propellers of the quadrotor are assumed to be rigid.
 	\item The thrust and drag forces are assumed to be proportional to the square of the spinning speed of each propeller.
 \end{itemize}
  
@@ -227,25 +248,26 @@ Friction & All helicopter motions & $C \dot{\phi},\dot{\theta},\dot{\psi}$\\
  \begin{figure}[h]
  \centering
  \includegraphics[width=0.5\textwidth]{Images/Modeling/Test_Bench}
- \caption{Coordinate system of a quadrotor. \cite{Bouabdalla2007}}
+ \caption{Coordinate system of a simple quadrotor. \cite{Bouabdalla2007}}
  \label{coordinate_system_simple}
  \end{figure}
 
 \subsection{Kinematics} 
  
- For any point of the body frame of the quadrotor expressed in the fixed world frame, the following can be written ( c: $\cos$, s: $\sin$):   
+ For any point of the body frame of the quadrotor expressed in the fixed world frame, the following can be written 
+ ( c: $\cos$, s: $\sin$):   
  
  \begin{equation}\label{kinematics}
  \begin{cases}
  r_X= (c\psi c \theta ) x + ( c \psi s \theta s \phi  - s \psi c \phi) y + (c \psi s \theta c \phi + s \psi s \phi) z \\
+ \\
  r_Y= (s\psi c \theta ) x + ( s \psi s \theta s \phi  + c \psi c \phi) y + (s \psi s \theta c \phi - c \psi s \phi) z \\
- r_Z= (-s \theta ) x + ( c \theta s \phi ) y + (c \theta c \phi) z \\
- 
+ \\
+ r_Z= (-s \theta ) x + ( c \theta s \phi ) y + (c \theta c \phi) z \\ 
  \end{cases}
  \end{equation}
 
-Thus, the velocities can be derived by differentiation \ref{kinematics}
-, and the squared magnitude of the squared velocity can be expressed as follows for any point:
+Thus, the velocities can be derived by differentiation \ref{kinematics}, and the squared magnitude of the squared velocity can be expressed as follows for any point:
 
 \begin{equation}\label{velocity_magnitude}
 	v^2 = v_X^2 + v_Y^2 + v_Z^2\\
@@ -253,7 +275,7 @@ Thus, the velocities can be derived by differentiation \ref{kinematics}
 
 \subsection{Energy}
 
-Assuming that the matrix of inertia is diagonal, then from equation \ref{velocity_magnitude},the expression of the kinetics energy can be calculated:
+Assuming that the matrix of inertia is diagonal, then from equation \ref{velocity_magnitude}, the expression of the kinetics energy can be calculated:
 
 \begin{equation}\label{kinetic_energy}
 T = \frac{1}{2} I_{xx}(\dot{\phi}-\dot{\psi} s \theta)^2 + \frac{1}{2} I_{yy}(\dot{\theta} c \phi + \dot{\psi} s \phi c \theta)^2 + \frac{1}{2} I_{zz}(\dot{\theta} s \phi - \dot{\psi} c \phi)^2
@@ -278,15 +300,473 @@ L = T - V \text{\hspace{0.5cm} ,\hspace{0.5cm}} \Gamma_i = \frac{d}{dt}\bigg(\fr
  
  Where $L$ $\Gamma_i$ and $\dot{q}_i$ are the Lagrangian, the generalized forces and the generalized coordinates respectively. Thus, the equations of motion can be expressed as follows: 
  
+ \begin{equation}
+ \begin{cases}
+ I_{xx}\ddot{\phi} = \dot{\theta} \dot{\psi}(I_{yy}-I_{zz})\\
+ \\
+ I_{yy}\ddot{\theta} = \dot{\phi} \dot{\psi}(I_{zz}-I_{xx})\\
+ \\
+ I_{zz}\ddot{\psi} = \dot{\phi} \dot{\theta} (I_{xx} - I_{yy})
+ \end{cases}
+ \end{equation}
  
- 
- 
- 
-\newpage  
+Moreover, the torques that are nonconservative and acting on the quadrotor, are due to two different causes. First, it is due to thrust of each rotor pairs in figure \ref{coordinate_system_simple}:
 
- \section{State-space model}
+\begin{equation}
+\begin{cases}
+\tau_x = bl(\Omega_4^2 - \Omega_2^2)\\
+\\
+\tau_y = bl(\Omega_3^2 - \Omega_1^2)\\
+\\
+\tau_z = bl(\Omega_1^2 - \Omega_2^2 + \Omega_3^2 - \Omega_4^2)\\
+\end{cases}
+\end{equation}
+
+Second, it is also due to the gyroscopic effect which is the result of the rotation of the propellers:
+
+\begin{equation}
+\begin{cases}
+\tau_x' = J_r \omega_y (\Omega_1 + \Omega_3 - \Omega_2 - \Omega_4)\\
+\\
+\tau_y' = J_r \omega_x (\Omega_2 + \Omega_4 - \Omega_1 - \Omega_3)\\
+\end{cases}
+\end{equation}
+
+\subsection{The Derived Dynamic Model}
+
+The dynamic model of the quadrotor which describes the rotations of roll, pitch and yaw consists of three terms:
+\begin{enumerate}
+	\item The actuator torques.
+	\item The gyroscopic effects that are due to the rotation of the rigid body.
+	\item The gyroscopic effects that are due to rotation of the propeller that is coupled with the rotation of the body.
+\end{enumerate}
+
+ Thus, the dynamic model of the quadrotor is:
+ 
+ \begin{equation}\label{dynamic_model}
+ 	\begin{cases}
+ 		I_{xx}\ddot{\phi}= \dot{\theta}\dot{\psi}(I_{yy}-I_{zz})-J \dot{\theta} \Omega_r + \tau_x \\
+ 		\\
+ 		I_{yy}\ddot{\theta}= \dot{\theta}\dot{\psi}(I_{zz}-I_{xx})+J \dot{\phi} \Omega_r + \tau_y \\
+ 		\\
+ 		I_{zz}\ddot{\psi}= \dot{\phi}\dot{\theta}(I_{xx}-I_{yy}) + \tau_z \\	
+ 	\end{cases}
+ \end{equation}
+
+ 
+ 
+ \newpage
+ 
+ \subsection{Rotor Dynamics}
+ 
+ DC motors are used to drive the rotors of a quadrotor. So, the established equations of a DC motor are the following:
+
+\begin{equation}\label{DC_motor_dynamics}
+\begin{cases}
+L \frac{di}{dt}=u - R_{mot}i - k_e \omega_m\\
+\\
+J_m \frac{d \omega_m}{dt} = \tau_m - \tau_d \\
+\end{cases}
+\end{equation} 
+
+Since small motors are used in which they also have little inductance, then the second order equation of the DC motor dynamics is given by:
+
+\begin{equation}\label{DC_motor_2nd_order_dynamics}
+	J_m \frac{d\omega_m}{dt} = -\frac{k_m^2}{R_{mot}}\omega_m - \tau_d + \frac{k_m}{R_{mot}}u
+\end{equation}
+ 
+When the gearbox and the propeller models are introduced, then equation \ref{DC_motor_2nd_order_dynamics} becomes:
+
+\begin{equation}\label{DC_motor_2nd_order_dynamics}
+\begin{cases}
+	\dot{\omega}_m = - \frac{1}{\tau}\omega_m - \frac{d}{\eta r^3 J_t}\omega_m^2 + \frac{1}{k_m \tau}u\\
+	\\
+	\frac{1}{\tau} = \frac{k_m^2}{RJ_t}\\
+	\end{cases}
+\end{equation}
+ 
+Moreover, linearization of equation \ref{DC_motor_2nd_order_dynamics} can be done around an operation point $\dot{\omega}_0$ to the form $\dot{\omega}_m = -A \omega_m + B u + C$ with: 
+
+\begin{equation}
+A = \bigg( \frac{1}{\tau}+\frac{2d\omega_0}{\eta r^3 J_t} \bigg) \text{ \hfill , \hfill} B = \bigg( \frac{1}{k_m \tau} \bigg) \text{\hfill , \hfill} C = \bigg( \frac{d \omega_0^2}{\eta r^3 J_t} \bigg)
+\end{equation}
+ 
+ 
+ \section{Modeling with Newton-Euler Formalism}
+ 
+The model above was derived in succession as shown in papers  \cite{Bouabdallah2004,Bouabdallah2005a,Bouabdallah2005b} . The dynamic equations below includes contain rolling moments $R_m$, hub forces $H$ and various aerodynamic effects.
+Thus, this is a more realistic dynamic model, especially when the quadrotor flies in a forward manner. 
+With the previous versions of the dynamic model, it was required to to moderately tune the control parameters in order to have experiments that are successful.
+
+The dynamic model expressed in the Newton-Euler formalism of a rigid body that is subject to external forces acting on the center of mass is expressed as follows \cite{Murray1994}:
+
+\begin{equation}\label{NE_Formalism}
+\begin{bmatrix}
+m I_{3 \times 3} && 0 \\
+0 && I \\
+\end{bmatrix}
+\begin{bmatrix}
+\dot{V}\\
+\dot{\omega}\\
+\end{bmatrix}
++ \begin{bmatrix}
+\omega \times mV \\
+\omega \times I \omega \\
+\end{bmatrix}
+=
+\begin{bmatrix}
+F \\
+\tau \\
+\end{bmatrix}
+\end{equation}
+ 
+Considering a fixed world frame $E$ and a fixed body frame $B$ on the quadrotor as shown in figure \ref{coordinate_system_detailed_quadrotor}. Then, by the use of the Euler angles, the orientation of the rigid body of the quadrotor in space is expressed by a rotation $R$ from $B$ to $E$, where $R \in SO3$ is a rotation matrix. 
+ 
+ \begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{Images/Modeling/Detailed_quadrotor}
+\caption{Coordinate system of a simple quadrotor. \cite{Bouabdalla2007}}
+\label{coordinate_system_detailed_quadrotor}
+\end{figure}
+ 
+\newpage
+
+\subsection{Aerodynamic Forces and Moments}
+
+The aerodynamic forces and moments are computed using a mix of blade element and momentum theory \cite{Leishmana}. This is based off of the work of Gary Fay during the project of the Mesicopter \cite{Leishmanb}. For a simpler readings of the equations provided below, some symbols are recalled:
+
+\begin{table}[h]
+\centering
+\setlength{\tabcolsep}{10pt} % Default value: 6pt
+\renewcommand{\arraystretch}{1} % Default
+\begin{tabular}{c c}
+$\sigma$: solidity ration & $\lambda$: inflow ratio \\
+$a$: lift slope & $v$: induced velocity \\
+$\mu$: rotor advance ration & $\rho$: air density
+
+\end{tabular}
+\captionsetup[table]{list=no}
+\end{table}
+ 
+\subsubsection*{Thrust Force}
+
+The thrust force is due to all the vertical forces that the blade elements are subject to.
+
+\begin{equation}\label{thrust_force}
+\begin{cases}
+T = C_T \rho A(\Omega R_{rad})^2\\
+\\
+\frac{C_T}{\sigma a} = (\frac{1}{6} + \frac{1}{4} \mu^2)\theta_0 - (1+\mu^2)\frac{\theta_{tw}}{8} - \frac{1}{5} \lambda \\
+\end{cases}
+\end{equation}
+
+\subsubsection*{Hub Force}
+
+The hub force is due to all the horizontal forces that the blade elements are subject to.
+
+\begin{equation}
+\begin{cases}
+H = C_H \rho A(\Omega R_{rad})^2\\
+\\
+\frac{C_H}{\sigma a} = (\frac{1}{4a} \mu \overline{C_d} + \frac{1}{4} \lambda \mu (\theta_0 - \frac{\theta_{tw}}{2})\\
+\end{cases}
+\end{equation}
+
+\subsubsection*{Drag Moment}
+
+The drag moment about the rotor shaft is due to the aerodynamic forces that the blade elements are subject to. The horizontal forces that are acting on the rotor are multiplied by the moment arm and  integrated over the rotor. The drag moment gives the required power to spin the rotor.
+
+\begin{equation}
+\begin{cases}
+	Q = C_Q \rho A (\Omega R_{rad})^2 R_{rad}\\
+	\\
+	\frac{C_Q}{\sigma a} = \frac{1}{8a}(1+\mu^2) \overline{C_d} + \lambda (\frac{1}{6} \theta_0 - \frac{1}{8} \theta_{tw} - \frac{1}{4} \lambda)
+\end{cases}
+\end{equation}
+
+\newpage
+
+\subsubsection{Rolling moment}
+
+
+The rolling moment of a propeller occurs when the blade that is advancing is producing more lift than the blade that is retreating in forwarding flight. It is the integration of the lift of every single section that is acting at a given radius over the entire rotor.
+The reader should notice that the rolling moment is not the same as the propeller radius, or the overall rolling moment which is due to other effects or the rotation matrix $R$. So, there should not be any confusion.
+
+\begin{equation}
+\begin{cases}
+R_m = C_{R_m}\rho A (\Omega R_{rad})^2 R_{rad} \\
+\\
+\frac{C_{R_m}}{\sigma a} = -\mu (\frac{1}{6} \theta_0 - \frac{1}{8} \theta_{tw} - \frac{1}{8} \lambda)\\
+\end{cases}
+\end{equation}
+
+\subsubsection{Ground Effect}
+
+
+When operating near the ground ( at a height equivalent to half the diameter of the rotor), helicopters experience thrust augmentation which is caused by greater efficiency of the rotor.This is linked to a decrease in the velocity of induced airflow. Moreover, this is called Ground Effect. Different approaches to deal with this effect can be found in literature, for example, adaptive techniques can  be used \cite{Guenard2006}.
+However, the objective is to find a model that is simple and mainly captures the change in the velocity of the induced inflow.
+Cheeseman \cite{Cheeseman1957} states (reached from the images method \cite{Griffiths2002}) that if the power is constant ($T_{OGE}v_{i,OGE} = T_{IGE}v_{i,IGE}$), the generated vecolity at the center of the rotor by its imageis $\delta v_i = Av_i/16 \pi z^2$.
+Cheesman acquired the relation (\ref{Cheeseman}) by using the assumption that both $v_i$ and $\delta v_i$ are constant over disk, which results in $v_{i,IGE}=v_i-\delta v_i$.
+
+\begin{equation}\label{Cheeseman}
+\frac{T_{IGE}}{T_{OGE}}=\frac{1}{1-\frac{R^2_{rad}}{16 z^2}}
+\end{equation}
+
+An alternative way to move forward is to consider that the inflow ration of the inflow ratio is $\lambda_{IGE} = (v_{i,OGE}-\delta v_i - \dot{z})/\Omega R_{rad}$, where the change of the velocity of the induced inflow is $\delta v_i = v_i/(4z/R_{rad})^2$.Then, the thrust coefficient (\ref{thrust_force}) IGE can be rewritten  as:
+
+\begin{equation}
+\begin{cases}
+T_{IGE}=C_T^{IGE} \rho A(\Omega R_{rad})^2 \\
+\\
+\frac{C_T^{IGE}}{\sigma a} = \frac{C_T^{OGE}}{\sigma a} + \frac{\delta v_i}{4 \Omega R_{rad}}\\
+\end{cases}
+\end{equation} 
+
+
+\newpage
+
+\subsection{General Moments and Forces}\label{forces_and_moments}
+
+The motion of the quadrotor is the result of several forces and moments that are originating from different physical effects \cite{Bouabdalla2007}. In this model, the following effects are considered (with $c$: $\cos$, $s$:$\sin$).
+
+\subsubsection*{Rolling Moments}
+
+\setlength{\tabcolsep}{20pt}
+ \begin{tabular}{lp{0.8\textwidth}}
+  body gyro effect & $\dot{\theta}\dot{\psi}(I_{yy}-I_{zz})$\\
+  \\
+  propeller gyro effect & $J_r \dot{\theta}\Omega_r$\\
+  \\
+  pitch actuators action & $l(-T_2+T_4)$\\
+  \\
+  hub moment due to forward flight & $h(\sum_{i=1}^4 H_{yi})$\\
+  \\
+  rolling moment due to forward flight & $(-1)^{i+1}\sum_{i=1}^4 R_{mxi}$\\
+  \\
+\end{tabular}
+
+\subsubsection*{Pitching Moments}
+
+\setlength{\tabcolsep}{20pt}
+ \begin{tabular}{lp{0.8\textwidth}}
+ body gyro effect & $\dot{\phi}\dot{\psi}(I_{zz}-I_{xx})$\\
+ \\
+ propeller gyro effect & $J_r \dot{\phi}\Omega_r$ \\
+ \\
+ pitch actuators action & $l(T_1-T_3)$\\
+ \\
+ hub moment due to forward flight & $h(\sum_{i=1}^4 H_{xi})$\\
+ \\
+ rolling moment due to side-ward flight &  $(-1)^{i+1}\sum_{i=1}^4 R_{myi}$\\
+\end{tabular}
+
+\subsubsection*{Yawing Moments}
+
+\setlength{\tabcolsep}{20pt}
+ \begin{tabular}{lp{0.8\textwidth}}
+body gyro effect & $\dot{\theta}\dot{\phi}(I_{xx}-I_{yy})$\\
+\\
+inertial counter-torque & $J_r \dot{\Omega}_r$\\
+\\
+counter-torque unbalance & $(-1)^i\sum_{i=1}^4 Q_i$\\
+\\
+hub force unbalance in forward flight & $l(H_{x2}-H_{x4})$ \\
+\\
+hub force unbalance in sideward flight & $l(-H_{y1}+H_{y3})$\\
+
+\end{tabular}
+
+
+\subsubsection*{Forces Along z Axis}
+
+%
+\setlength{\tabcolsep}{58pt}
+ \begin{tabular}{lp{1\textwidth}}
+actuators action & $c \psi c \phi (\sum_{i=1}^4T_i$\\
+\\
+weight & $mg$ \\
+
+\end{tabular}
+
+\subsubsection*{Forces Along x Axis}
+\setlength{\tabcolsep}{58pt}
+ \begin{tabular}{lp{1\textwidth}}
+actuators action & $ (s \psi s \phi + c \psi s \theta c \phi)(\sum_{i=1}^4 T_i) $\\
+\\
+hub force in x axis & $-\sum_{i=1}^4 H_{xi}$ \\
+\\
+friction & $\frac{1}{2}C_x A_c \rho \dot{x}|\dot{x}|$
+
+\end{tabular}
+
+
+\subsubsection*{Forces Along y Axis}
+\setlength{\tabcolsep}{58pt}
+ \begin{tabular}{lp{1\textwidth}}
+actuators action & $ (-c \psi s \phi + s \psi s \theta c \phi)(\sum_{i=1}^4 T_i) $\\
+\\
+hub force in y axis & $-\sum_{i=1}^4 H_{yi}$ \\
+\\
+friction & $\frac{1}{2}C_y A_c \rho \dot{y}|\dot{y}|$
+
+\end{tabular}
+
+\subsection{Equations of Motion}\label{detail_equation_of_motin}
+
+The equations of motion are derived from (\ref{NE_Formalism}) in addition to all the forces and the moments that were listed in subsection \ref{forces_and_moments}.
+
+\begin{equation}\label{detailed_dynamic_model}
+\begin{cases}
+I_{xx}\ddot{\phi} = \dot{\theta} \dot{\psi}(I_{yy}-I_{zz}) + J_r \dot{\theta}\Omega_r + l(-T_2+T_4)-h(\sum_{i=1}^4H_{yi})+(-1)^{i+1} \sum_{i=1}^4 R_{mxi}\\
+\\
+I_{yy}\ddot{\theta} = \dot{\phi} \dot{\psi}(I_{zz}-I_{xx}) - J_r \dot{\phi}\Omega_r + l(T_1-T_3) + h(\sum_{i=1}^4H_{xi})+(-1)^{i+1} \sum_{i=1}^4 R_{mxi}\\
+\\
+I_{zz}\ddot{\psi} = \dot{\phi} \dot{\psi}(I_{xx}-I_{yy}) + J_r \dot{\Omega}_r +(-1)^i \sum_{i=1}^4 Q_i + l(H_{x2}-H_{x4})+l(-H_{y1}+H_{y3})\\
+\\
+m\ddot{z} = mg -(c \psi c \phi)\sum_{i=1}^4T_i\\
+\\
+m\ddot{x} = (s \psi s \phi + c \psi s \theta c \phi) \sum_{i=1}^4 T_i - \sum_{i=1}^4 H_{xi}-\frac{1}{2}C_xA_c \rho \dot{x}|\dot{x}|\\
+\\
+m \ddot{y} = ( - c \psi s \phi + s \psi s \theta c \phi) \sum_{i=1}^4 T_i - \sum_{i=1}^4H_{yi} - \frac{1}{2}C_y A_c \rho \dot{y}|\dot{y}|\\
+\end{cases}
+\end{equation}
+
+\newpage
+
+
+ \section{State-Space Model}
+The model \ref{detailed_dynamic_model} that was developed in subsecton \ref{detail_equation_of_motin} expresses the differential equations of the system. However, for the purpose of control design, it is desirable to reduce the complexity and simplify the model to satisfy the real-time limitations of the embedded control loop. Thus, the thrust and the drag coefficients are assumed to be constant and the hub forces and rolling moments are neglected. As a result, the system can be expressed in state-space form \\ $\dot{X}=f(X,U)$ with $X$ the state vector and $U$ the control input vector.
+
+The state vector has the following form:
+
+\begin{equation}\label{state_vector}
+X = \left[\begin{array}{c c c c c c c c c c c c c}
+\phi & \dot{\phi} & \theta & \dot{\theta} & \psi & \dot{\psi} & z & \dot{z} & x & \dot{x} & y & \dot{y} 
+\end{array}\right]^{\intercal}
+\end{equation}
   
-  
+ With,
+ 
+\begin{multicols}{2}
+ 
+\begin{equation*}
+\begin{aligned}
+x_1 = \phi\\
+x_2 = \dot{x}_1=\dot{\phi}\\
+x_3 = \theta\\
+x_4 = \dot{x}_3 = \dot{\theta} \\
+x_5 = \psi \\
+x_6 = \dot{x}_5 = \dot{\psi}\\
+\end{aligned}
+\end{equation*}
+
+\columnbreak
+
+\begin{equation}
+\begin{aligned}
+x_7 = z\\
+x_8 = \dot{x}_7=\dot{z}\\
+x_9 = x\\
+x_{10} = \dot{x}_9 = \dot{x} \\
+x_{11} = y \\
+x_{12} = \dot{x}_{11} = \dot{y}\\
+\end{aligned}
+\end{equation}
+
+\end{multicols}
+ 
+Moreover, the control input vector has the following form: 
+
+\begin{equation}\label{control_input_vector}
+X = \left[\begin{array}{c c c c}
+U_1 & U_2 & U_3 & U_4 
+\end{array}\right]^{\intercal}
+\end{equation}
+
+Where the control inputs are mapped by: 
+
+\begin{equation}
+\begin{cases}
+U_1 = b(\Omega_1^2 + \Omega_2^2 + \Omega_3^2 + \Omega_4^2)\\
+\\
+U_2 = b(-\Omega_2^2 + \Omega_4^2)\\
+\\
+U_3 = b(\Omega_1^2 - \Omega^3)\\
+\\
+U_4 = d(-\Omega_1^2 + \Omega_2^2 - \Omega_3^2 + \Omega_4^2) \\
+\end{cases}
+\end{equation}
+
+The transformation matrix between the rate change of the attitude angles ($\dot{\phi},\dot{\theta},\dot{\psi}$) and the angular velocities of the body($p,q,r$) can be regarded as the identity matrix if the disturbances due to hover flight are small. As a result, the following can be written:
+
+\begin{equation}
+(\dot{\phi},\dot{\theta},\dot{\psi})  \approx (p,q,r)
+\end{equation}
+
+Simulation tests have demonstrated that this assumption is reasonable \cite{Bouabdalla2007}. 
+
+\newpage
+
+From equations (\ref{detailed_dynamic_model}),(\ref{state_vector}),(\ref{control_input_vector}), the following expression is obtained after simplification:
+
+\begin{equation}\label{state_space_model}
+f(X,U) = \begin{pmatrix}
+\dot{\phi}\\
+\dot{\theta} \dot{\psi} a_1 + \dot{\theta} a_2 \Omega_r + b_1 U_2 \\
+\dot{\theta}\\
+\dot{\phi} \dot{\psi} a_3 - \dot{\phi} a_4 \Omega_r + b_2 U_3 \\
+\dot{\psi}\\
+\dot{\theta} \dot{\psi} a_5 + b_3 U_4 \\
+\dot{z}\\
+g - (\cos \phi \cos \theta) \frac{1}{m} U_1 \\
+\dot{x} \\
+u_x \frac{1}{m} U_1\\
+\dot{y}\\
+u_y \frac{1}{m}U_1\\
+\end{pmatrix}
+\end{equation}
+
+With, 
+
+\begin{multicols}{2}
+ 
+\begin{equation*}
+\begin{aligned}
+a_1 = (I_{yy} - I_{zz})/I_{xx}\\
+a_2 = J_r/I_{xx}\\
+a_3 = (I_{zz} - I_{xx})/I_{yy}\\
+a_4 = J_r/I_{yy}\\
+a_5 = (I_{xx} - I_{yy})/I_{zz}\\
+\end{aligned}
+\end{equation*}
+
+\columnbreak
+
+\begin{equation}
+\begin{aligned}
+b_1 = l/I_{xx}\\
+b_2 =l/I_{yy}\\
+b_3 = l/I_{zz}\\
+\end{aligned}
+\end{equation}
+
+\end{multicols}
+
+\begin{equation}
+	\begin{aligned}
+	u_x = (\cos \phi \sin \theta \cos \psi + \sin \phi \sin \psi)\\
+	u_y = (\cos \phi \sin \theta \sin \psi - \sin \phi \cos \psi)\\
+	\end{aligned}
+\end{equation}
+
+It is important to note that that the angles and the derivatives of the angles do not depend on the components of the translation in the system represented by equation (\ref{state_space_model}). Contrarily, the translation components depend of the angles. So, the system represented by equation(\ref{state_space_model}) can be depicted as two subsystems, the angle subsystem and the translation subsystem as shown in figure 
+
+\begin{figure}[h]
+\centering 
+\includegraphics[width=0.5\textwidth]{Images/Modeling/subsystems}
+\caption{Link between the rotation and the translation subsystems.\cite{Bouabdalla2007}}
+\end{figure}
+
  \chapter{Control of quadrotors}
  
  \section{General control architecture}
@@ -307,15 +787,7 @@ L = T - V \text{\hspace{0.5cm} ,\hspace{0.5cm}} \Gamma_i = \frac{d}{dt}\bigg(\fr
  
  \subsection{Control approaches for multi-flip maneuvers}
   
- \chapter{Trajectory optimization}
-
- 
- 
-
-
- 
-
- 
+ \chapter{Trajectory optimization} 
  
  \chapter*{Conclusion}
  \addcontentsline{toc}{chapter}{Conclusion}
