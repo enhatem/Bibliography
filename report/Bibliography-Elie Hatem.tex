@@ -3,9 +3,11 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{comment}
+\usepackage{amsmath}
 \usepackage{bm}
 \usepackage{multicol}
 \usepackage{xcolor}
+\usepackage{tabularx}
 
 \setlength{\columnseprule}{1pt}
 \def\columnseprulecolor{\color{black}}
@@ -74,7 +76,7 @@ In specific, in the sections below, quadrotors and parallel robots are briefly p
  
  \section*{The quadrotor platform}
 
-A quadrotor is a type of unmanned aerial vehicle with four rotors and six degrees of freedom. Typically, drones have a small size and low inertia which allows it to be controller by simple flight control systems. It is typically designed in a cross-configuration such that the electronics are held in the center of the platform and the rotors are placed at the borders.
+A quadrotor is a type of unmanned aerial vehicle (UAV) with four rotors and six degrees of freedom. Typically, drones have a small size and low inertia which allows it to be controller by simple flight control systems. It is typically designed in a cross-configuration such that the electronics are held in the center of the platform and the rotors are placed at the borders.
 An example of a real quadrotor, namely the DJI Phantom, is shown in fig. \ref{fig:drone}. The quadrotor is typically built in a way such that a pair of opposite rotors rotate clockwise, whereas the other pair of rotors rotates in counter-clockwise.
 The attitude and the position of the drone are controlled by changing the spinning speed of the rotors. An example is shown in figure \ref{fig:propeller_directions}.
 
@@ -85,7 +87,7 @@ The attitude and the position of the drone are controlled by changing the spinni
      \begin{subfigure}[b]{0.45\textwidth}
          \centering
          \includegraphics[width=\textwidth]{Images/Introduction/drone}
-    \caption{A DJI Phantom quadcopter (UAV)}
+         \caption[Caption for LOF]{A DJI Phantom quadcopter (UAV)\protect\footnotemark}
          \label{fig:drone}
      \end{subfigure}
      \hfill
@@ -100,6 +102,9 @@ The attitude and the position of the drone are controlled by changing the spinni
 \end{figure}
 
 The distinctive mechanical design of the quadrotor permits the actuation system to control all of the six degrees of freedom, even though it is under-actuated. This is due to the fact that the rotational and translational dynamics are tightly coupled. Thus, all the translational and rotational motions can be carried off by properly controlling the magnitude and direction of the spinning speed of the rotors.   
+
+\footnotetext[1]{\url{https://en.wikipedia.org/wiki/Quadcopter\#/media/File:Quadcopter_camera_drone_in_flight.jpg}, accessed on 01/08/2021.}
+
 
 \pagebreak
 
@@ -142,8 +147,8 @@ A parallel manipulator is a mechanical system that consists of two connected pla
 
 
 
-\footnotetext[1]{\url{https://en.wikipedia.org/wiki/Stewart_platform\#/media/File:Simulator-flight-compartment.jpeg}}
-\footnotetext[2]{\url{https://en.wikipedia.org/wiki/Parallel_manipulator\#/media/File:Prototype_robot_parall\%C3\%A8le_PAR4.jpg}}
+\footnotetext[1]{\url{https://en.wikipedia.org/wiki/Stewart_platform\#/media/File:Simulator-flight-compartment.jpeg}, accessed on 01/08/2021.}
+\footnotetext[2]{\url{https://en.wikipedia.org/wiki/Parallel_manipulator\#/media/File:Prototype_robot_parall\%C3\%A8le_PAR4.jpg}, accessed on 01/08/2021.}
 
 
 \pagebreak
@@ -176,7 +181,7 @@ Specifically, the goal of this master thesis is to study a distinct class of agg
         \label{fig:three graphs}
 \end{figure}
 
-\footnotetext[1]{\url{https://newatlas.com/drones/muscle-signals-drone-control/\#gallery:2}}
+\footnotetext[1]{\url{https://newatlas.com/drones/muscle-signals-drone-control/\#gallery:2}, accessed on 01/08/2021.}
 
 \pagebreak
 
@@ -685,7 +690,7 @@ U_1 & U_2 & U_3 & U_4
 
 Where the control inputs are mapped by: 
 
-\begin{equation}
+\begin{equation}\label{Control_input_mapping}
 \begin{cases}
 U_1 = b(\Omega_1^2 + \Omega_2^2 + \Omega_3^2 + \Omega_4^2)\\
 \\
@@ -768,24 +773,124 @@ It is important to note that that the angles and the derivatives of the angles d
 \end{figure}
 
  \chapter{Control of quadrotors}
+
+ \section{Differential Flatness}\label{Differential_flatness}  
  
- \section{General control architecture}
+ In the quadrotor community, a well-established finding is that the dynamic model of a quadrotor is differentially flat. Moreover, the control design problem in non-linear systems will be considerably simplified. Precisely, a system with state $\textbf{\textsc{x}} \in \mathbb{R}^n$ and input $\textbf{\textsc{u}} \in \mathbb{R}^m$ is considered to be \textit{differentially flat} if there exists a set of \textit{flat outputs} $\textbf{\textsc{y}} \in \mathbb{R}^m$ which have the following form:
  
- \section{Model Predictive control}
+ \begin{equation}
+ \textbf{\textsc{y}} = \textbf{\textsc{y}}(\textbf{\textsc{x}}, \textbf{\textsc{u}}, \dot{\textbf{\textsc{u}}},...,\textbf{\textsc{u}}^{(p)})
+ \end{equation}
+
+ With, 
  
- \section{Lyapunov Stability Analysis}
+ \begin{equation}
+ 	\begin{cases}
+ 		\textbf{\textsc{x}} = \textbf{\textsc{x}}(\textbf{\textsc{y}}, \dot{\textbf{\textsc{y}}},...,\textbf{\textsc{y}}^{(q)}) \\
+ 	\\
+ 		\textbf{\textsc{u}} = \textbf{\textsc{u}}(\textbf{\textsc{y}}, \dot{\textbf{\textsc{y}}},...,\textbf{\textsc{y}}^{(r)}) \\
+ 	\end{cases}
+ \end{equation}
+
+ Thus, the new set of variables is required to be a function of the state, the input and the derivatives of the input. Moreover, this set should also have the same dimensions as the control input. In this manner, it is possible to rewrite both the state and the input in function of the flat outputs and the derivatives of the flat outputs.This is a very useful property in underactuated systems where $m<n$, such as quadrotors, because, it will allow to generate trajectories in the lower dimensional space $m$, then this trajectory will be mapped into the full dimensional \\ space $n$. Another well known example of systems is a car, in which the underactuation is the result of the nonholonomic constraints that are imposed by the wheels. So, for a car, a generated trajectory for $(x,y)$ position of the rear-wheels is enough to specify all the viable trajectories of the system.Formal proofs that the quadrotor system is differentially flat can be found in \cite{Mellinger2011}, and \cite{Faessler2018} for the full model with first-order aerodynamics. The standard choice of flat outputs for the quadrotor is the coodinates of the center of mass and the yaw angle:
+
+\begin{equation}
+\textbf{\textsc{y}} = \begin{bmatrix}
+x && y && z && \psi \\
+\end{bmatrix}^{\intercal}
+\end{equation}
+
+Consequently, the problem of generating a feasible trajectory for a quadrotor then trajecing it can be dimensionally decreased from a 6-dimensional space to a 4-dimensional space. By reason of the tight coupling between the rotational and translational dynamics, then defining a trajectory in function of the flat outputs $\textbf{\textsc{y}}$ is sufficient to properly define the full dynamics $\textbf{\textsc{x}}$.
+
+
+\newpage 
  
- \section{Sliding mode control}
+ \section{General Control Architecture}
+ In the last few years, many researches have developed interest in control of quadrotors. As a result, various control approaches have been proposed. The most known control architecture \cite{Faessler2018} consists of three nested control loops, as shown in figure \ref{General_control_architecture}, in order to generate the suitable thrust in each actuator to follow the desired signal. Thius strategy assumes that the attitude dynamics of a quadrotor are much faster than the translational dynamics. Assuming that Euler angles are used to define the attitude and that a navigation module generates the desired trajectory $(\bm{r}_d(t),\psi_d(t))$ as shown in section \ref{Differential_flatness}, then:
  
- \section{Other types of control}
+\begin{itemize}
+	\setlength{\itemindent}{-.5in}
+	\item [] \textbf{Position controller} has the objective of driving the errors occurring on the translational dynamics to zero.
+		And, the outputs of this outer loop are the thrust $f=U_1$, which is sent to the motor controller, and the desired attitude $(\theta_d(t),\phi_d(t))$, which corresponds to the reference signal of the attitude controller.
+	\item [] \textbf{Attitude controller} ithas the goal of driving the errors occuring on the rotational dynamics to zero. This controller generates the inputs 
+	$\bm{\tau}=\begin{bmatrix}
+	U_2 && U_3 && U_4
+	\end{bmatrix}^{\intercal}
+	$
+	that are then sent to the motor controller.
+	\item [] \textbf{Motor controller} This controller receives the control inputs 	$\bm{\tau}=\begin{bmatrix}
+	f && \bm{\tau}
+	\end{bmatrix}^{\intercal}
+	$ and maps them into the desired spinning velocities $\Omega_i$ for each individual rotor based on equation \ref{Control_input_mapping}. Moreover, low-level control laws are designed and realized in the firmware of the drone to make the convergence from the actual rotations to these desired values.
+\end{itemize}
+ 
+
+ 
+ \begin{figure}[h]
+ \centering
+ \includegraphics[width=0.8\textwidth]{Images/Control/General_control_architecture}
+ \caption{General control architecture of a quadrotor.}
+ \label{General_control_architecture}
+ \end{figure}
+ 
+ 
+ 
+ \newpage 
+ \section{General Control Approaches}
+In the following section, several potential control method that can be used to control quadrotors (or other types of mechanical systems) will be presented.
+\subsection{Method of Linearization}
+
+By using extreme assumptions, it is feasible to apply linear control techniques in order to control a quadrotor (\cite{Sabatino2015}, \cite{BouabdallahNothSiegwart2018}). Particularly, this can be made by doing a linearization of the full dynamic model around an equilibrium point $\overline{\textbf{\textsc{x}}}$ and by using the assumption that the vehicle is only capable of oscillating lightly around the hover point.
+It is very easy to observe that a feasible equilibrium is provided by a configuration where the center of mass is at a random position $\overline{\textbf{\textsc{r}}}$ and all the other elements of the state are set to zero. So, the nominal input $\bm{U} = \overline{\textbf{\textsc{U}}}$ to sustain such equilibrium can be assessed as the thrust that is required to compensate the gravity force:
+
+\begin{equation}
+\overline{\textbf{\textsc{u}}} = \begin{bmatrix}
+f \\ 
+\bm{\tau}\\
+\end{bmatrix}=
+\begin{bmatrix}
+mg \\
+\bm{0_{3 \times 1}} \\
+\end{bmatrix}
+\end{equation}
+
+At this stage, the complete non-linear dynamics that have the form :
+
+\begin{equation}
+\dot{\textbf{\textsc{x}}}=\overline{\textbf{\textsc{f}}}(\overline{\textbf{\textsc{x}}},\overline{\textbf{\textsc{u}}})
+\end{equation}
+
+can now be linearized around the hover point $(\overline{\textbf{\textsc{x}}},\overline{\textbf{\textsc{u}}})$ as shown below:
+
+\begin{equation}
+\dot{\textbf{\textsc{x}}} = \begin{bmatrix}
+\frac{\partial \textbf{\textsc{f}}(\textbf{\textsc{x}},\textbf{\textsc{u}})}{\partial \textbf{\textsc{x}}}
+\end{bmatrix}_{(\bar{\textbf{\textsc{x}}},\bar{\textbf{\textsc{u}}})} \textbf{\textsc{x}}+ 
+\begin{bmatrix}
+\frac{\partial \textbf{\textsc{f}}(\textbf{\textsc{x}},\textbf{\textsc{u}})}{\partial \textbf{\textsc{x}}}
+\end{bmatrix}_{(\bar{\textbf{\textsc{x}}},\bar{\textbf{\textsc{u}}})} \textbf{\textsc{u}} = \textbf{\textsc{A}}\textbf{\textsc{x}} + \textbf{\textsc{B}} \textbf{\textsc{u}}
+\end{equation}
+
+It can be demonstrated that both matrices $\textbf{\textsc{A}}$ and $\textbf{\textsc{B}}$ can be used to determine a linear system that is both controllable and observable \cite{Sabatino2015}. Thus, any control technique that is linear can now be used on the quadrotor in order to keep it areound a desired equilibrium point, such as optimal LQR/LQG \cite{Cowling2007,Minh2010} control or simple PD or PID controller \cite{Han2012,Altug2007}.
+
+\newpage
+
+ \subsection{Lyapunov Stability Analysis}
+ 
+ \subsection{Model Predictive control}
+ 
+ 
+ \subsection{Sliding mode control}
+ 
+ \subsection{Other types of control}
  
  \chapter{Multi-flips maneuver with quadrotors}
  
- \subsection{Quadrotor flip physics}
+ \section{Quadrotor flip physics}
  
- \subsection{Link to parallel robots}
+ \section{Link to parallel robots}
  
- \subsection{Control approaches for multi-flip maneuvers}
+ \section{Control approaches for multi-flip maneuvers}
   
  \chapter{Trajectory optimization} 
  
