@@ -885,8 +885,6 @@ Before defining the \textit{Lyapunov Direct Method}, the notion of stability wil
  
  For a general system without any control input
  
-
-
 \begin{align}
  \dot{x}(t) = f(x(t),0,t) \hspace{1in} (CT) \\
  \dot{x}(k+1) = f(x(k),0,k) \hspace{1in} (DT),
@@ -895,9 +893,9 @@ Before defining the \textit{Lyapunov Direct Method}, the notion of stability wil
  it is said that a point $\overline{x}$ is called an \textit{equilibrium point} from time $t_0$ for the continuous system (CT) if $f(\overline{x},0,t)=0,$ $\forall t \geq t_0$. Moreover, in the discrete time (DT) case, the point $\overline{x}$ is an equilibrium point from time $k_0$ if $f(\overline{x},0,k)=0,$ $\forall k \geq k_0$.
 If the system begins from state $\overline{x}$ at time $t_0$ or $k_0$, then the system will stay there and will not change with time. It is possible for nonlinear system to have more than one equilibrium point (equilibria). There also exists another class of special solutions in the case of nonlinear systems, these solutions are called \textit{periodic} solution. However, it is outside the scope of this bibliography and interested readers are referred to \cite{Schmitt1972} for more in depth explanation. So, the focus will be on equilibria. It is desired to identify the \textit{stability} of the equilibria in some way. For instance, it is desired to know if, given some small perturbation to the system, the state would either come back to the equilibrium point, remain close to it in some sense, or it diverges.
 
-The most useful notion of stability for an equilibrium point of a nonlinear system is provided by the definition below. Assuming that the equilibrium point is at the origin, because if $\overline{x} \neq 0$, a simple translation can be done to obtain a system that is equivalent with the equilibrium at the origin. \\
+The most useful notion of stability for an equilibrium point of a nonlinear system is provided by the definition below. Assuming that the equilibrium point is at the origin, because if $\overline{x} \neq 0$, a simple translation can be done to obtain a system that is equivalent with the equilibrium at the origin.
 
-\textbf{Asymptotic stability}: a system is said to be \textit{asymptotically stable} about its own equilibrium point at the origin if the following two conditions are satisfied \cite{Dahleh2011}:
+\paragraph{Asymptotic stability} A system is said to be \textit{asymptotically stable} about its own equilibrium point at the origin if the following two conditions are satisfied \cite{Dahleh2011}:
 
 \begin{enumerate}
 	\item For any $\epsilon > 0$, $\exists \delta_1 > 0$ such that if $\| x(t_0)\|<\delta_1$, then $\|x(t)\|<\epsilon, \forall t>t_0$.
@@ -910,7 +908,119 @@ For the first condition, it is required that the state trajectory should be rest
 
 \paragraph{Genral Idea}
 
- 
+If the following continuous-time system is considered
+
+\begin{equation} \label{Lyapunov_nonlinear_equation}
+\dot(x)(t) = f(x(t))
+\end{equation}
+which has an equilibrium point at the origin (x=0).This system is called a time-invariant system because $f$ does not depend explicitly on the time t. In such a system, the stability analysis of the equilibrium point is in general a tedious task. This is because there is no way to write a simple formula which relates the trajectory to the initial state. The main idea of \textit{Lyapunov's direct method} is to establish properties of the equilibrium point (of the nonlinear system in general) by evaluating how a certain carefully chosen scalar function of the changes as the state of the system changes. (The term \textit{"direct"} is used to distinguish this method from the Lypunov's \textit{"indirect"} method, which tries to establish properties of the equilibrium point by assessing the behavior of the \textit{linearized} system at that point \cite{MELCHORAGUILAR2004175}.
+
+As an example, a continuous and scalar function $V(x)$ that is equal to 0 at the origin and positive elsewhere is considered in some ball that is enclosing the origin. So, $V(0)=0$ and $V(x)>0$ when $x \neq 0$ in this ball. This $V(x)$ be considered as an \textit{"energy"} function. Also, let $\dot{V}(x)$ denote the time derivative of $V(x)$ throughout any trajectory of the system. In other words,  $\dot{V}(x)$ varies as $x(t)$ varies proportionally to equation (\ref{Lyapunov_nonlinear_equation}). If this derivative is negative in all the region (with the exclusion of the origin), then this means that the energy is decreasing with time in a strict manner. Moreover, since the lower bound of the energy is 0, then the energy must go to 0 with time. This means that all trajectories will converge to the origin (zero state). This idea is formalized below.
+
+
+
+
+\newpage
+
+\paragraph{Lyapunov Functions}
+
+Assuming V is a continuous map from $\mathbb{R}^n$ to $\mathbb{R}$. $V(x)$ is called a \textit{locally positive definite} (lpd) function about x=0 if 
+
+\begin{enumerate}
+	\item $V(0)=0$.
+	\item $V(x)>0$, $0<\|x\|<r$ for a given $r$.
+\end{enumerate}
+
+Also, the function is called locally \textit{positive semidefinite} (lpsd) id the strict inequality applied on the function in the second condition is changed to $V(x) \geq 0$. The function $V(x)$ is locally \textit{negative definite} (lnd) if $-V(x)$ is lpd. Moreover, $V(x)$ is locally \textit{negative semidefinite} (lnsd) if $-V(x)$ is lpsd. In order to graphically illustrate the locally positive definite function $V(x)$, it is useful to imaging having "contours" of constant $V$ that form (at least in a tiny region about the origin) a set of nested surfaces that are encircling the origin. An example is given in figure \ref{Lyapunov_figure} below: 
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{Images/Control/Lyapunov_function}
+\caption{Diffrenet values for a Lyapunov function, where $c_1<c_2<c_3$. \cite{Dahleh2011}}
+\label{Lyapunov_figure}
+\end{figure}
+
+In the continuous time case, the focus in this bibliography will be restricted to $V(x)$ that has first partial derivatives that are continuous. (In the case of discrete time, only continuity will suffice, so differentiability is not required in that case.) The derivative of $V$ with respect to time \textit{along a trajectory of the system} \ref{Lyapunov_nonlinear_equation} is denoted as $\dot{V}(x(t))$. This derivative is expressed as follows:
+
+\begin{equation}
+\dot{V}(x(t)) = \frac{dV(x)}{dx}\dot{x} = \frac{dV(x)}{dx}f(x)
+\end{equation}
+where 
+$\frac{dV(x)}{x}$ is the \textit{Jacobian} of $V$ with respect to $x$ which contain the partial derivative $V$ with respect to every component of $x$: $\frac{\partial V}{\partial x_i}$.
+
+Moreover, assuming $V$ is a lpd function (a "candidate Lyapunov function"), and $(\dot{V})$ is the derivative along trajectories of the system of equation \ref{Lyapunov_nonlinear_equation}. Then,$V$ is called a \textit{Lyapunov function} of the system of equation \ref{Lyapunov_nonlinear_equation} if $\dot{V}$ is lnsd \cite{Dahleh2011}.
+
+
+\paragraph{Lyapunov Theorem for Local Stability}
+
+If a Lyapunov function for the system of equation (\ref{Lyapunov_nonlinear_equation}) exists, this means that $x=0$ is a stable equilibrium point in the sense of Lyapunov. Moreover, if $\dot{V}<0$, $0<\|x\|<r_1$, for some $r_1$, in other words, if $\dot{V}$ is lnd, this means that $x=0$ is an equilibrium point that is asymptotically stable\cite{Dahleh2011}.
+
+
+
+
+\begin{comment}
+In order to demonstrate this, the stability in the sense of Lyapunov must first be proven. Assuming that $\epsilon>0$ is given. Then a $\delta>0$ must be found such that for all $\|x(0)\|<\delta$, it follows that $\|x(t)\|<\epsilon$, $\forall t>0$. 
+
+\newpage
+
+The figure \ref{Lyapunov_proof_a} below shows the constructions of the proof.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{Images/Control/Proof}
+\caption{Representation of the neighborhoods used for the proof \cite{Dahleh2011}.}
+\label{Lyapunov_proof_a}
+\end{figure}
+
+Let $\epsilon_1 = \min(\epsilon,r)$. And, assuming:
+
+\begin{equation}
+m = \min_{\|x\|=\epsilon_1} V(x)
+\end{equation}
+
+Since $V(x)$ is continuous, then $m$ is positive and well defined. Then a value $\delta$ can be chosen with $0<\delta<\epsilon_1$ such that for all $\|x\|<\delta$
+, $V(x)<m$. 
+
+\end{comment}
+
+
+
+\paragraph{Lyapunov Theorem of Global Asymptotic Stability}
+
+The region in the state space for which the earlier results hold is determined by the region over which $V(x)$ represents a Lyapunov function. It is interesting to determine the "basin of attraction" of an equilibrium point that is asymptotically stable. In other words, the basin of attraction is the set of initial conditions whose following trajectories conclude at the equilibrium point. Thus, an equilibrium point is \textit{"globally asymptotically stable"} ( also called asymptotically stable "in the large") if its basin of attraction is the entire state space.\\
+
+\noindent
+If a function $V(x)$ has the following criteria below, 
+
+\begin{enumerate}
+	\item $V(x)$ is positive definite throughout the state-space.
+	\item $V(x)$ also has the added property that $|V(x)| \rightarrow \infty$ as $\|x\| \rightarrow \infty$.
+	\item The derivative of $V$ (in other words $\dot{V}$) is negative definite throughout the state-space.
+\end{enumerate}
+Then, the equilibrium point at the origin is globally asymptotically stable \cite{Dahleh2011}.
+
+\paragraph{Discrete-Time Systems}
+
+Fundamentally identical results hold for the system
+
+\begin{equation}
+x(k+1) = f(x(k))
+\end{equation}
+
+provided that $\dot{V}$ is represented as
+
+\begin{equation*}
+\dot{V}(x) \triangleq V(f(x)) - V(x),
+\end{equation*}
+
+in other words as 
+
+\begin{equation*}
+V(\text{next state}) - V(\text{present state})
+\end{equation*}
+
+
  \newpage
  \subsection{Model Predictive control}
  
