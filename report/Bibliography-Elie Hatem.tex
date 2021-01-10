@@ -8,6 +8,7 @@
 \usepackage{multicol}
 \usepackage{xcolor}
 \usepackage{tabularx}
+\usepackage{optidef}
 
 \setlength{\columnseprule}{1pt}
 \def\columnseprulecolor{\color{black}}
@@ -739,11 +740,11 @@ With,
  
 \begin{equation*}
 \begin{aligned}
-a_1 = (I_{yy} - I_{zz})/I_{xx}\\
-a_2 = J_r/I_{xx}\\
-a_3 = (I_{zz} - I_{xx})/I_{yy}\\
-a_4 = J_r/I_{yy}\\
-a_5 = (I_{xx} - I_{yy})/I_{zz}\\
+a_1 &= (I_{yy} - I_{zz})/I_{xx}\\
+a_2 &= J_r/I_{xx}\\
+a_3 &= (I_{zz} - I_{xx})/I_{yy}\\
+a_4 &= J_r/I_{yy}\\
+a_5 &= (I_{xx} - I_{yy})/I_{zz}\\
 \end{aligned}
 \end{equation*}
 
@@ -751,9 +752,9 @@ a_5 = (I_{xx} - I_{yy})/I_{zz}\\
 
 \begin{equation}
 \begin{aligned}
-b_1 = l/I_{xx}\\
-b_2 =l/I_{yy}\\
-b_3 = l/I_{zz}\\
+b_1 &= l/I_{xx}\\
+b_2 &=l/I_{yy}\\
+b_3 &= l/I_{zz}\\
 \end{aligned}
 \end{equation}
 
@@ -886,8 +887,8 @@ Before defining the \textit{Lyapunov Direct Method}, the notion of stability wil
  For a general system without any control input
  
 \begin{align}
- \dot{x}(t) = f(x(t),0,t) \hspace{1in} (CT) \\
- \dot{x}(k+1) = f(x(k),0,k) \hspace{1in} (DT),
+ \dot{x}(t) &= f(x(t),0,t) \hspace{1in} (CT) \\
+ \dot{x}(k+1) &= f(x(k),0,k) \hspace{1in} (DT),
 \end{align}
 
  it is said that a point $\overline{x}$ is called an \textit{equilibrium point} from time $t_0$ for the continuous system (CT) if $f(\overline{x},0,t)=0,$ $\forall t \geq t_0$. Moreover, in the discrete time (DT) case, the point $\overline{x}$ is an equilibrium point from time $k_0$ if $f(\overline{x},0,k)=0,$ $\forall k \geq k_0$.
@@ -906,12 +907,12 @@ For the first condition, it is required that the state trajectory should be rest
 
 \subsubsection{Lyapunov's Direct Method}
 
-\paragraph{Genral Idea}
+\paragraph{General Idea}
 
 If the following continuous-time system is considered
 
 \begin{equation} \label{Lyapunov_nonlinear_equation}
-\dot(x)(t) = f(x(t))
+\dot{x}(t) = f(x(t))
 \end{equation}
 which has an equilibrium point at the origin (x=0).This system is called a time-invariant system because $f$ does not depend explicitly on the time t. In such a system, the stability analysis of the equilibrium point is in general a tedious task. This is because there is no way to write a simple formula which relates the trajectory to the initial state. The main idea of \textit{Lyapunov's direct method} is to establish properties of the equilibrium point (of the nonlinear system in general) by evaluating how a certain carefully chosen scalar function of the changes as the state of the system changes. (The term \textit{"direct"} is used to distinguish this method from the Lypunov's \textit{"indirect"} method, which tries to establish properties of the equilibrium point by assessing the behavior of the \textit{linearized} system at that point \cite{MELCHORAGUILAR2004175}.
 
@@ -1021,10 +1022,295 @@ V(\text{next state}) - V(\text{present state})
 \end{equation*}
 
 
+ 
+ \subsection{Model Predictive Control}
+ 
+ There exist "open-loop" methods \cite{Kirillova2000} in which the control input sequence $\textbf{\textsc{u}}(t)$ is designed using a model of the system and a set of constraints. However, the problem with this approach is that modeling error and noise are not taken into consideration. So, these inputs will not necessarily generate the desired response from the system. Because of that, a "closed-loop" strategy is required in order to cancel out these errors. So, an approach that can be used is called \textit{"Model Predictive Control"} (MPC). This approach is also known as \textit{"receding horizon control"} \cite{How2008}.
+ 
+ \paragraph{Basic strategy}
+
+The basic strategy of MPC is following:
+
+
+\begin{itemize}
+	\item At time instant $k$, the system model will be used in order to design a sequence of control inputs
+	
+	$$ \textbf{\textsc{u}}(k|k), \textbf{\textsc{u}}(k+1|k), \textbf{\textsc{u}}(k+2|k), \textbf{\textsc{u}}(k+3|k),...,\textbf{\textsc{u}}(k+N|k) $$
+	
+	starting from the current state $\textbf{\textsc{x}}(k)$ over a finite horizon $N$.
+	\item Only the first step of the sequence of control inputs will be applied on the system.
+	\item The processes above are then iterated for time $k+1$ at state $\textbf{\textsc{x}}(k+1)$
+\end{itemize}
+ 
  \newpage
- \subsection{Model Predictive control}
  
+ \begin{figure}[h]
+ \centering
+ \includegraphics[width=0.6\textwidth]{Images/control/MPC_general_idea}
+ \caption{Basic idea of MPC \cite{How2008}.}
+ \label{MPC_basic_idea}
+\end{figure}  
  
+ It should be noted that the control algorithm of MPC is based on numerically solving an optimization problem at each time step. In general, it is a constrained optimization.
+ 
+ \paragraph{Advantages and drawbacks of MPC} There are several advantages when using MPC: 
+ 
+ \begin{itemize}
+ 	\item MPC explicitly accounts for the constraints that imposed on the system. So, it do not just design a controller to keep the system away from the constraints.
+ 	\item MPC can easily handle nonlinear dynamics and time-varying plant dynamics, because the controller is explicitly a function of the model of the system which can be modified in real-time.
+ \end{itemize}
+
+ The main drawback of MPC is that it usually requires high computational capabilities in order to properly solve the problem at hand, because it solves an optimization problem at each time instant.
+ 
+ There have been many commercial applications of MPC starting from the early 1970 in the process industry. The table \ref{table_MPC} below shows the different companies that have used MPC in different industries in 2014.
+ 
+
+
+\begin{table}[h]
+\setlength{\tabcolsep}{15pt} % Default value: 6pt
+\renewcommand{\arraystretch}{1} % Default value: 1
+ \caption{MPC applications in different industries in 2014.\cite{Kozak2014}}
+ \label{table_MPC}
+\begin{tabular}{l c c c c c r}
+Application & Aspen & Honeywell & Adersa & CCI & Pavilion & Total \\
+\hline
+Refining & 950 & 300 & 290 & - & 15 & 1555 \\
+Chemicals & 437 & 55 & 12 & 21 & 25 & 550 \\
+Food & - & - & 48 & - & 14 & 62 \\
+Pulp paper & 21 & 39 & - & - & 3 & 63 \\
+Gas and air & 11 & 13 & - & 24 & - & 48 \\
+Polymer & 5 & - & - & - & 22 & 27 \\
+Utilities & 7 & 9 & - & 6 & - & 22 \\
+Other & 39 & - & 51 & 6 & - & 96 \\
+\hline 
+\hline
+Total & 1470 & 416 & 401 & 57 & 79 & 2423 \\
+\end{tabular}
+\end{table}
+
+ However, as computational power has increased throughout the years thanks to the advancement of technology, there has been renewed curiosity in applying this control approach to systems with fast dynamics for which the computational complexity is significantly larger when compared to the industrial applications for which computational complexity was not a concern (since MPC was applied on systems with slow dynamics in that case).
+ 
+
+\paragraph{Basic formulation} 
+
+For a given set of plant dynamics which is first assumed to be linear:
+
+\begin{equation}
+\begin{cases}
+\textbf{\textsc{x}}(k+1) = A\textbf{\textsc{x}}(k) + B \textbf{\textsc{u}}(k) \\
+\textbf{\textsc{z}}(k) = C \textbf{\textsc{x}}(k)\\
+\end{cases}
+\end{equation}
+
+\noindent and a cost function as follows: 
+
+\begin{equation}
+J = \sum_{j=0}^{N} \{ \|\textbf{\textsc{z}}(k+j|k)\|_{R_{zz}} + \|\textbf{\textsc{u}}(k+j|k)\|_{R_{uu}} \} + F \textbf{\textsc{x}}(k+N|k))
+\end{equation}
+
+ 
+\noindent With: 
+ 
+ \begin{itemize}
+ 	\item $\|\textbf{\textsc{z}}(k+j|k)\|_{R_{zz}}$ is the weighted $L^2$ norm of the state, so it is expressed as follows:
+
+ \begin{equation*}
+ \|\textbf{\textsc{z}}(k+j|k)\|_{R_{zz}} = \textbf{\textsc{z}}(k+j|k)^{\intercal}R_{zz}\textbf{\textsc{z}}(k+j|k)
+\end{equation*}   	
+ 	
+	\item  	$\|\textbf{\textsc{u}}(k+j|k)\|_{R_{uu}}$ is the weighted $L^2$ norm of the control input sequence, so it is expressed as follows:
+	
+\begin{equation*}
+ \|\textbf{\textsc{z}}(k+j|k)\|_{R_{zz}} = \textbf{\textsc{z}}(k+j|k)^{\intercal}R_{zz}\textbf{\textsc{z}}(k+j|k)
+\end{equation*}  
+
+	\item $F \textbf{\textsc{x}}(k+N|k))$ is a terminal cost function.
+ 	
+\end{itemize}  
+ 
+It should be noted that if  $N \rightarrow \infty$, and there are no additional constraints on  $\textbf{\textsc{z}}$ or $\textbf{\textsc{u}}$, then the problem falls back to the discrete LQR problem \cite{Kostova2013}. Moreover, when limits are added on 
+  $\textbf{\textsc{x}}$ or $\textbf{\textsc{u}}$, then the general solution cannot be found anymore in analytical form, and it has to be solved numerically.
+
+Moreover, solving for a very long sequence of control input is useless if the model used for the computations is expected to be erroneous or there are distrubances applied on the system, since only the first element the optimized control sequence only will be implemented. This is why MPC is designed by using a small $N$. 
+  
+  \paragraph{Typical problem statement}
+  
+  For a finite $N$ and $F=0$ the problem can be expressed as follows: 
+  
+\begin{mini}|s|
+{u}{ J = \sum_{j=0}^{N}{  \{ \|\textbf{\textsc{z}}(k+j|k)\|_{R_{zz}} + \|\textbf{\textsc{u}}(k+j|k)\|_{R_{uu}} \} }}
+{}{}
+\addConstraint{ \textbf{\textsc{x}}(k+j+1|k) = A\textbf{\textsc{x}}(k+j|k) + B \textbf{\textsc{u}}(k+j|k) }
+\addConstraint{ \textbf{\textsc{x}}(k|k) \equiv \textbf{\textsc{x}}(k) }
+\addConstraint{\textbf{\textsc{z}}(k) = C \textbf{\textsc{x}}(k+j|k)}
+\addConstraint{|\textbf{\textsc{u}}(k+j|k)| \leq u_m}
+{}
+\label{optim_problem}
+\end{mini}
+
+ \newpage  
+  
+  
+  \noindent The problem statement in (\ref{optim_problem}) can be converted into a more standard optimization problem as follows:
+  
+
+  
+
+  \begin{align*}
+    	\textbf{\textsc{z}}(k|k) &= C \textbf{\textsc{x}}(k|k)\\
+    	\vspace{1cm}\\
+  	\textbf{\textsc{z}}(k+1|k) &= C \textbf{\textsc{x}}(k+1|k) = C (A\textbf{\textsc{x}}(k|k) + B\textbf{\textsc{u}}(k|k))\\
+  	&=  C A\textbf{\textsc{x}}(k|k) + CB\textbf{\textsc{u}}(k|k)\\
+  	\vspace{1cm}\\
+  	\textbf{\textsc{z}}(k+2|k) &= C \textbf{\textsc{x}}(k+2|k) \\
+  	&= C(A\textbf{\textsc{x}}(k+1|k) + B \textbf{\textsc{u}}(k+1|k)) \\
+  	&= C A(A \textbf{\textsc{x}}(k|k) + B   	\textbf{\textsc{u}}(k|k)) + C B \textbf{\textsc{u}}(k+1|k)\\
+  	&= C A^2 \textbf{\textsc{x}}(k|k) + CAB \textbf{\textsc{u}}(k|k) + CB \textbf{\textsc{u}}(k+1|k) \\
+  	&\text{\hspace{0.2cm}}\vdots \\
+  	 \textbf{\textsc{z}}(k+N|k) &=  C A^N \textbf{\textsc{x}}(k|k) + CA^{N-1}B\textbf{\textsc{u}}(k|k) + \ldots\\
+  	 &\text{\hspace{0.5cm}} + CB\textbf{\textsc{u}}(k+(N-1)|k)\\	
+  \end{align*}
+
+ \noindent The equations above can then be grouped as follows:
+ 
+ \begin{multline*}
+ \begin{bmatrix}
+ \textbf{\textsc{z}}(k|k) \\
+ \textbf{\textsc{z}}(k+1|k)\\
+ \textbf{\textsc{z}}(k+2|k)\\
+ \vdots \\
+ \textbf{\textsc{z}}(k+N|k)\\
+ \end{bmatrix} = 
+ \begin{bmatrix}
+ C\\
+ CA\\
+ CA^2\\
+ \vdots\\
+ CA^N \\
+ \end{bmatrix} \textbf{\textsc{x}}(k|k) \\
+ + \begin{bmatrix}
+ 0 && 0 && 0 && \ldots && 0\\
+ CB && 0 && 0 && && 0 \\
+ CAB && CB && 0 && && 0 \\
+ \vdots\\ 
+ CA^{N-1}B && CA^{N-2}B && CA^{N-3}B && \ldots && CB \\
+ \end{bmatrix}
+ \begin{bmatrix}
+ \textbf{\textsc{u}}(k|k)\\
+ \textbf{\textsc{u}}(k+1|k)\\
+ \vdots\\
+ \textbf{\textsc{u}}(k+N-1|k)\\
+ \end{bmatrix}
+ \end{multline*}
+
+\noindent Now $Z(k)$ and $U(k)$ can be defined as follows:
+
+\begin{equation*}
+Z(k) \equiv \begin{bmatrix}
+\textbf{\textsc{z}}(k|k)\\
+\vdots \\
+\textbf{\textsc{z}}(k+N|k)\\
+\end{bmatrix} 
+\text{\hspace{1cm} , \hspace{1cm}}
+U(k) \equiv \begin{bmatrix}
+\textbf{\textsc{u}}(k|k)\\
+\vdots \\
+\textbf{\textsc{u}}(k+N-1|k)\\
+\end{bmatrix} 
+\end{equation*}  
+  
+
+\noindent It should be noted that:
+
+\begin{equation*}
+	\sum_{j=0}^{N}\textbf{\textsc{z}}(k+j|k)^{\intercal} R_{zz}\textbf{\textsc{z}}(k+j|k) = Z(k)^{\intercal}W_1Z(k)
+\end{equation*}  
+with $W_1$ denoting the weighting matrix.
+
+\newpage
+
+ \noindent Thus, the elements of the cost function in (\ref{optim_problem}) can now be expressed as follows:
+  
+
+  \begin{align}
+  	Z(k)^{\intercal}W_1Z(k) + U(k)^{\intercal}W_2U(k) &=(G\textbf{\textsc{x}}(k) + HU(k))^{\intercal}W_1(G\textbf{\textsc{x}}(k) +HU(k)) + U(k)^{\intercal}W_2U(k) \nonumber \\
+  &= \textbf{\textsc{x}}(k)^{\intercal}H_1\textbf{\textsc{x}}(k) + H_2^{\intercal} U(k) + \frac{1}{2}U(k)^{\intercal}H_3U(k)
+  \end{align}
+  
+  With
+  
+  \begin{equation*}
+  H_1 = G^{\intercal} W_1 G, \text{\hspace{0.5cm}} H_2 = 2(\textbf{\textsc{x}}(k)^{\intercal}G^{\intercal}W_1H), \text{\hspace{0.5cm}} H_3 = 2(H^{\intercal} W_1 H + W_2)
+  \end{equation*}
+
+Since the term $\textbf{\textsc{x}}(k)^{\intercal} H_1 \textbf{\textsc{x}}(k)$ does not contain the component to be minimized $U(k)$, this means that it will be constant throughout the optimization process. As a result, it can be omitted.
+Finally, the MPC problem can be re-written as:
+
+ \begin{mini}|s|
+{U(k)}{ \tilde{J} = H_2^{\intercal} U(k) + \frac{1}{2}U(k) H_3 U(k) }
+{}{}
+\addConstraint{\begin{bmatrix}
+I_N\\
+-I_N\\
+\end{bmatrix}U(k) \leq u_m}
+{}
+\label{MPC_problem}
+\end{mini}
+  
+  Thus, the MPC problem has been transformed to the form of a quadratic program for which there exists various efficient tools to solve the problem. 
+  
+  \paragraph{Existing MPC toolboxes} Some of the available tools that allow to solve the MPC problem are listed below:
+  
+  \begin{itemize}
+  	\item \textbf{Model Predictive Control Toolbox}\footnotemark : it is made by MathWorks (closed-source).
+  	\item \textbf{MPCtools}\footnotemark : it is a free and open-source toolbox for MATLAB and Simultink that  permits to create and simulate basic MPC controllers by using linear state space models.
+  	\item \textbf{do-mpc}\footnotemark : it is a free and comprehensive open-source toolbox for robust model predictive control (MPC) which is based on the Python language.
+  	\item \textbf{Control Toolbox}\footnotemark : it is an efficient library for control, estimation, optimization and motion planning in robotics problem that is written in C++ language.
+  \end{itemize}
+  
+
+\footnotetext[1]{\url{https://www.mathworks.com/products/model-predictive-control.html}, accessed on 01/10/2021.}  
+
+\footnotetext[2]{\url{http://www.control.lth.se/research/tools-and-software/mpctools/}, accessed on 01/10/2021.}  
+
+\footnotetext[3]{\url{https://www.do-mpc.com/en/latest/}, accessed on 01/10/2021.}  
+
+\footnotetext[4]{\url{https://github.com/ethz-adrl/control-toolbox}, accessed on 01/10/2021.}  
+
+
+\paragraph{MPC Observations} The current form of (\ref{MPC_problem}) assumes that the full state of the system is available. Moreover, a state estimator can also be used. In addition, the corresponding control is also assumed to be sensed and applied immediately on the system, this is usually a safe and reasonable assumption for most control systems. However, given that the optimization problem will be solved at each time step, then there is a possibility that accounting for this computation delay could be mandatory.
+
+\newpage
+
+\paragraph{Case of no imposed constraints} 
+If there are no active constraints on \ref{MPC_problem}, then the solution of the QP becomes
+
+\begin{equation}
+U(k) = - H_3^{-1}H_2
+\end{equation}
+which can be expressed as follows:
+
+  \begin{align}
+  	u(k|k) &= - \begin{bmatrix}
+  	1 && 0 && \ldots && 0\\
+  	\end{bmatrix}
+  	(H^{\intercal} W_1 H + W_2)^{-1} H^{\intercal} W_1 G \textbf{\textsc{x}}(k) \\
+  	&= -K \textbf{\textsc{x}}(k)
+  \end{align}
+which is nothing else but a state feedback controller.
+
+
+\paragraph{Stability of MPC}
+
+The stability of MPC greatly depends on the terminal cost and terminal constraints \cite{MAYNE2000789}. On the other hand, a classic result \cite{BEMPORAD19942013} states that if a Model Predictive Control algorithm was applied on a linear system with constraints, and assuming there exists terminal constraints: 
+
+\begin{itemize}
+	\item $\textbf{\textsc{x}}(k+N|k)=0$ for the predicted state $\textbf{\textsc{x}}$.
+	\item $\textbf{\textsc{u}}(k+N|k)=0$ for the computed future control input $\textbf{\textsc{u}}$
+\end{itemize}
+And, if the optimization problem is realizable at time step $k$, then $\textbf{\textsc{x}}=0$ is stable.
+
+ \newpage
  \subsection{Sliding mode control}
  
  \subsection{Other types of control}
