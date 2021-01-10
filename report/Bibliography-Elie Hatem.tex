@@ -1,5 +1,8 @@
 \documentclass{thesisreport}
 
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{3}
+
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{comment}
@@ -12,6 +15,7 @@
 
 \setlength{\columnseprule}{1pt}
 \def\columnseprulecolor{\color{black}}
+\DeclareUnicodeCharacter{2212}{-}
 
 \begin{document}
 
@@ -433,7 +437,7 @@ Considering a fixed world frame $E$ and a fixed body frame $B$ on the quadrotor 
  \begin{figure}[h]
 \centering
 \includegraphics[width=0.5\textwidth]{Images/Modeling/Detailed_quadrotor}
-\caption{Coordinate system of a simple quadrotor. \cite{Bouabdalla2007}}
+\caption{Coordinate system of a detailed quadrotor. \cite{Bouabdalla2007}}
 \label{coordinate_system_detailed_quadrotor}
 \end{figure}
  
@@ -494,7 +498,7 @@ The drag moment about the rotor shaft is due to the aerodynamic forces that the 
 
 \newpage
 
-\subsubsection{Rolling moment}
+\subsubsection*{Rolling moment}
 
 
 The rolling moment of a propeller occurs when the blade that is advancing is producing more lift than the blade that is retreating in forwarding flight. It is the integration of the lift of every single section that is acting at a given radius over the entire rotor.
@@ -508,7 +512,7 @@ R_m = C_{R_m}\rho A (\Omega R_{rad})^2 R_{rad} \\
 \end{cases}
 \end{equation}
 
-\subsubsection{Ground Effect}
+\subsubsection*{Ground Effect}
 
 
 When operating near the ground ( at a height equivalent to half the diameter of the rotor), helicopters experience thrust augmentation which is caused by greater efficiency of the rotor.This is linked to a decrease in the velocity of induced airflow. Moreover, this is called Ground Effect. Different approaches to deal with this effect can be found in literature, for example, adaptive techniques can  be used \cite{Guenard2006}.
@@ -883,7 +887,6 @@ It can be demonstrated that both matrices $\textbf{\textsc{A}}$ and $\textbf{\te
 Before defining the \textit{Lyapunov Direct Method}, the notion of stability will be thoroughly defined first.
 
 \subsubsection{Notions of Stability}
- 
  For a general system without any control input
  
 \begin{align}
@@ -1022,10 +1025,12 @@ V(\text{next state}) - V(\text{present state})
 \end{equation*}
 
 
- 
  \subsection{Model Predictive Control}
+ \subsubsection{General Idea}
  
- There exist "open-loop" methods \cite{Kirillova2000} in which the control input sequence $\textbf{\textsc{u}}(t)$ is designed using a model of the system and a set of constraints. However, the problem with this approach is that modeling error and noise are not taken into consideration. So, these inputs will not necessarily generate the desired response from the system. Because of that, a "closed-loop" strategy is required in order to cancel out these errors. So, an approach that can be used is called \textit{"Model Predictive Control"} (MPC). This approach is also known as \textit{"receding horizon control"} \cite{How2008}.
+ There exist "open-loop" methods \cite{Kirillova2000} in which the control input sequence $\textbf{\textsc{u}}(t)$ is designed using a model of the system and a set of constraints. However, the problem with this approach is that modeling error and noise are not taken into consideration. So, these inputs will not necessarily generate the desired response from the system. Because of that, a "closed-loop" strategy is required in order to cancel out these errors. So, an approach that can be used is called \textit{"Model Predictive Control"} (MPC). This approach is also known as \textit{"receding horizon control"} \cite{How2008} since the \textit{"prediction horizon"} (finite horizon) shifts forward by one time step after the current optimization problem is solved . In short, MPC is a \textit{feedback control} algorithm which uses a model of the system to predict the future outputs of the system and it solves an optimization problem on-line in order to select an optimal control.
+
+\newpage 
  
  \paragraph{Basic strategy}
 
@@ -1033,16 +1038,15 @@ The basic strategy of MPC is following:
 
 
 \begin{itemize}
-	\item At time instant $k$, the system model will be used in order to design a sequence of control inputs
+	\item At time instant $k$, the system model and an optimizer will be used in order to design a sequence of control inputs
 	
 	$$ \textbf{\textsc{u}}(k|k), \textbf{\textsc{u}}(k+1|k), \textbf{\textsc{u}}(k+2|k), \textbf{\textsc{u}}(k+3|k),...,\textbf{\textsc{u}}(k+N|k) $$
 	
-	starting from the current state $\textbf{\textsc{x}}(k)$ over a finite horizon $N$.
+	starting from the current state $\textbf{\textsc{x}}(k)$ over a prediction horizon $N$.
 	\item Only the first step of the sequence of control inputs will be applied on the system.
-	\item The processes above are then iterated for time $k+1$ at state $\textbf{\textsc{x}}(k+1)$
+	\item The processes above are then iterated for time $(k+1)$ at state $\textbf{\textsc{x}}(k+1)$. 
 \end{itemize}
  
- \newpage
  
  \begin{figure}[h]
  \centering
@@ -1056,15 +1060,16 @@ The basic strategy of MPC is following:
  \paragraph{Advantages and drawbacks of MPC} There are several advantages when using MPC: 
  
  \begin{itemize}
- 	\item MPC explicitly accounts for the constraints that imposed on the system. So, it do not just design a controller to keep the system away from the constraints.
+ 	\item MPC is able to control multi-input multi-output (MIMO) systems which might have interactions between their inputs and outputs
+ 	\item MPC explicitly accounts for the constraints that are imposed on the system. So, it does not just design a controller to keep the system away from the constraints.
  	\item MPC can easily handle nonlinear dynamics and time-varying plant dynamics, because the controller is explicitly a function of the model of the system which can be modified in real-time.
  \end{itemize}
 
- The main drawback of MPC is that it usually requires high computational capabilities in order to properly solve the problem at hand, because it solves an optimization problem at each time instant.
+ The main drawback of MPC is that it usually requires a powerful and fast processor with a large memory in order to properly solve the problem at hand, because it solves an optimization problem at each time instant.
  
- There have been many commercial applications of MPC starting from the early 1970 in the process industry. The table \ref{table_MPC} below shows the different companies that have used MPC in different industries in 2014.
+ There have been many commercial applications of MPC starting from the early 1970s in the process industry. The table \ref{table_MPC} below shows the different companies that have used MPC in different industries in 2014.
  
-
+\newpage
 
 \begin{table}[h]
 \setlength{\tabcolsep}{15pt} % Default value: 6pt
@@ -1088,10 +1093,52 @@ Total & 1470 & 416 & 401 & 57 & 79 & 2423 \\
 \end{tabular}
 \end{table}
 
- However, as computational power has increased throughout the years thanks to the advancement of technology, there has been renewed curiosity in applying this control approach to systems with fast dynamics for which the computational complexity is significantly larger when compared to the industrial applications for which computational complexity was not a concern (since MPC was applied on systems with slow dynamics in that case).
+ However, as computational power has increased throughout the years thanks to the advancement of technology, there has been a renewed curiosity in applying this control approach to systems with fast dynamics for which the computational complexity is significantly larger when compared to the industrial applications for which computational complexity was not a concern (since MPC was applied on systems with slow dynamics in that case).
  
+\subsubsection{Design Parameters}
+The different parameters that can be tuned in a MPC controller are the following:
 
-\paragraph{Basic formulation} 
+\begin{itemize}
+	\item The sample time $T_s$.
+	\item The prediction horizon $N$.
+	\item The control horizon $m$.
+	\item The constraints.
+	\item The weights.
+\end{itemize}
+
+\noindent Choosing the proper values for the parameters stated above is very important since they affect the performance of the controller and the computational complexity of the MPC algorithm.
+
+\paragraph{Sample Time $T_s$} 
+
+The sample time determine the rate at which the controller executes the control algorithm. \begin{itemize}
+	\item If $T_s$ is too large, then when a disturbance occurs, the controller will be unable to react to the disturbance quick enough.
+	\item If $T_s$ is too small, the controller will have much faster reaction times to disturbances and setpoint changes. However, this comes at the cost of an excessive computational load \cite{MathWorks2018}.
+\end{itemize}
+
+\noindent In order to find reasonable balance between controller performance and computational effort, the general recommendation is to have between 10\% and 25\% of the minimum desired close-loop response time \cite{MathWorks2018}.
+
+\paragraph{Prediction horizon $N$} 
+
+The prediction horizon $N$ (sometimes referred to with the variable $p$ \cite{MathWorks2018}, however, $N$ will be used instead for the remaining of this paper) is the number of predicted future time steps of the system. It shows how far the controller predicts into the future. Thus, a prediction horizon must be chosen in such a way that it covers the significant dynamics of the system. However, it should be noted that a large prediction horizon should not be selected, since unexpected phenomenons could occur that may affect the dynamics system, which will cause a waste of computational power. The general recommendation is to increase $N$ until additional increases will have little impact on the performance. The maximum $N$ is the number of control intervals needed for the open-loop step response of the system to become infinite. However, having $N>50$ is hardly ever required unless $T_s$ is very small \cite{MathWorks2018}.
+
+\paragraph{Control horizon m}
+
+The control horizon is the set of future actions which will lead to the predicted plant output. It represent the number of control moves until time step $m$. After the first $m$ steps, the remain inputs will remain constant as shown in figure \ref{MPC_basic_idea} for the \textit{"Optimal" future inputs}. Moreover, each control input element in the control horizon is a free variable that will be computed by the optimizer. Thus, the smaller the control horizon, the fewer the computations. However, setting $m=1$ may not give the best possible output for the system. And, similarly to the prediction horizon, if the control horizon is increased, this will lead to better predictions at the cost of increasing the computational complexity. Moreover, the general recommendation for the control horizon is to keep it much smaller than the prediction horizon \cite{MathWorks2018},because:
+
+\begin{itemize}
+	\item A smaller control horizon $m$ will lead to less variables to optimize in the QP that will be solved at each control input interval. This will encourage quicker computation times.
+	\item If delays are considered, then having $m<N$ is mandatory. If not, some control input elements within the control horizon  may not have any effect on the plant outputs before the prediction horizon ends, which will lead to a QP Hessian matrix which is singular. 
+	\item Having a small value for $m$ encourages having an internally stable controller. However, this is not guaranteed.
+\end{itemize}
+
+\paragraph{Constraints} A model predictive controller can integrate constraints on the inputs, the rate of change of the inputs and the outputs. In addition, the constraints can be \textit{"soft"} constraints or \textit{"hard"} constraints. However, it should be noted that hard constraints cannot be violated. In addition, applying hard constraints on both the inputs and outputs at the same time may cause conflict to occur between the constraints, which may lead to an unfeasible solution. Moreover, the general recommendation is to used soft constraints on the outputs and to avoid having hard constraints on both the inputs and the rate of change of the inputs \cite{MathWorks2018b}.
+
+\paragraph{Weights} Model Predictive Control could have many goals. One goal could be to have the outputs converge to their set-points as fast as possible. Another goal can be to have smooth control inputs in order to avoid aggressive control maneuvers. So, in order to achieve a balanced performance between these two competing goals, the input rates and the outs can be weighted relative to each other. It is also possible to adjust relative weights within the input rates and the outputs \cite{MathWorks2018c}.
+
+
+
+\newpage
+\subsubsection{Basic formulation} 
 
 For a given set of plant dynamics which is first assumed to be linear:
 
@@ -1243,11 +1290,11 @@ with $W_1$ denoting the weighting matrix.
   H_1 = G^{\intercal} W_1 G, \text{\hspace{0.5cm}} H_2 = 2(\textbf{\textsc{x}}(k)^{\intercal}G^{\intercal}W_1H), \text{\hspace{0.5cm}} H_3 = 2(H^{\intercal} W_1 H + W_2)
   \end{equation*}
 
-Since the term $\textbf{\textsc{x}}(k)^{\intercal} H_1 \textbf{\textsc{x}}(k)$ does not contain the component to be minimized $U(k)$, this means that it will be constant throughout the optimization process. As a result, it can be omitted.
+\noindent Since the term $\textbf{\textsc{x}}(k)^{\intercal} H_1 \textbf{\textsc{x}}(k)$ does not contain the component to be minimized $U(k)$, this means that it will be constant throughout the optimization process. As a result, it can be omitted.
 Finally, the MPC problem can be re-written as:
 
  \begin{mini}|s|
-{U(k)}{ \tilde{J} = H_2^{\intercal} U(k) + \frac{1}{2}U(k) H_3 U(k) }
+{\textsc{U}(k)}{ \tilde{J} = H_2^{\intercal} U(k) + \frac{1}{2}U(k) H_3 U(k) }
 {}{}
 \addConstraint{\begin{bmatrix}
 I_N\\
@@ -1257,30 +1304,14 @@ I_N\\
 \label{MPC_problem}
 \end{mini}
   
-  Thus, the MPC problem has been transformed to the form of a quadratic program for which there exists various efficient tools to solve the problem. 
-  
-  \paragraph{Existing MPC toolboxes} Some of the available tools that allow to solve the MPC problem are listed below:
-  
-  \begin{itemize}
-  	\item \textbf{Model Predictive Control Toolbox}\footnotemark : it is made by MathWorks (closed-source).
-  	\item \textbf{MPCtools}\footnotemark : it is a free and open-source toolbox for MATLAB and Simultink that  permits to create and simulate basic MPC controllers by using linear state space models.
-  	\item \textbf{do-mpc}\footnotemark : it is a free and comprehensive open-source toolbox for robust model predictive control (MPC) which is based on the Python language.
-  	\item \textbf{Control Toolbox}\footnotemark : it is an efficient library for control, estimation, optimization and motion planning in robotics problem that is written in C++ language.
-  \end{itemize}
+ \noindent Thus, the MPC problem has been transformed to the form of a quadratic program for which there exists various efficient tools to solve the problem. 
   
 
-\footnotetext[1]{\url{https://www.mathworks.com/products/model-predictive-control.html}, accessed on 01/10/2021.}  
-
-\footnotetext[2]{\url{http://www.control.lth.se/research/tools-and-software/mpctools/}, accessed on 01/10/2021.}  
-
-\footnotetext[3]{\url{https://www.do-mpc.com/en/latest/}, accessed on 01/10/2021.}  
-
-\footnotetext[4]{\url{https://github.com/ethz-adrl/control-toolbox}, accessed on 01/10/2021.}  
 
 
-\paragraph{MPC Observations} The current form of (\ref{MPC_problem}) assumes that the full state of the system is available. Moreover, a state estimator can also be used. In addition, the corresponding control is also assumed to be sensed and applied immediately on the system, this is usually a safe and reasonable assumption for most control systems. However, given that the optimization problem will be solved at each time step, then there is a possibility that accounting for this computation delay could be mandatory.
+\subsubsection{MPC Observations} 
 
-\newpage
+The current form of (\ref{MPC_problem}) assumes that the full state of the system is available. Moreover, a state estimator can also be used. In addition, the corresponding control is also assumed to be sensed and applied immediately on the system, this is usually a safe and reasonable assumption for most control systems. However, given that the optimization problem will be solved at each time step, then there is a possibility that accounting for this computation delay could be mandatory.
 
 \paragraph{Case of no imposed constraints} 
 If there are no active constraints on \ref{MPC_problem}, then the solution of the QP becomes
@@ -1309,6 +1340,72 @@ The stability of MPC greatly depends on the terminal cost and terminal constrain
 	\item $\textbf{\textsc{u}}(k+N|k)=0$ for the computed future control input $\textbf{\textsc{u}}$
 \end{itemize}
 And, if the optimization problem is realizable at time step $k$, then $\textbf{\textsc{x}}=0$ is stable.
+
+\newpage
+
+
+\subsubsection{Different MPC Methods}
+The MPC methods that are mainly used are the following:
+
+\begin{itemize}
+	\item Linear time-invariant MPC.
+	\item Adaptive MPC.
+	\item Gain-Scheduled MPC.
+	\item Non-linear MPC.
+\end{itemize} 
+
+\noindent The method to be used is chosen based on the complexity of the system at hand and on the required goals to be reached. 
+
+\paragraph{In case of linear systems} The method to be used is called Linear time-invariant MPC. The constraints must be linear and the cost function must be quadratic. These characteristics will result in a convex optimization problem \cite{ZEMAN2003325} which has a global optimum. An example of a convex optimization problem is shown in figure \ref{convex_function} below.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{Images/Control/MPC_Convex_Equation}
+\caption{Representation of convex function plotted using MATLAB.}
+\label{convex_function}
+\end{figure}
+
+\paragraph{In case of a nonlinear systems} If the system is linearizable, then both Adaptive MPC and Gain-Scheduled MPC can be used in this case. But the constraints are still linear and the cost function is still quadratic. In this case, the nonlinear function can be linearized around an operating point, which will result in a linear function that approximates the nonlinear system well near the operating point. However, it should be noted that the linear function will not work well outside the operating region. This is why it is interesting to find multiple linearized models, with each model representing the nonlinear function well around it's operating point.
+
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{Images/Control/linearization}
+\caption{Example of the linearization of a nonlinear function around an operating point \cite{Erickson2020}.}
+\label{nonlinear_function_linearization}
+\end{figure}
+
+
+
+\paragraph{Adaptive MPC} In this case, a linear model is computed on-line as the operating conditions change. And, the internal plant model used by the MPC is updated with the corresponding linear model at each time step. Moreover, it should be noted that the optimization problem remains the same across different operating points. In other words, the number of elements in the state and the constraints remain the same across different operating conditions \cite{Bujarbaruah2018}.
+
+\paragraph{Gain-Scheduled MPC} In this case, linearization of the nonlinear model is done offline at the operating points of interest. Then, a linear MPC controller is designed for each operating point. However, it should be noted that unlike Adaptive MPC, each controller is now independent from the other. In other words, the number of elements in the state and the constraints are different across different operating conditions.
+It should also be noted that for this method, an algorithm must be designed to switch between the predefined MPC controllers for different operating conditions. Moreover, Gain-Scheduled MPC also uses more memory than Adaptive M
+
+
+\newpage
+
+  \subsubsection{Existing MPC toolboxes} Some of the available tools that allow to solve the MPC problem are listed below:
+  
+  \begin{itemize}
+  	\item \textbf{Model Predictive Control Toolbox}\footnotemark : it is made by MathWorks (closed-source).
+  	\item \textbf{MPCtools}\footnotemark : it is a free and open-source toolbox for MATLAB and Simultink that  permits to create and simulate basic MPC controllers by using linear state space models.
+  	\item \textbf{do-mpc}\footnotemark : it is a free and comprehensive open-source toolbox for robust model predictive control (MPC) which is written in Python language.
+  	\item \textbf{Control Toolbox}\footnotemark : it is an efficient library for control, estimation, optimization and motion planning in robotics problem that is written in C++ language.
+  \end{itemize}
+  
+
+\footnotetext[1]{\url{https://www.mathworks.com/products/model-predictive-control.html}, accessed on 01/10/2021.}  
+
+\footnotetext[2]{\url{http://www.control.lth.se/research/tools-and-software/mpctools/}, accessed on 01/10/2021.}  
+
+\footnotetext[3]{\url{https://www.do-mpc.com/en/latest/}, accessed on 01/10/2021.}  
+
+\footnotetext[4]{\url{https://github.com/ethz-adrl/control-toolbox}, accessed on 01/10/2021.}  
+
+
+
 
  \newpage
  \subsection{Sliding mode control}
