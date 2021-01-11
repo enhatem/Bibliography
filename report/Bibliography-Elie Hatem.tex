@@ -1476,6 +1476,216 @@ It is another method to improve the computational time of the MPC controller. In
  \newpage
  \subsection{Sliding mode control}
  
+ 
+ 
+  \subsubsection{Main Principles}
+ 
+ 
+ 
+Sliding mode control (SMC) is a control technique that is nonlinear presenting exceptional attributes of robustness,
+accuracy, easy tuning and execution.
+ 
+The aim of SMS systems is to drive the system states to a specific surface in the state space, called sliding surface. Upon
+reaching the sliding surface, sliding mode control allows the states to remain on the close neighborhood of the sliding
+surface. Therefore, the sliding mode control consists of a controller design with two parts. The first part includes the
+design of a sliding surface in order for the sliding motion to fulfill design requirements. The second deals with selecting a
+control law that makes the switching surface interesting with respect to the system state \cite{Utkin1997}.
+
+
+
+
+There exists two main benefits of sliding mode control. Firstly, the behavior of the dynamics of the system can be changed
+according to a specific selection of the sliding function. Secondly, the response of the closed loop system becomes completely
+insensitive to some special uncertainties. This principle goes beyond bounded model parameter uncertainties, interference and non-linearity.
+
+In a practical sense, SMC allows the control of nonlinear processes that are affected by external noise and heavy model uncertainties.
+
+
+
+The most important principles of SMC are shown in the following significant references \cite{Utkin1997,DeCarlo1998,Hung1993}\\
+
+
+
+Researchers have also studied the problems appearing in the practical execution of this class of techniques. \cite{Young1999}
+
+Moreover, the following book presents a very modern overview of the most promising current line of theoretical and practical research in the domain.
+
+ 
+ \subsubsection{Simple Description}
+ 
+ Considereing the SISO nonlinear system:
+ 
+ \begin{align}
+ \dot{x} &=f(x,t)+g(x,t)u \label{SISO_1}\\
+ y &= h(x,t) \label{SISO_2}
+ \end{align}
+
+
+Where y and u represent the scalar output and input variable, and $x \in \mathbb{R}^n$ represents the state vector.
+
+
+
+The goal of the control is to make the output variable y follow a chosen profile $y_{DES}$. This means that it is needed that the
+output error variable $e=y-y_{DES}$ tend to a small proximity of zero following a transient of reasonable duration.
+
+
+As stated earlier, the synthesis of SMC requires two phases:
+
+\begin{itemize}
+	\item [] \textbf{Phase 1}: \textit{"Sliding Surface Design"}.
+	\item [] \textbf{Phase 2}: \textit{"Control Input Design"}
+\end{itemize}
+
+
+In the first phase, a specific scalar function $\sigma$ of the system state is defined such that:
+
+\begin{equation*}
+	\sigma{\textsc{x}}:\mathbb{R}^n \rightarrow \mathbb{R}.
+\end{equation*}
+
+
+In many cases, the sliding surface relies on the tracking error $e_y$, along with a specific number of its derivatives
+
+\begin{equation}
+	\sigma = \sigma(e,\dot{e},\ldots,e^{(k)})
+\end{equation}
+
+
+The function $\sigma$ must be chosen in a way that when $\sigma=0$, it will result in a stable differential equation such that any $e_y(t) \rightarrow 0$ as $t \rightarrow \infty$.
+
+
+The most common choices for the sliding manifold are the following:
+
+\begin{align}
+\sigma = \dot{e} + c_0 e\\
+\sigma = \ddot{e} + c_1 \dot{e} + c_0 e \\
+\sigma = e^{(k)} + \sum_{i=0}^{k-1} c_i e^{(i)}\label{equation_with_k}
+\end{align} 
+
+
+The 
+ 
+
+The number of derivatives that should be included ( $k$ in (\ref{equation_with_k})) must be $k=r-1$, where $r$ is the input output relative
+degree of  (\ref{SISO_1})-(\ref{SISO_2}).
+
+
+With correctly chosen $c_i$ coefficients, if $\sigma$ is driven to 0, then the error and its derivatives will decrease to 0 exponentially.
+
+
+
+Provided that such property holds, the goal of the  control system is to drive $\sigma$ to 0.
+
+
+From a geometrical perspective, the equation $\sigma=0$ represents a surface in the error space that is called \textit{"sliding surface"}. The trajectories of the system that is being controller are forced to be on the sliding surface, along which the behavior of the system satisfies the design requirements.
+
+
+A common form for the sliding surface depends on a  scalar paramete $p$, and is expressed as follows:
+
+\begin{equation}
+\sigma = \bigg(\frac{d}{dt}+p\bigg)^k e
+\end{equation}
+
+\begin{align}
+k&=1 \text{\hspace{0.5cm}} \sigma = \dot{e} + pe \\
+k&=2 \text{\hspace{0.5cm}} \sigma = \ddot{e} + 2p \dot{e} + p^2 e
+\end{align}
+ 
+\noindent The parameter p can be chosen randomly, and it defines the particular pole of the derived \textit{"reduced dynamics"} of the system when sliding.
+ 
+
+\noindent The integer parameter k is on the other hand somewhat crucial, it is required be equal to $r-1$, with $r$ being the relative
+degree between y and u.
+
+
+\noindent This signifies that the relative degree of the $\sigma$ variable is one.
+
+
+\noindent The next phase (\textbf{Phase 2 }) is determining a control action that guides the trajectories of the system onto the sliding manifol. This means that the control is capable of driving the $\sigma$ variable to zero in finite time.
+
+
+\noindent There exist many approaches that are based on the approach of sliding mode control:
+
+\begin{itemize}
+	\item \textit{"Standard"} ( also called \textit{"first-order"}) sliding mode control.
+	\item \textit{"High-order"} sliding mode control.
+\end{itemize}
+
+
+Emphasis is dedicated to the second order sliding mode approach, and some references to the higher order approaches
+are also granted. Frequent characteristic of all sliding mode-based techniques is that no specific information about the
+original system dynamics is required. In other words, the controlled system will be treated as an entirely uncertain “black box” object.
+
+\newpage
+
+\subsubsection{First-Order Sliding Mode Control}
+
+
+Along the manifold $\sigma=0$, the control is discontinuous. So, it can be expressed as follows:
+
+\begin{equation}
+	u = -U \space sgn(\sigma)
+\end{equation}
+
+
+This means that:
+
+\begin{equation}
+\begin{aligned}
+	u = \begin{cases}
+		-U \hspace{0.5cm} &\sigma>0 \\
+		U \hspace{0.5cm}  &\sigma<0
+	\end{cases}
+\end{aligned}
+\end{equation}
+
+With $U$ being an adequately large positive constant.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{Images/Control/first_order_sliding_mode_control}
+\caption{Typical evolution of $\sigma$ starting from different initial conditions.}
+\label{sigma_evolution}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{Images/Control/first_order_sliding_mode_control_b}
+\caption{Typical evolution of the control signal $u$ ( $\sigma$ is represented by dashed lines).}
+\label{control_evolution}
+\end{figure}
+
+
+\noindent In steady condition the control variable u will alternate at very high (theoretically infinite) frequency along the values u=U
+and u=-U, which can be observed in figure \ref{control_evolution}.
+
+
+
+\noindent The discontinuous switching control with high frequency  in figure \ref{control_evolution} is suitable in” electrical” implementation (where PWM control signals are usually used) but cause an increase in oscillations and numerous different problems in several areas, such as the control of mechanical systems.
+
+
+In order to find a solution for the problem presented above (referred to as \textit{”chattering phenomenon”}) roughly (smoothed) execution of sliding mode control techniques have been proposed where the discontinuous \text{“sign”} term is substituted with a  continuous and smooth approximation using one of the two functions below.
+
+
+\begin{equation}
+\begin{aligned}
+&\text{SAT} \text{\hspace{1cm}} u=-U sat(\sigma; \epsilon) \equiv -U \frac{\sigma}{|\sigma| + \sigma} \text{\hspace{1.5cm}} \epsilon >0 \text{\hspace{0.5cm}} \epsilon \approx 0 \\
+&\text{TANH} \text{\hspace{1cm}} u=-U tanh(\sigma/ \epsilon)  \text{\hspace{3.3cm}} \epsilon >0 \text{\hspace{0.5cm}} \epsilon \approx 0  \\
+\end{aligned}
+\end{equation}
+
+Unfortunately, this approach is successful only when uncertainties are not applied on the system and the control action that prevents these uncertainties can be set to zero in the sliding mode.
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{Images/Control/first_order_sliding_mode_control_c}
+\caption{Smooth approximations of sliding mode control.}
+\label{Smooth_Sliding_mode_control}
+\end{figure}
+
+
+ 
  \subsection{Other types of control}
  
  \chapter{Multi-flips maneuver with quadrotors}
