@@ -2220,7 +2220,7 @@ Regardless of the collocation method that is being used, the \textit{collocation
   as constraint equations. When the collocation equations are are formed by utilizing this these two constraint equations, then this pair of equations is considered to be in \textit{separated form}. 
   
   There are numerous trade-offs between the separated and the compressed forms of Hermite-Simpson collocation, which are explained in detail in \cite{Betts2010}. The general rule of thumb is that the separated form is superior when working with a smaller number of segments, while the compressed form is superior when the number of segments is great. Both constraint equations (\ref{first_Hermite_collocation_equation})
-and (\ref{second_Hermite_collocation_equation.tion_equation})  can be found in the book of Netts \cite{Betts2010}.
+and (\ref{second_Hermite_collocation_equation})  can be found in the book of Netts \cite{Betts2010}. 
 
 
 
@@ -2243,22 +2243,72 @@ Additionally to collocation constraints, which implement the dynamics of the sys
 \end{cases}
 \end{equation}
 
-Path constraints are managed tackled in a similar manner: they are implemented at all the collocation points as shown below.
+\noindent Path constraints are managed tackled in a similar manner: they are implemented at all the collocation points as shown below.
 
 
 \begin{equation}
-\bm{g}(t,\bm{x},\bm{u}) < 0 \text{\hspace{1cm}} \rightarrow \text{\hspace{1cm}} 
+\bm{g}(t,\bm{x},\bm{u}) < \bm{0} \text{\hspace{1cm}} \rightarrow \text{\hspace{1cm}} \begin{cases}
+\bm{g}(t_k, \bm{x}_k,\bm{u}_k) < \bm{0} \\
+\bm{g}(t_{k+\frac{1}{2}}, \bm{x}_{k+\frac{1}{2}},\bm{u}_{k+ \frac{1}{2}}) < \bm{0} \\
+\end{cases}
+\end{equation}
+
+\noindent Boundary constraint are also implemented at the first and last knot points:
+
+\begin{equation}
+\bm{h}\big(t_0,\bm{x}(t_0),\bm{u}(t_0)\big) < \bm{0} \text{\hspace{1cm}} \rightarrow \text{\hspace{1cm}} \bm{h}(t_0,\bm{x}_0,\bm{u}_0) <\bm{0}
+\end{equation}
+
+\noindent Similarly to the case of trapezoidal collocation, trajectory optimization problems with path constraints always happen to be much more difficult to solve than trajectory optimization problems that do not have path constraints \cite{Betts2010}. In addition, the boundaries of the trajectory are always collocation points. There exist some methods for which the trajectory boundaries are not collocation points. So, special care must be taked when handling boundary constraints for these methods \cite{Benson2006, Garg2010}
+  
+\section{Interpolation}
+ 
+ After solving the nonlinear program, the value of the state of the system and the control trajectories at each collocation point are now know. The subsequent step is to build a continuous trajectory to interpolate the solution between the collocation points. Similarly to what was done in trapezoidal collocation, a polynomial interpolant, which is derived from the collocation equations will be used.
+  
+ \begin{figure}[h]
+ \centering 
+ \includegraphics[width=\textwidth]{Images/Trajectory/Hermite-Simpson_Rule}
+ \caption{Representation of the quadratic and cubic spline segments that are utilized to approximate the control and state trajectories for Hermite–Simpson collocation.}
+ \label{Hermite-Simpson_figure_}
+ \end{figure}
+
+Hermite-Simpson collocation operates by using Simpson quadrature in order to approximate every segment of the trajectory. 
+Simpson quadrature utilizes a quadratic segment, fitted through three equally spaced points in order to approximate the intergrand \cite{Kelly2017}. The general equation for quadratic interpolation is provided in \textit{Numerical Recipes in C} \cite{Press1992}, and it is repeated below for a curve $\bm{u}$(t) that passes through 3 points: $(t_A,\bm{u}_A)$, $(t_B,\bm{u}_B)$ and $(t_C,\bm{u}_C)$
+
+\begin{equation}
+\bm{u}(t) = \frac{(t-t_B)(t-t_C)}{(t_A-t_B)(t_A-t_C)}\bm{u}_A + 
+\frac{(t-t_A)(t-t_C)}{(t_B-t_A)(t_B-t_C)}\bm{u}_B + 
+\frac{(t-t_A)(t-t_B)}{(t_C-t_A)(t_C-t_B)}\bm{u}_C
+\end{equation}
+
+For this specific case, this equation can be greatly simplified, because the points are uniformly distributed.
+Then, by using the points $k, k+\frac{1}{2}$ and k+1 in place of $A,B$ and $C$. The next step is to recall from previous sections that $h_k = t_{k+1}-t_k$, and  $t_{k + \frac{1}{2}}=\frac{1}{2}(t_k + t_{k+1})$. And, $\tau$ = $t-t_k$. After doing the proper substitutions and performing some algebra, the following simplified equation for interpolating the control trajectory is the following:
+
+\begin{equation}
+	\bm{u}(t) = \frac{2}{h_k^2} (\tau - \frac{h_k}{2})(\tau - h_k)\bm{u}_k - \frac{4}{h_k^2}(\tau)(\tau - h_k)\bm{u}_{k+\frac{1}{2}} + \frac{2}{h_k^2}(\tau)(\tau-\frac{h_k}{2})\bm{u}_{k+1} 
+\end{equation}
+
+Hermite-Simpson collocation also describes the dynamics of the system $\bm{f}(\cdot)=\dot{\bm{x}}$ by utilizing quadratic polynomials over each segment. Thus, the quadratic interpolation formula that was developed for the control trajectory can also be implemented to the dynamics of the system.
+
+\begin{equation}\label{state_trajectory_derivative}
+	\bm{f}(t) = \dot{\bm{x}} = \frac{2}{h_k^2} (\tau - \frac{h_k}{2})(\tau - h_k)\bm{f}_k - \frac{4}{h_k^2}(\tau)(\tau - h_k)\bm{f}_{k+\frac{1}{2}} + \frac{2}{h_k^2}(\tau)(\tau-\frac{h_k}{2})\bm{f}_{k+1} 
+\end{equation}
+
+Generally, the main interest is to obtain an expression for the state trajectory $\bm{x}(t)$ instead of its derivative $\dot{\bm{x}}(t)$. In order to obtain the state trajectory, equation \ref{state_trajectory_derivative} will be integrated, after arranging the expressing for it to be in standard polynomial form, the following expression is then obtained.
+
+\begin{equation}
+	\bm{x}(t)=\int \dot{\bm{x}}(t)=\int \left[ \bm{f}_k + \bigg(-3 \bm{f}_k + 4 \bm{f}_{k + \frac{1}{2}} -\bm{f}_{k+1}\bigg) \bigg( \frac{\tau}{h_k}\bigg) + \bigg( 2 \bm{f}_k -4 \bm{f}_{k+ \frac{1}{2}} + 2 \bm{f}_{k+1}\bigg)\bigg(\frac{\tau}{h_k}\bigg)^2 \right]dt
 \end{equation}
 
 
+The integral can be calculated by using basic calculus. Then, the constant of integration is solved by using the boundary condition $\bm{x}(t_k) = \bm{x}_k$. The obtained expression is provided below. Moreover, this expression allows the interpolation of the state trajectory.
 
-  
-  
-  
-  
-  
-  
-  
+\begin{equation}
+	\bm{x}(t)= \bm{x}_k + \bm{f}_k \bigg(\frac{\tau}{h_k}\bigg) +\frac{1}{2}\bigg(-3 \bm{f}_k + 4 \bm{f}_{k+\frac{1}{2}} - \bm{f}_{k+1}\bigg) \bigg(\frac{\tau}{h_k}\bigg)^2 + \frac{1}{3} \bigg(2 \bm{f}_k -4\bm{f}_{k+ \frac{1}{2}} + 2 \bm{f}_{k+1} \bigg) \bigg(\frac{\tau}{h_k}\bigg)^3
+\end{equation}
+
+The interpolant of the state and control trajectories are represented in figure \ref{Hermite-Simpson_figure_}.
+
 \newpage 
  
  \chapter*{Conclusion}
