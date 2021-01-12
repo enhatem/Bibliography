@@ -1944,14 +1944,186 @@ In the subsequent works, a backstepping control approach \cite{Chen2017} has bee
 \newpage
 
  \chapter{Trajectory optimization} 
+  
+ 
+ In order to understand what trajectory optimization means, an example of a moving satellite between two planets can taken.  The term \textit{trajectory} is used to depict the path that the satellite takes between the two planets. Generally, this path would incorporate both the state (position and velocity) and control (thrust) in function of time. the term \textit{trajectory optimization} alludes to a set of  approaches that can be utilized to identify the best trajectory option, generally by choosing the inputs to the system, also known as \textit{controls}, as functions of time.   
+ 
+ \section{The trajectory optimization problem}
+
+\subsection{Formulation of The Optimization Problem} 
+ 
+ The are numerous ways to formulate a trajectory optimization problem(\cite{Betts1998}, \cite{Patterson2013}  \cite{Rao2009}). The main focus will be on single-phase continuous-time trajectory optimization problems. This means that the dynamics of the system are continuous along the full trajectory. Thus, multi-phase methods are outside the scope of this paper and interested readers are referred to \cite{Rao2009} for a more general framework.
+ 
+ 
+\noindent Generally, an objective function includes two distinct terms: a boundary objective $J$ and a path integral about the full trajectory, with the integrand $w$ . A problem that is containing both terms is considered to be in \textit{Bolza form}. Moreover, a problem only having the integral term is considered to be in \textit{Lagrange form}, and a problem only having the boundary term is considered to be in \textit{Mayer form}. 
+ 
+
  
  
  
  
+  \begin{equation}\label{trajectory_optimization_function}
+ \min\limits_{t_0,t_F,\bm{x}(t),\bm{u}(t)} \underbrace{J \big(t_0,t_f,\bm{x}(t_0),\bm{x}(t_F)\big)}_\text{Mayer Term} + \underbrace{\int_{t_0}^{t_F} w(\tau, \bm{x}(\tau),\bm{x}(\tau),\bm{u}(\tau)) d \tau}_\text{Lagrange Term}
+ \end{equation}
+ 
+\noindent In optimization, the term \textit{decision variable} is used to depict the variables that will be adjusted through the optimizer to minimize the objective function. As an example, the decision variables in equation (\ref{trajectory_optimization_function}) are the initial and final time ($t_0, t_f$) in addition to the trajectories of the state and the control input $(\bm{x}(t),\bm{u}(t))$
+
+Numerous limits and constraints are imposed on the optimization problem at hand, which are detailed in the following equations \ref{}. The first, and possibly the most crucial of all the imposed constraints is the system dynamics, which are generally nonlinear and depict how the system varies with time.
+\begin{equation}
+	\bm{\dot{x}} = \bm{f}\big(t,\bm{x}(t),\bm{u}(t)\big) \space{\hspace{2cm} \textbf{system dynamics}}
+\end{equation}
+ 
+
+\newpage 
+ 
+\noindent Then, there is the path constraint, which implements limitations along the trajectory. As an example, a path constraint can be utilized to maintain the foot of a humanoid robot above the ground in the course of it performing a step.
+ 
+ 
+\begin{equation}
+	\bm{h}\big(t,\bm{x}(t),\bm{u}(t)\big) \leq 0 \space{\hspace{2cm} \textbf{path constraint}}
+\end{equation}
+ 
+ 
+\noindent Another crucial type of constraint is a nonlinear boundary constraint, which imposes limitations of the initial and final state of the system. As an example, this type of constraint can be utilized to make sure that the step of a humanoid robot is periodic.
+ 
+\begin{equation}
+	\bm{g}\big(t_0,t_F,\bm{x}(t_0),\bm{x}(t_F)\big) \leq 0 \space{\hspace{2cm} \textbf{boundary constraint}}
+\end{equation}
+ 
+ Typically, there are constant limits on the state and the control. For instant, a 6-degrees of freedom (6-DOF) serial anthropomorphic robot  could have limitations on the angles, angular rates, and torques that could be applied throughout the entire trajectory. 
+ 
+ \begin{align}
+ \bm{x}_{low} &\leq \bm{x}(t) \leq \bm{x}_{upp} \space{\hspace{2cm} \textbf{path bound on state}} \\
+ \bm{u}_{low} &\leq \bm{u}(t) \leq \bm{u}_{upp} \space{\hspace{2cm} \textbf{path bound on control}} 
+ \end{align}
+
+Lastly, it is generally crucial to incorporate particular limitations on the initial time $t_0$, the final time $t_F$ and the state $\bm{x}(t)$. These types of constraints can be used to make sure that the solution to a trajectory planning problem attains the goal inside some desirable time window, alternatively it attains some target region in state space.
+
+
+\begin{align}
+t_{low} \leq t_0 < t_F &\leq t_{upp} \text{\hspace{2.35cm} \textbf{bounds on initial and final time}}\\
+\bm{x}_{0,low} \leq t_0 < \bm{x}(t_0) &\leq \bm{x}_{0,upp} \text{\hspace{2cm} \textbf{bound on initial state}}\\
+\bm{x}_{F,low} \leq t_0 < \bm{x}(t_F) &\leq \bm{x}_{F,upp} \text{\hspace{2cm} \textbf{bound on final state}}
+\end{align}
+ 
+ 
+ \subsection{Direct Collocation Method}
+ 
+ The majority of the methods for solving trajectory optimization problem can be categorized as \textit{direct} or \textit{indirect} methods. In this paper, the main focus will be on direct methods,  however a brief overview will on indirect collocation methods will be provided. The main idea of a direct method is that it discretizes the trajectory optimization problem and converts it into a nonlinear program. This conversion procedure is named \textit{transcription}. This is why the direct collocation methods are also known as \textit{direct direct transcription methods.} Generally, direct transcription methods are capable of discretizing a continuous trajectory optimization problem by estimating all the continuous functions of the problem as polynomial splines. A \textit{spline} is a function which consists of a series of polynomial segments. Polynomials are utilized since they have two crucial characteristics:
+ 
+ \begin{enumerate}
+ 	\item They can be described by using a small and finite  group of coefficients.
+ 	\item It is simple to calculate integrals and derivatives of polynomials in function of these coefficients.
+ \end{enumerate}
+ Throughout this paper, two direct collocation methods will be discussed in detail: \textit{trapezoidal} collocation and \textit{Hermite-Simpson} collocation. Moreover, other direct collocation methods will be briefly covered, such as the direct single shooting method, the direct multiple shooting method and the orthogonal collocation method.
+ 
+ \newpage
+ 
+ \subsection{Nonlinear Programming}
+ 
+ The majority of the direct collocation methods transcribe a continuous-time trajectory optimization problem to a nonlinear problem. A non-linear program is a specific term provided to a constrained parameter optimization problem that contains nonlinear elements in either the objective function or the constraint function. A general expression for a nonlinear program is provided below:
+ 
+  \begin{mini}|s|
+{\bm{z}}{ J(\bm{z})}
+{}{}
+\addConstraint{\bm{f}(\bm{z})=\bm{0}}
+\addConstraint{\bm{g}(\bm{z})\leq\bm{0}}
+\addConstraint{ \bm{z}_{low}\leq \bm{z} \leq \bm{z}_{upp}}
+{}
+\label{optim_problem}
+\end{mini}
+
+Sometimes, a direct collocation method can result in a linear or quadratic program instead of a non-linear program. This occurs if the constraints (including the dynamics of the system) are linear and the objective function is linear (which results in a linear program) or quadratic (which results in a quadratic program). Linear and quadratic programs are both far easier to tackle than nonlinear programs, rendering them attractive for real-time applications, specifically in robotics.
+ 
+ \section{Trapezoidal Collocation Method}
+ 
+ Trapezoidal collocation operates by transcribing a continuous-trajectory optimization into a non-linear program. This is performed by utilizing trapezoidal quadrature, which is also named the \textit{trapezoidal rule} for integration, to transcribe every continuous element of the problem into a discrete approximation. In this section, the trapezoidal method will be thoroughly examined by demonstrating how the transformation is achieve for each element of a trajectory optimization problem.
+ 
+\subsection{Integrals}
+
+Frequently, there are integral expressions in trajectory optimization problems. Generally, they are located in the objective function, however, it is also possible that they could be located in the constraints too. The aim is to approximate the continuous integral $\int w(\cdot) dt$ as a sum $\sum c_k w_k$. The main idea is that the summation just necessitates the value of the integrand  $w(t_k)=w_k$ at the collocation points $t_k$ about the trajectory. This approximation is performed by applying the trapezoid rule for integration between each pair of consecutive collocation points, which produces the equation below, with $h_k=t_{k+1} - t_k$. \cite{Betts2010}
+ 
+ \begin{equation}
+ \int_{t_0}^{t_F} w \big( \tau,\bm{x}(\tau),\bm{u}(\tau)\big)d \tau \approx \sum\limits_{k=0}^{N-1} \frac{1}{2} h_k \cdot (w_k + w_{k+1})
+ \end{equation}
+ 
+ \newpage
+ 
+\subsection{System Dynamics}
+
+One of the main features of direct collocation method is that it depicts the system dynamics as a set of constraints, referred to as \textit{collocation constraints}. For trapezoidal collocation, the collocation constraints are built by expressing the dynamics of the system in integral form and then approximation of that integral is performed by using trapezoidal quadrature \cite{Betts2010}. 
+
+\begin{equation*}
+\dot{\bm{x}}= \bm{f}
+\end{equation*}
+ 
+ \begin{equation*}
+\int_{t_k}^{t_{k+1}} \dot{\bm{x}}dt = \int_{t_k}^{t_{k+1}} \bm{f}dt
+\end{equation*}
+ 
+  \begin{equation*}
+\bm{x}_{k+1}-\bm{x}_k \approx \frac{1}{2} h_k \cdot (\bm{f}_{k+1} + \bm{f}_k )
+\end{equation*}
+ 
+ This approximation is then implemented between each pair of collocation points: 
+ 
+ \begin{equation}
+ \bm{x}_{k+1} - \bm{x}_k = \frac{1}{2} h_k \cdot (\bm{f}_{k+1} + \bm{f}_k ) \text{\hspace{2cm}}  k \in \ldots(N-1)
+ \end{equation}
+ 
+ \noindent It should be noted that $\bm{x}_k$ is a decision variable in the nonlinear program, whereas \\ $\bm{f}_k = \bm{f}(t_k, \bm{x}_k, \bm{u}_k)$ is the outcome of evaluating the dynamics of the system at every collocation point.
+ 
+
+\subsection{Constraints} 
+ 
+Besides the collocation constraints, which implement the dynamics of the system, there could also be limits on the state and the control, path constraints and boundary constraints. All of these constraints are managed by implementing them at particular collocation points. For instance, simple constraints on state and control can be approximated as follows:
+
+\begin{align}
+\bm{x}< \bm{0} \text{\hspace{1cm}} \rightarrow \text{\hspace{1cm}} \bm{x}_k <\bm{0} \text{\hspace{1cm}} \forall k \\
+\bm{u}< \bm{0} \text{\hspace{1cm}} \rightarrow \text{\hspace{1cm}} \bm{u}_k <\bm{0} \text{\hspace{1cm}} \forall k 
+\end{align}
+ 
+ Path constraints are managed in the same way: 
+ 
+ \begin{equation}
+ \bm{g}(t, \bm{x},\bm{u}) < \bm{0} \text{\hspace{1cm}} \rightarrow \text{\hspace{1cm}} \bm{g}(t_k, \bm{x}_k, \bm{u}_k) <\bm{0} \text{\hspace{1cm}} \forall k \\
+ \end{equation}
+ 
+ Moreover, boundary constraint are also enforced at the first and last collocation points:
+ 
+ \begin{equation}
+ \bm{h}(t_0, \bm{x}(t_0),\bm{u}(t_0)) < \bm{0} \text{\hspace{1cm}} \rightarrow \text{\hspace{1cm}} \bm{h}(t_0, \bm{x}_0, \bm{u}_0) <\bm{0} \text{\hspace{1cm}} \forall k \\
+ \end{equation} 
+ 
+ 
+ When dealing with constraints, the following must points must be takes into consideration: 
+ 
+ \begin{itemize}
+ 	\item Trajectory optimization problems with path constraints are likely to be considerably harder to solve than trajectory optimization problems without path constraints. The details are beyond the scope of this paper. However, they are properly explained by Betts \cite{Betts2010}.
+ 	\item The limits of the trajectories are always considered as collocation points in trapezoidal collocation. There exist different methods for whichj the trajectory limits are not considered as collocation points. For these methods, special attention must be given when boundary constraints are being handled (\cite{Benson2006, Garg2010}.
+ \end{itemize}
+ 
+ \newpage
+ 
+ 
+ \subsection{Interpolation}
+ 
+ Trapezoidal collocation operates by approximating the trajectory of the dynamics of the system and the control trajectory as piece-wise linear functions, which are also called \textit{linear splines}, shown in figure \ref{function_approximation_a}. When building a spline, the term \textit{knot point} is utilized to represent every point that combines two polynomial segments. The knot points related to the spline are coincident in the case of trapezoidal collocation.  
+ 
+ 
+ \begin{figure}[h]
+ \centering
+ \includegraphics[width=\textwidth]{Images/Trajectory/Function_approximation_a}
+ \caption{Function approximation using a linear spline \cite{Kelly2017}.}
+ \label{function_approximation_a}
+ \end{figure}
  
  
  
+   
  
+ 
+\newpage 
  
  \chapter*{Conclusion}
  \addcontentsline{toc}{chapter}{Conclusion}
