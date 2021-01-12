@@ -2067,7 +2067,7 @@ One of the main features of direct collocation method is that it depicts the sys
  
  This approximation is then implemented between each pair of collocation points: 
  
- \begin{equation}
+ \begin{equation}\label{system_dynamics_equation}
  \bm{x}_{k+1} - \bm{x}_k = \frac{1}{2} h_k \cdot (\bm{f}_{k+1} + \bm{f}_k ) \text{\hspace{2cm}}  k \in \ldots(N-1)
  \end{equation}
  
@@ -2119,10 +2119,146 @@ Besides the collocation constraints, which implement the dynamics of the system,
  \end{figure}
  
  
+ First, the control strategy must be constructed, which is a simple spline which is linear. Since both the time and control are known at each knot point, then it is easy to derive the expression for $bm{u}$ on the interval $t \in [t_k,t_{k+1}]$. In order to keep the math readable,$\tau$ and $h_k$ are defined such that:
  
+ \begin{equation*}
+ 	\tau = t-t_k \text{\hspace{2cm}}h_k = t_{k+1} - t_k
+ \end{equation*}
    
+ Thus, the expression of $\bm{u}$ is the following:
+ 
+ \begin{equation}\label{spline_a}
+ 	\bm{u}(t) \approx \bm{u}_k + \frac{\tau}{h_k}(\bm{u}_{k+1}-\bm{u}_k)
+ \end{equation}
  
  
+ The state trajectory is expressed by a \textit{quadratic spline} (a piece-wise quadratic function). This may seem perplexing, however it follows directly from the collocation equations \ref{system_dynamics_equation}. The trapezoidal collocation equations are accurate when the dynamics of the system vary linearly between any two knot points, which is a fact the is used to approximate the dynamics of the system over a single segment $t \in [t_k, t_{k+1}]$ as expressed below.
+ 
+ 
+ \begin{equation}\label{approximation_of_state_dynamics}
+ 	\bm{f}(t) = \dot{\bm{x}}(t) \approx \bm{f}_k + \frac{\tau}{h_k}(\bm{f}_{k+1}-\bm{f}_k)
+ \end{equation}
+ 
+ However, what is interesting is $\bm{x}$ and not $\dot{\bm{x}}$, thus equation (\ref{approximation_of_state_dynamics}) must be integrated on both sides in order to obtain a quadratic expression for the state.
+ 
+ \begin{equation}
+ 	\bm{x}(t) = \int \dot{\bm{x}}(t) d \tau \approx \bm{c} + \bm{f}_k \tau + \frac{\tau^2}{2 h_k} (\bm{f}_{k+1}-\bm{f}_k)
+ \end{equation}
+ 
+ 
+Then, the constant of integration $\bm{c}$ can be computed by utilizing the value of the state at the boundary $\tau = 0$  in order to get the final expression of the state.
+
+ \begin{equation}\label{spline_b}
+ 	\bm{x}(t) \approx \bm{x}_k + \bm{f}_k \tau + \frac{\tau^2}{2 h_k} (\bm{f}_{k+1}-\bm{f}_k)
+ \end{equation} 
+
+\newpage 
+ 
+ \begin{figure}[h]
+ \centering
+ \includegraphics[width=\textwidth]{Images/Trajectory/Trapezoid_Rule}
+ \caption{Representation of the linear and quadratic spline segments that are utilizied to approximate the control and state trajectories for trapezoidal collocation.}
+ \label{trapezoid_collocation_state_control_fig}
+ \end{figure}
+ 
+ 
+ 
+\noindent Figure\ref{trapezoid_collocation_state_control_fig} represents how a linear control segment and quadratic state segment are built. The spline equations (\ref{spline_a}) and (\ref{spline_b}) are particularly for trapezoidal collocation, since there is a one-to-one correlation between the collocation equations and the interpolation spline. Generally, if the control is a spline of order $n$, then the state is depicted by a spline of order $n+1$ \cite{Betts2010}.
+ 
+ 
+
+\section{Hermite-Simpson Collocation Method}
+
+The Hermite-Simpson collocation is  comparable to trapezoidal collocation, however it offers a solution that is higher-order accurate. This is due to the fact that trapezoidal collocation approximates the objective function and the dynamics of the system as piece-wise quadratic functions, as shown in figure \ref{function_approximation_b}. An added benefit of the Hermite-Simpson collocation method is that the trajectory is a cubic Hermite spline, which has a first-order derivative which is continuous.
+
+
+ \begin{figure}[h]
+ \centering
+ \includegraphics[width=\textwidth]{Images/Trajectory/Function_approximation_b}
+ \caption{Function approximation using a quadratic spline.  \cite{Kelly2017}.}
+ \label{function_approximation_b}
+ \end{figure} 
+ 
+It can be observed that this approximation is significantly more accurate than the linear spline in figure \ref{function_approximation_a}, for the same number of segments.
+ 
+ 
+ 
+ \subsection{Integrals}
+ 
+ Integral expressions are regular in trajectory optimization problems, specifically in the objective function. The Hermite-Simpson collocation provide an approximation of the integrals by utilizing the Simpson quadrature. The Simpson quadrature, also called \textit{Simpson's rule} for integration, which operates by approximating the integrand of the integral as a piece-wise quadratic function. This approximation of the integrand is provided below. 
+ 
+\begin{equation*}
+\int_{t_0}^{t_f} w(\tau) d \tau \text{\hspace{0.5cm}}  \approx \text{\hspace{0.5cm}}  \sum\limits_{k=0}^{N-1} \frac{h_k}{6} ( w_k + 4 w_{k + \frac{1}{2}} + w_{k+1})
+\end{equation*}  
+  
+  
+\section{System Dynamics}
+
+Regardless of the collocation method that is being used, the \textit{collocation constraints} are the group of constraints that are built to approximate the dynamics of the system. In the hermite-Simpson collocation method, these constraints are built by writing the system dynamics in integral form: the change in state between any two knot points $t_k$ must be equal to the integral of the dynamics of the system $\bm{f}(\cdot)$ between those points.
+  
+  
+  \begin{align}
+  	\dot{\bm{x}} &= \bm{f} \\
+  	\int_{t_k}^{t_{k+1}} \dot{\bm{x}} &= \int_{t_k}^{t_k+1} \bm{f} dt  	\label{continuous_integral}
+  \end{align}
+  
+  The transcription from continuous dynamics to a group of collocation equations takes place when the continuous integral is approximated in  \ref{continuous_integral} with Simpson quadrature and then implemented between every pair of knot points. 
+  
+  \begin{equation}\label{first_Hermite_collocation_equation}
+  	\bm{x}_{k+1} - \bm{x}_k = \frac{1}{6} h_k(\bm{f}_k + 4 \bm{f}_{k + \frac{1}{2}} + \bm{f}_{k+1})
+  \end{equation}
+  	
+  In fact, for the Hermite-Simpson collocation, a second collocation equation is required in addition to equation (\ref{first_Hermite_collocation_equation}), in order to impose the dynamics of the system. This is due to fact that the dynamics at the mid-point of segment $\bm{f}_{k+\frac{1}{2}}$ are a function of the state $\bm{x}_{k+\frac{1}{2}}$, which is not known \textit{a priori}. Thus, the state of the system can be computed at the mid-point by building an interpolant for the state trajectory  and then assessing it at the mid-point of the interval.
+  
+
+	\begin{equation}\label{second_Hermite_collocation_equation}
+	\bm{x}_{k+\frac{1}{2}} = \frac{1}{2}( \bm{x}_k + \bm{x}_{k+1}) + \frac{h_k}{8}(\bm{f}_k - \bm{f}_{k+1})
+	\end{equation}
+  
+  This second collocation equation (\ref{second_Hermite_collocation_equation}) is particuar because it can be computed explicitly in function of the state at the knot points. So, it is possible to merge both equations  (\ref{first_Hermite_collocation_equation}) and(\ref{second_Hermite_collocation_equation})  into just one complicated collocation constraint. When the transcription of the dynamics of the system is performed using only this single resulting collocation constraint, then the resulting formulation is said to be in \textit{compressed form}. A different approach is to build an additional decision variable for the state at the mid-point $\bm{x}_{k+\frac{1}{2}}$, and the to use both equation (\ref{first_Hermite_collocation_equation})
+  and (\ref{second_Hermite_collocation_equation})
+  as constraint equations. When the collocation equations are are formed by utilizing this these two constraint equations, then this pair of equations is considered to be in \textit{separated form}. 
+  
+  There are numerous trade-offs between the separated and the compressed forms of Hermite-Simpson collocation, which are explained in detail in \cite{Betts2010}. The general rule of thumb is that the separated form is superior when working with a smaller number of segments, while the compressed form is superior when the number of segments is great. Both constraint equations (\ref{first_Hermite_collocation_equation})
+and (\ref{second_Hermite_collocation_equation.tion_equation})  can be found in the book of Netts \cite{Betts2010}.
+
+
+
+\section{Constraints}
+
+
+Additionally to collocation constraints, which implement the dynamics of the system, there might also be limits on the state and control, path constraints and boundary constraints. These constraints are all handled by imposing them at particular collocation points. For instance, simple limits on the state of the system and the control are approximated as follows:
+
+\begin{equation}
+\bm{x}<\bm{0} \text{\hspace{1cm}}\rightarrow  \text{\hspace{1cm}} \begin{cases}
+\bm{x}_k <\bm{0} \\
+\bm{x}_{k+\frac{1}{2}}<\bm{0}
+\end{cases}
+\end{equation}
+
+\begin{equation}
+\bm{u}<\bm{0} \text{\hspace{1cm}}\rightarrow  \text{\hspace{1cm}} \begin{cases}
+\bm{u}_k <\bm{0} \\
+\bm{u}_{k+\frac{1}{2}}<\bm{0}
+\end{cases}
+\end{equation}
+
+Path constraints are managed tackled in a similar manner: they are implemented at all the collocation points as shown below.
+
+
+\begin{equation}
+\bm{g}(t,\bm{x},\bm{u}) < 0 \text{\hspace{1cm}} \rightarrow \text{\hspace{1cm}} 
+\end{equation}
+
+
+
+  
+  
+  
+  
+  
+  
+  
 \newpage 
  
  \chapter*{Conclusion}
