@@ -17,25 +17,28 @@
 \def\columnseprulecolor{\color{black}}
 \DeclareUnicodeCharacter{2212}{-}
 
+\setlength\parindent{0pt}
+
 \begin{document}
 
  \include{thesisfront}  
  
   \section*{Abstract}
 Within the rapidly growing aerial robotics market, one of the most substantial challenges in the quadrotor community is performing aggressive maneuvers, especially multi-flip maneuvers.  A proper physical definition of the issue is not addressed by the current approaches in the field and several key aspects of this maneuver are still overlooked.
-It can be shown, in particular, that making a flip with a quadrotor meanWs crossing the parallel singularity of the dynamic model. The aim of the master thesis is to explore the possibility of defining aggressive trajectories for quadrotors on the basis of their dynamic model degeneracy analysis and to adapt various strategies to control the robot in a closed loop. In addition, the possibility to perform the aggressive maneuver in constrained environments will also be investigated.
-Therefore, the analysis will be extended from the previous studied to create general feasible trajectories that will allow quadrotors to perform aggressive flip maneuvers while passing through a constrained environment and while guaranteeing a satisfactory degree of robustness to the uncertainties of the dynamic model.
+It can be shown, in particular, that making a flip with a quadrotor means crossing the parallel singularity of the dynamic model. The aim of the master thesis is to explore the possibility of defining aggressive trajectories for quadrotors on the basis of their dynamic model degeneracy analysis and to adapt various strategies to control the robot in a closed loop. In addition, the possibility to perform the aggressive maneuver in constrained environments will also be investigated.
+Therefore, the analysis will be extended from the previous studies to create general feasible trajectories that will allow quadrotors to perform aggressive multi-flip maneuvers while passing through a constrained environment and while guaranteeing a satisfactory degree of robustness to the uncertainties of the dynamic model.\\
 
+\textbf{Keywords: quadrotors, parallel robots, aggressive maneuvers, multi-flips, constrained environmen. } 
  
  \newpage
  
  \section*{Acknowledgements}
 
 
-I would like to express my special thanks and gratitude to my supervisors Dr. Sébastien Briot and Dr. Isabelle Fantoni who gave me the  opportunity to work on this wonderful project which encapsulates control theory, dynamics and quadrotors. This project has allowed me to perform research on all of these topics and I am now more knowledgeable thanks to my supervisors. Moreover, I would like to thank them for believing in my capabilities and for me the confidence when I needed it. \\\\
+I would like to express my special thanks and gratitude to my supervisors Dr. Sébastien Briot and Dr. Isabelle Fantoni who gave me the  opportunity to work on this wonderful project which encapsulates control theory, dynamics and quadrotors. This project has allowed me to perform research on all of these topics and I am now more knowledgeable thanks to my supervisors. Moreover, I would like to thank them for believing in my capabilities and giving me the confidence and the support when I needed it. \\\\
 Secondly, I would also like to thank Dr. Ina Taralova for providing me with the valuable knowledge to create a proper bibliography. \\\\
 I would like to thank my patient and understanding girlfriend Glysa, who has been with me for more than 5 years. Thank you for all the love, support and comfort that you have given me in these stressful 2 years. I hope that this Master degree will allow us to have a better future together. \\\\
-I would like to thank my family as well: my parents Naji and Yolla, my sister Rebecca, my uncle and his wife Fadi and Lara and my aunt Bernadette. They have provided me with the emotional and economical support from the very beginning and they gave me the opportunity to travel and study for this Master degree. They have always been proud and encouraging. I would not be here if it wasn't for them.
+I would like to thank my family as well: my parents Naji and Yolla, my sister Rebecca, my uncle and his wife Fadi and Lara and my aunt Bernadette. They have provided me with the emotional and economical support from the very beginning and they gave me the opportunity to travel and study for this Master degree. They have always been proud and encouraging. \\I would not be here if it wasn't for them.
 
  
  \newpage
@@ -43,14 +46,14 @@ I would like to thank my family as well: my parents Naji and Yolla, my sister Re
  
  \section*{Notations}
  \begin{tabular}{cp{0.8\textwidth}}
-  $b$ & Thrust factor \\
-  $l$ & horizontal distance: From the center of the propeller to the CoG \\
-  $\Omega$ & Spinning speed of a propeller\\
-  $C_{R_m}$ & Rolling moment coefficient \\
-  $C_T$ & Thrust coefficient \\
-  $H$ & Hub force\\
-  $CT$ & Continuous time \\
-  $DT$ & Discrete time \\
+  $b$ & thrust factor \\
+  $l$ & horizontal distance: from the center of the propeller to the CoG \\
+  $\Omega$ & spinning speed of a propeller\\
+  $C_{R_m}$ & rolling moment coefficient \\
+  $C_T$ & thrust coefficient \\
+  $H$ & hub force\\
+  $CT$ & continuous time \\
+  $DT$ & discrete time \\
 
 \end{tabular}\\
  
@@ -60,9 +63,14 @@ I would like to thank my family as well: my parents Naji and Yolla, my sister Re
  
   \section*{Abbreviations}
  \begin{tabular}{cp{0.8\textwidth}}
-  \textbf{IGE} & In Ground Effect \\
-  \textbf{OGE} & Out of Ground Effect \\
-
+  \textbf{UAV} & unmanned aerial vehicle \\
+  \textbf{IGE} & in ground effect \\
+  \textbf{OGE} & out of ground effect \\
+  \textbf{CoG} & center of gravity \\
+  \textbf{i.s.L.} & in sense of Lyapunov \\
+  \textbf{lpd} & locally positive definite \\
+  \textbf{lpsd} & locally positive semi-definite \\
+  \textbf{lnd} & locally positive negative definite \\
 \end{tabular}\\
  \newpage
  
@@ -83,7 +91,7 @@ In specific, in the sections below, quadrotors and parallel robots are briefly p
  
  \section*{The quadrotor platform}
 
-A quadrotor is a type of unmanned aerial vehicle (UAV) with four rotors and six degrees of freedom. Typically, drones have a small size and low inertia which allows it to be controller by simple flight control systems. It is typically designed in a cross-configuration such that the electronics are held in the center of the platform and the rotors are placed at the borders.
+A quadrotor is a type of unmanned aerial vehicle (UAV) with four rotors and six degrees of freedom. Typically, drones have a small size and low inertia which allows them to be controller by simple flight control systems. It is typically designed in a cross-configuration such that the electronics are held in the center of the platform and the rotors are placed at the borders.
 An example of a real quadrotor, namely the DJI Phantom, is shown in fig. \ref{fig:drone}. The quadrotor is typically built in a way such that a pair of opposite rotors rotate clockwise, whereas the other pair of rotors rotates in counter-clockwise.
 The attitude and the position of the drone are controlled by changing the spinning speed of the rotors. An example is shown in figure \ref{fig:propeller_directions}.
 
@@ -108,9 +116,9 @@ The attitude and the position of the drone are controlled by changing the spinni
         \label{fig:three graphs}
 \end{figure}
 
-The distinctive mechanical design of the quadrotor permits the actuation system to control all of the six degrees of freedom, even though it is under-actuated. This is due to the fact that the rotational and translational dynamics are tightly coupled. Thus, all the translational and rotational motions can be carried off by properly controlling the magnitude and direction of the spinning speed of the rotors.   
+\noindent The distinctive mechanical design of the quadrotor permits the actuation system to control all of the six degrees of freedom, even though it is under-actuated. This is due to the fact that the rotational and translational dynamics are tightly coupled. Thus, all the translational and rotational motions can be carried off by properly controlling the magnitude and direction of the spinning speed of the rotors.   
 
-\footnotetext[1]{\url{https://en.wikipedia.org/wiki/Quadcopter\#/media/File:Quadcopter_camera_drone_in_flight.jpg}, accessed on 01/08/2021.}
+\noindent \footnotetext[1]{\url{https://en.wikipedia.org/wiki/Quadcopter\#/media/File:Quadcopter_camera_drone_in_flight.jpg}, accessed on 01/08/2021.}
 
 
 \pagebreak
@@ -120,12 +128,12 @@ Over the last few years, quadrotors have gained a large popularity in academia a
 \begin{enumerate}
 
     \item Quadrotors are very simple to design and they can be easily assembled using relatively cheap components.  
-    \item As quadrotors became more and more affordable and dependable, the number of quadrotors real-world applications has grown significantly. They are being used for aerial photography, agriculture, surveillance, inspection tasks, in addition to many other uses as well. 
-    \item Quadrotors are quite agile and maneuverable during flight. Especially when compared to other types of unmanned aerial vehicles (UAVs). 
+    \item As quadrotors became more and more affordable and dependable, the number of real-world applications for quadrotors  has grown significantly. They are being used for aerial photography, agriculture, surveillance, inspection tasks, in addition to many other uses as well. 
+    \item Quadrotors are quite agile and maneuverable during flight. Especially when compared to other types of UAVs.
     
 \end{enumerate}
 
-However, on the main challenges in the quadrotors community is the capability to design control and planning methods that will allow the quadrotors to carry out aggressive maneuvers.  The fast dynamics associated with typically small dimensions of such agile quadrotors, in addition to several aerodynamic effects that will become important during aggressive flight maneuvers, are just a few of the main problems that are faced during the system control design. Moreover, accurate tracking of the provided trajectory is a very big issue in the case of aggressive maneuvers when the rotors are commanded high speeds and accelerations, which will cause rotors to become saturated and may also cause delays.
+However, one the main challenges in the quadrotors community is the capability to design control and planning methods that will allow the quadrotors to carry out aggressive maneuvers.  The fast dynamics associated with typically small dimensions of such agile quadrotors, in addition to several aerodynamic effects that will become crucial during aggressive flight maneuvers, are just a few of the main problems that are faced during the system control design. Moreover, accurate tracking of the provided trajectory is a big issue in the case of aggressive maneuvers when the rotors are commanded high speeds and accelerations, which will cause rotors to become saturated and may also cause delays.
 
 
  \section*{Parallel manipulators}
@@ -160,14 +168,14 @@ A parallel manipulator is a mechanical system that consists of two connected pla
 
 \pagebreak
 
-However, parallel manipulators are subject to singularities, which can lead to big problems in the robot workspace in case they were not handled correctly. Thus, the study of the singular configuartions of parallel manipulators is very important. Because, even just before reaching a singularity, the performance of the parallel manipulator will decrease dramatically. Moreover, the robot may loose the ability of moving in a certain direction, gain uncontrollable motions and it the mechanism could even break. The main difference between serial and parallel manipulators is that singularity configurations may also appear inside the robot workspace (depending on the dimensions of the robot) and not just at the boundaries of the robot workspace, which can significantly decrease the area of the robot workspace.
+However, parallel manipulators are subject to singularities, which can lead to big problems in the robot workspace in case they were not handled correctly. Thus, the study of the singular configuartions of parallel manipulators is very important. Because, even just before reaching a singularity, the performance of the parallel manipulator will decrease dramatically. Moreover, the robot may loose the ability of moving in a certain direction, gain uncontrollable motions and the mechanism could even break. The main difference between serial and parallel manipulators is that singularity configurations may also appear inside the workspace of the robot (depending on the dimensions of the robot) and not just at the boundaries of the robot workspace, which can significantly decrease the area of the robot workspace.
 As a result, many works have been developed by robotics researchers in order to allow parallel manipulator manipulators to safely cross these singularities by using trajectory planning and specific control methods.
 
 \section*{The goal of this thesis}
 
 This master thesis lies at the intersection of parallel robotics and aerial robotics. The two fields may seem very different from each other. However, quadrotors can be seen as a particular case of a parallel manipulator. 
 In fact, a parallel manipulator is made up of a wrench system, applied by the robot limbs on the moving platform. And, this wrench system will define the motion of the moving platform. In the same manner, each propeller in a quadrotor can be considered as limb of a parallel robot and the moving platform to be controlled can be considered as the body of the drone. 
-Specifically, the goal of this master thesis is to study a distinct class of aggressive maneuvers for quadrotors, namely multi-flip maneuvers. By doing multi-flip maneuvers, full rotations around one or more axes of the body of the quadrotor can be done. In addition, the quadrotor must also must also do the flips in a constrained environment.
+Specifically, the goal of this master thesis is to study a distinct class of aggressive maneuvers for quadrotors, namely multi-flip maneuvers. By doing multi-flip maneuvers, full rotations around one or more axes of the body of the quadrotor can be done. In addition, the quadrotor must also perform the multi-flip maneuvers in a constrained environment.
 
 \begin{figure}[h]
      \centering
@@ -199,7 +207,7 @@ The rest of the bibliography is structured as follows:
 
 \begin{itemize}
 \setlength{\itemindent}{-.5in}
-	\item [] \textbf{Chapter 1} is devoted to introduce the system modeling of quadrotors. Specifically, a simplified dynamic model of the quadrotor will be presented by using Euler-Lagrange formalism. Then, moving on from the simple dynamic model, a more detailed dynamic model will be presented by using the Newton-Euler formalism. Finally, the state-space model of the quadrotor will also be derived.
+	\item [] \textbf{Chapter 1} is devoted to introduce the system modeling of quadrotors. Specifically, a simplified dynamic model of the quadrotor will be presented by using Euler-Lagrange formalism. Then, moving on from the simple dynamic model, a more detailed dynamic model will be presented by using the Newton-Euler formalism. Finally, the state-space model of the quadrotor will be derived.
 
 	\item [] \textbf{Chapter 2} provides an overview of state of the art in quadrotor control in addition to introducing the different potential control methods that can be used during the master thesis in order to properly control the quadrotor. 
 
@@ -279,7 +287,7 @@ Friction & All helicopter motions & $C \dot{\phi},\dot{\theta},\dot{\psi}$\\
  \end{cases}
  \end{equation}
 
-Thus, the velocities can be derived by differentiation \ref{kinematics}, and the squared magnitude of the squared velocity can be expressed as follows for any point:
+Thus, the velocities can be derived by differentiation (\ref{kinematics}), and the squared magnitude of the squared velocity can be expressed as follows for any point:
 
 \begin{equation}\label{velocity_magnitude}
 	v^2 = v_X^2 + v_Y^2 + v_Z^2\\
@@ -287,13 +295,13 @@ Thus, the velocities can be derived by differentiation \ref{kinematics}, and the
 
 \subsection{Energy}
 
-Assuming that the matrix of inertia is diagonal, then from equation \ref{velocity_magnitude}, the expression of the kinetics energy can be calculated:
+Assuming that the matrix of inertia is diagonal, then from equation (\ref{velocity_magnitude}), the expression of the kinetic energy can be calculated:
 
 \begin{equation}\label{kinetic_energy}
 T = \frac{1}{2} I_{xx}(\dot{\phi}-\dot{\psi} s \theta)^2 + \frac{1}{2} I_{yy}(\dot{\theta} c \phi + \dot{\psi} s \phi c \theta)^2 + \frac{1}{2} I_{zz}(\dot{\theta} s \phi - \dot{\psi} c \phi)^2
 \end{equation}
 
-Using the formula of the potential energy, equation \ref{kinetic_energy} can be expressed in the fixed world frame as: 
+Using the formula of the potential energy, equation (\ref{kinetic_energy}) can be expressed in the fixed world frame as: 
 
 \begin{equation}\label{potential_energy}
 V = \int xdm(x)(-g s \theta) + \int ydm(y)(g s \phi c \theta) + \int z dm (z) (g c \phi c \theta) 
@@ -310,7 +318,7 @@ By using the Euler-Lagrange formalism:
 L = T - V \text{\hspace{0.5cm} ,\hspace{0.5cm}} \Gamma_i = \frac{d}{dt}\bigg(\frac{\partial L}{\partial \dot{q}_i}\bigg) - \frac{\partial L}{\partial q_i}
 \end{equation}
  
- Where $L$ $\Gamma_i$ and $\dot{q}_i$ are the Lagrangian, the generalized forces and the generalized coordinates respectively. Thus, the equations of motion can be expressed as follows: 
+ Where $L$, $\Gamma_i$ and $q_i$ are the Lagrangian, the generalized forces and the generalized coordinates respectively. Thus, the equations of motion can be expressed as follows: 
  
  \begin{equation}
  \begin{cases}
@@ -322,7 +330,7 @@ L = T - V \text{\hspace{0.5cm} ,\hspace{0.5cm}} \Gamma_i = \frac{d}{dt}\bigg(\fr
  \end{cases}
  \end{equation}
  
-Moreover, the torques that are nonconservative and acting on the quadrotor, are due to two different causes. First, it is due to thrust of each rotor pairs in figure \ref{coordinate_system_simple}:
+Moreover, the torques that are nonconservative and acting on the quadrotor, are due to two different causes. First, they are due to the thrust of each rotor pairs in figure \ref{coordinate_system_simple}:
 
 \begin{equation}
 \begin{cases}
@@ -334,7 +342,7 @@ Moreover, the torques that are nonconservative and acting on the quadrotor, are 
 \end{cases}
 \end{equation}
 
-Second, it is also due to the gyroscopic effect which is the result of the rotation of the propellers:
+Second, they are also due to the gyroscopic effect which is the result of the rotation of the propellers:
 
 \begin{equation}
 \begin{cases}
@@ -383,11 +391,11 @@ J_m \frac{d \omega_m}{dt} = \tau_m - \tau_d \\
 
 Since small motors are used in which they also have little inductance, then the second order equation of the DC motor dynamics is given by:
 
-\begin{equation}\label{DC_motor_2nd_order_dynamics}
+\begin{equation}\label{DC_motor_2nd_order_dynamics_first}
 	J_m \frac{d\omega_m}{dt} = -\frac{k_m^2}{R_{mot}}\omega_m - \tau_d + \frac{k_m}{R_{mot}}u
 \end{equation}
  
-When the gearbox and the propeller models are introduced, then equation \ref{DC_motor_2nd_order_dynamics} becomes:
+When the gearbox and the propeller models are introduced, then equation (\ref{DC_motor_2nd_order_dynamics_first}) becomes:
 
 \begin{equation}\label{DC_motor_2nd_order_dynamics}
 \begin{cases}
@@ -397,7 +405,7 @@ When the gearbox and the propeller models are introduced, then equation \ref{DC_
 	\end{cases}
 \end{equation}
  
-Moreover, linearization of equation \ref{DC_motor_2nd_order_dynamics} can be done around an operation point $\dot{\omega}_0$ to the form $\dot{\omega}_m = -A \omega_m + B u + C$ with: 
+Moreover, linearization of equation (\ref{DC_motor_2nd_order_dynamics}) can be done around an operation point $\dot{\omega}_0$ to the form $\dot{\omega}_m = -A \omega_m + B u + C$ with: 
 
 \begin{equation}
 A = \bigg( \frac{1}{\tau}+\frac{2d\omega_0}{\eta r^3 J_t} \bigg) \text{ \hfill , \hfill} B = \bigg( \frac{1}{k_m \tau} \bigg) \text{\hfill , \hfill} C = \bigg( \frac{d \omega_0^2}{\eta r^3 J_t} \bigg)
@@ -408,7 +416,7 @@ A = \bigg( \frac{1}{\tau}+\frac{2d\omega_0}{\eta r^3 J_t} \bigg) \text{ \hfill ,
  
 The model above was derived in succession as shown in papers  \cite{Bouabdallah2004,Bouabdallah2005a,Bouabdallah2005b} . The dynamic equations below include rolling moments $R_m$, hub forces $H$ and various aerodynamic effects.
 Thus, this is a more realistic dynamic model, especially when the quadrotor flies in a forward manner. 
-With the previous versions of the dynamic model, it was required to to moderately tune the control parameters in order to have experiments that are successful.
+With the previous versions of the dynamic model, it was required to moderately tune the control parameters in order to have experiments that are successful.
 
 The dynamic model expressed in the Newton-Euler formalism of a rigid body that is subject to external forces acting on the center of mass  \cite{Murray1994} is expressed as follows:
 
@@ -451,7 +459,7 @@ The aerodynamic forces and moments are computed using a mix of blade element and
 \centering
 \setlength{\tabcolsep}{10pt} % Default value: 6pt
 \renewcommand{\arraystretch}{1} % Default
-\begin{tabular}{c c}
+\begin{tabular}{l l}
 $\sigma$: solidity ration & $\lambda$: inflow ratio \\
 $a$: lift slope & $v$: induced velocity \\
 $\mu$: rotor advance ration & $\rho$: air density
@@ -515,16 +523,16 @@ R_m = C_{R_m}\rho A (\Omega R_{rad})^2 R_{rad} \\
 \subsubsection*{Ground Effect}
 
 
-When operating near the ground ( at a height equivalent to half the diameter of the rotor), helicopters experience thrust augmentation which is caused by greater efficiency of the rotor.This is linked to a decrease in the velocity of induced airflow. Moreover, this is called Ground Effect. Different approaches to deal with this effect can be found in literature, for example, adaptive techniques can  be used \cite{Guenard2006}.
+When operating near the ground (at a height equivalent to half the diameter of the rotor), helicopters experience thrust augmentation which is caused by greater efficiency of the rotor. This is linked to a decrease in the velocity of induced airflow. Moreover, this is called Ground Effect. Different approaches to deal with this effect can be found in literature, for example, adaptive techniques can  be used \cite{Guenard2006}.
 However, the objective is to find a model that is simple and mainly captures the change in the velocity of the induced inflow.
-Cheeseman \cite{Cheeseman1957} states (reached from the images method \cite{Griffiths2002}) that if the power is constant ($T_{OGE}v_{i,OGE} = T_{IGE}v_{i,IGE}$), the generated vecolity at the center of the rotor by its imageis $\delta v_i = Av_i/16 \pi z^2$.
-Cheesman acquired the relation (\ref{Cheeseman}) by using the assumption that both $v_i$ and $\delta v_i$ are constant over disk, which results in $v_{i,IGE}=v_i-\delta v_i$.
+Cheeseman \cite{Cheeseman1957} states (reached from the images method \cite{Griffiths2002}) that if the power is constant ($T_{OGE}v_{i,OGE} = T_{IGE}v_{i,IGE}$), the generated velocity at the center of the rotor by its image is $\delta v_i = Av_i/16 \pi z^2$.
+Cheesman acquired the relation (\ref{Cheeseman}) by using the assumption that both $v_i$ and $\delta v_i$ are constant over the disk, which results in $v_{i,IGE}=v_i-\delta v_i$.
 
 \begin{equation}\label{Cheeseman}
 \frac{T_{IGE}}{T_{OGE}}=\frac{1}{1-\frac{R^2_{rad}}{16 z^2}}
 \end{equation}
 
-An alternative way to move forward is to consider that the inflow ration of the inflow ratio is $\lambda_{IGE} = (v_{i,OGE}-\delta v_i - \dot{z})/\Omega R_{rad}$, where the change of the velocity of the induced inflow is $\delta v_i = v_i/(4z/R_{rad})^2$.Then, the thrust coefficient (\ref{thrust_force}) IGE can be rewritten  as:
+An alternative way to move forward is to consider that the inflow ratio of the inflow ratio is $\lambda_{IGE} = (v_{i,OGE}-\delta v_i - \dot{z})/\Omega R_{rad}$, where the change of the velocity of the induced inflow is $\delta v_i = v_i/(4z/R_{rad})^2$. Then, the thrust coefficient (\ref{thrust_force}) IGE can be rewritten  as:
 
 \begin{equation}
 \begin{cases}
@@ -709,7 +717,7 @@ u_4 = d(-\Omega_1^2 + \Omega_2^2 - \Omega_3^2 + \Omega_4^2) \\
 \end{cases}
 \end{equation}
 
-The transformation matrix between the rate change of the attitude angles ($\dot{\phi},\dot{\theta},\dot{\psi}$) and the angular velocities of the body($p,q,r$) can be regarded as the identity matrix if the disturbances due to hover flight are small. As a result, the following can be written:
+The transformation matrix between the rate change of the attitude angles ($\dot{\phi},\dot{\theta},\dot{\psi}$) and the angular velocities of the body $(p,q,r)$ can be regarded as the identity matrix if the disturbances due to hover flight are small. As a result, the following can be written:
 
 \begin{equation}
 (\dot{\phi},\dot{\theta},\dot{\psi})  \approx (p,q,r)
@@ -771,7 +779,7 @@ b_3 &= l/I_{zz}\\
 	\end{aligned}
 \end{equation}
 
-It is important to note that that the angles and the derivatives of the angles do not depend on the components of the translation in the system represented by equation (\ref{state_space_model}). Contrarily, the translation components depend of the angles. So, the system represented by equation(\ref{state_space_model}) can be depicted as two subsystems, the angle subsystem and the translation subsystem as shown in figure 
+It is important to note that the angles and the derivatives of the angles do not depend on the components of the translation in the system represented by equation (\ref{state_space_model}). Contrarily, the translation components depend on the angles. So, the system represented by equation(\ref{state_space_model}) can be depicted as two subsystems, the angle subsystem and the translation subsystem as shown in figure 
 
 \begin{figure}[h]
 \centering 
@@ -783,7 +791,7 @@ It is important to note that that the angles and the derivatives of the angles d
 In the following sections of this chapter, differential flatness,  the general control architecture of a quadrotor and different potential control approaches (linear and nonlinear) that can be used to control a quadrotor are explained. 
  \section{Differential Flatness}\label{Differential_flatness}  
  
- In the quadrotor community, a well-established finding is that the dynamic model of a quadrotor is differentially flat. Moreover, the control design problem in non-linear systems will be considerably simplified. Precisely, a system with state $\textbf{\textsc{x}} \in \mathbb{R}^n$ and input $\textbf{\textsc{u}} \in \mathbb{R}^m$ is considered to be \textit{differentially flat} if there exists a set of \textit{flat outputs} $\textbf{\textsc{y}} \in \mathbb{R}^m$ which have the following form:
+ In the quadrotor community, a well-established finding is that the dynamic model of a quadrotor is differentially flat. Moreover, the control design problem in nonlinear systems will be considerably simplified. Precisely, a system with state $\textbf{\textsc{x}} \in \mathbb{R}^n$ and input $\textbf{\textsc{u}} \in \mathbb{R}^m$ is considered to be \textit{differentially flat} if there exists a set of \textit{flat outputs} $\textbf{\textsc{y}} \in \mathbb{R}^m$ which have the following form:
  
  \begin{equation}
  \textbf{\textsc{y}} = \textbf{\textsc{y}}(\textbf{\textsc{x}}, \textbf{\textsc{u}}, \dot{\textbf{\textsc{u}}},...,\textbf{\textsc{u}}^{(p)})
@@ -799,7 +807,7 @@ In the following sections of this chapter, differential flatness,  the general c
  	\end{cases}
  \end{equation}
 
- Thus, the new set of variables is required to be a function of the state, the input and the derivatives of the input. Moreover, this set should also have the same dimensions as the control input. In this manner, it is possible to rewrite both the state and the input in function of the flat outputs and the derivatives of the flat outputs.This is a very useful property in underactuated systems where $m<n$, such as quadrotors, because, it will allow to generate trajectories in the lower dimensional space $m$, then this trajectory will be mapped into the full dimensional \\ space $n$. Another well known example of systems is a car, in which the underactuation is the result of the nonholonomic constraints that are imposed by the wheels. So, for a car, a generated trajectory for $(x,y)$ position of the rear-wheels is enough to specify all the viable trajectories of the system.Formal proofs that the quadrotor system is differentially flat can be found in \cite{Mellinger2011}, and \cite{Faessler2018} for the full model with first-order aerodynamics. The standard choice of flat outputs for the quadrotor is the coodinates of the center of mass and the yaw angle:
+ Thus, the new set of variables is required to be a function of the state, the input and the derivatives of the input. Moreover, this set should also have the same dimensions as the control input. In this manner, it is possible to rewrite both the state and the input in function of the flat outputs and the derivatives of the flat outputs. This is a very useful property in underactuated systems where $m<n$, such as quadrotors, because, it will allow to generate trajectories in the lower dimensional space $m$, then this trajectory will be mapped into the full dimensional \\ space $n$. Another well known example of systems is a car, in which the underactuation is the result of the nonholonomic constraints that are imposed by the wheels. So, for a car, a generated trajectory for $(x,y)$ position of the rear-wheels is enough to specify all the viable trajectories of the system. Formal proofs that the quadrotor system is differentially flat can be found in \cite{Mellinger2011}, and \cite{Faessler2018} for the full model with first-order aerodynamics. The standard choice of flat outputs for the quadrotor is the coodinates of the center of mass and the yaw angle:
 
 \begin{equation}\label{flat_outputs}
 \textbf{\textsc{y}} = \begin{bmatrix}
@@ -813,13 +821,13 @@ Consequently, the problem of generating a feasible trajectory for a quadrotor th
 \newpage 
  
  \section{General Control Architecture}
- In the last few years, many researches have developed interest in control of quadrotors. As a result, various control approaches have been proposed. The most known control architecture \cite{Faessler2018} consists of three nested control loops, as shown in figure \ref{General_control_architecture}, in order to generate the suitable thrust in each actuator to follow the desired signal. Thius strategy assumes that the attitude dynamics of a quadrotor are much faster than the translational dynamics. Assuming that Euler angles are used to define the attitude and that a navigation module generates the desired trajectory $(\bm{r}_d(t),\psi_d(t))$ as shown in section \ref{Differential_flatness}, then:
+ In the last few years, many researches have developed interest in control of quadrotors. As a result, various control approaches have been proposed. The most known control architecture \cite{Faessler2018} consists of three nested control loops, as shown in figure \ref{General_control_architecture}, in order to generate the suitable thrust in each actuator to follow the desired signal. This strategy assumes that the attitude dynamics of a quadrotor are much faster than the translational dynamics. Assuming that Euler angles are used to define the attitude and that a navigation module generates the desired trajectory $(\bm{r}_d(t),\psi_d(t))$ as shown in section \ref{Differential_flatness}, then:
  
 \begin{itemize}
 	\setlength{\itemindent}{-.5in}
 	\item [] \textbf{Position controller} has the objective of driving the errors occurring on the translational dynamics to zero.
-		And, the outputs of this outer loop are the thrust $f=U_1$, which is sent to the motor controller, and the desired attitude $(\theta_d(t),\phi_d(t))$, which corresponds to the reference signal of the attitude controller.
-	\item [] \textbf{Attitude controller} ithas the goal of driving the errors occuring on the rotational dynamics to zero. This controller generates the inputs 
+		And, the outputs of this outer loop are the thrust $f=u_1$, which is sent to the motor controller, and the desired attitude $(\theta_d(t),\phi_d(t))$, which corresponds to the reference signal of the attitude controller.
+	\item [] \textbf{Attitude controller} has the goal of driving the errors occuring on the rotational dynamics to zero. This controller generates the inputs 
 	$\bm{\tau}=\begin{bmatrix}
 	u_2 && u_3 && u_4 \\
 	\end{bmatrix}^{\intercal}
@@ -828,7 +836,7 @@ Consequently, the problem of generating a feasible trajectory for a quadrotor th
 	\item [] \textbf{Motor controller} This controller receives the control inputs 	$\bm{\tau}=\begin{bmatrix}
 	f && \bm{\tau}
 	\end{bmatrix}^{\intercal}
-	$ and maps them into the desired spinning velocities $\Omega_i$ for each individual rotor based on equation \ref{Control_input_mapping}. Moreover, low-level control laws are designed and realized in the firmware of the drone to make the convergence from the actual rotations to these desired values.
+	$ and maps them into the desired spinning velocities $\Omega_i$ for each individual rotor based on equation (\ref{Control_input_mapping}). Moreover, low-level control laws are designed and realized in the firmware of the drone to make the convergence from the actual rotations to these desired values.
 \end{itemize}
  
 
@@ -848,7 +856,7 @@ Consequently, the problem of generating a feasible trajectory for a quadrotor th
 \subsection{Method of Linearization}
 
 By using extreme assumptions, it is feasible to apply linear control techniques in order to control a quadrotor (\cite{Sabatino2015}, \cite{BouabdallahNothSiegwart2018}). Particularly, this can be made by doing a linearization of the full dynamic model around an equilibrium point $\overline{\textbf{\textsc{x}}}$ and by using the assumption that the vehicle is only capable of oscillating lightly around the hover point.
-It is very easy to observe that a feasible equilibrium is provided by a configuration where the center of mass is at a random position $\overline{\textbf{\textsc{r}}}$ and all the other elements of the state are set to zero. So, the nominal input $\bm{U} = \overline{\textbf{\textsc{U}}}$ to sustain such equilibrium can be assessed as the thrust that is required to compensate the gravity force:
+It is very easy to observe that a feasible equilibrium is provided by a configuration where the center of mass is at a random position $\overline{\textbf{\textsc{r}}}$ and all the other elements of the state are set to zero. So, the nominal input $ \textbf{\textsc{u}} = \overline{\textbf{\textsc{u}}}$ to sustain such equilibrium can be assessed as the thrust that is required to compensate the gravity force:
 
 \begin{equation}
 \overline{\textbf{\textsc{u}}} = \begin{bmatrix}
@@ -884,7 +892,7 @@ It can be demonstrated that both matrices $\textbf{\textsc{A}}$ and $\textbf{\te
 
  \subsection{Internal Lyapunov Stability}
  
-Before defining the \textit{Lyapunov Direct Method}, the notion of stability will be thoroughly defined first.
+Before defining the \textit{Lyapunov Direct Method}, the notions of stability will be thoroughly defined first.
 
 \subsubsection{Notions of Stability}
  For a general system without any control input
@@ -895,7 +903,7 @@ Before defining the \textit{Lyapunov Direct Method}, the notion of stability wil
 \end{align}
 
  it is said that a point $\overline{x}$ is called an \textit{equilibrium point} from time $t_0$ for the continuous system (CT) if $f(\overline{x},0,t)=0,$ $\forall t \geq t_0$. Moreover, in the discrete time (DT) case, the point $\overline{x}$ is an equilibrium point from time $k_0$ if $f(\overline{x},0,k)=0,$ $\forall k \geq k_0$.
-If the system begins from state $\overline{x}$ at time $t_0$ or $k_0$, then the system will stay there and will not change with time. It is possible for nonlinear system to have more than one equilibrium point (equilibria). There also exists another class of special solutions in the case of nonlinear systems, these solutions are called \textit{periodic} solution. However, it is outside the scope of this bibliography and interested readers are referred to \cite{Schmitt1972} for more in depth explanation. So, the focus will be on equilibria. It is desired to identify the \textit{stability} of the equilibria in some way. For instance, it is desired to know if, given some small perturbation to the system, the state would either come back to the equilibrium point, remain close to it in some sense, or it diverges.
+If the system begins from state $\overline{x}$ at time $t_0$ or $k_0$, then the system will stay there and will not change with time. It is possible for nonlinear system to have more than one equilibrium point (equilibria). There also exists another class of special solutions in the case of nonlinear systems, these solutions are called \textit{periodic} solution. However, it is outside the scope of this paper and interested readers are referred to \cite{Schmitt1972} for a more in depth explanation. So, the focus will be on equilibria. It is desired to identify the \textit{stability} of the equilibria in some way. For instance, it is desired to know if, given some small perturbation to the system, the state would either come back to the equilibrium point, remain close to it in some sense, or it diverges.
 
 The most useful notion of stability for an equilibrium point of a nonlinear system is provided by the definition below. Assuming that the equilibrium point is at the origin, because if $\overline{x} \neq 0$, a simple translation can be done to obtain a system that is equivalent with the equilibrium at the origin.
 
@@ -906,7 +914,7 @@ The most useful notion of stability for an equilibrium point of a nonlinear syst
 	\item $\exists \delta_2$ such that if $\|x(t_0)\|<\delta_2$, then $x(t)\rightarrow 0$ at $t \rightarrow \infty$.
 \end{enumerate}
 
-For the first condition, it is required that the state trajectory should be restricted to a randomly small \textit{"ball"} that is centered at the equilibrium point and has a radius $\epsilon$, when released from aa \textit{arbitrary} initial condition in a ball that has an adequately small (yet positive) radius $\delta_1$. This is referred to as \textit{stability in the sense of Lyapunov} (i.s.L.). It is also possible to have stability in the sense of Lyapunov without having asymptotic stability, in that case, it is said that the equilibrium point is \textit{marginally stable}. Moreover, there also exist nonlinear systems that satisfy the second condition without being stable in the sense of Lyapunov. Moreover, an equilibrium point that is \textit{not} stable in the sense of Lyapunov is said to be \textit{unstable}.
+For the first condition, it is required that the state trajectory should be restricted to a randomly small \textit{"ball"} that is centered at the equilibrium point and has a radius $\epsilon$, when released from an \textit{arbitrary} initial condition in a ball that has an adequately small (yet positive) radius $\delta_1$. This is referred to as \textit{stability in the sense of Lyapunov} (i.s.L.). It is also possible to have stability in the sense of Lyapunov without having asymptotic stability, in that case, it is said that the equilibrium point is \textit{marginally stable}. Moreover, there also exist nonlinear systems that satisfy the second condition without being stable in the sense of Lyapunov. Furthermore, an equilibrium point that is \textit{not} stable in the sense of Lyapunov is said to be \textit{unstable}.
 
 \subsubsection{Lyapunov's Direct Method}
 
@@ -919,7 +927,7 @@ If the following continuous-time system is considered
 \end{equation}
 which has an equilibrium point at the origin (x=0).This system is called a time-invariant system because $f$ does not depend explicitly on the time t. In such a system, the stability analysis of the equilibrium point is in general a tedious task. This is because there is no way to write a simple formula which relates the trajectory to the initial state. The main idea of \textit{Lyapunov's direct method} is to establish properties of the equilibrium point (of the nonlinear system in general) by evaluating how a certain carefully chosen scalar function of the changes as the state of the system changes. (The term \textit{"direct"} is used to distinguish this method from the Lypunov's \textit{"indirect"} method, which tries to establish properties of the equilibrium point by assessing the behavior of the \textit{linearized} system at that point \cite{MELCHORAGUILAR2004175}.
 
-As an example, a continuous and scalar function $V(x)$ that is equal to 0 at the origin and positive elsewhere is considered in some ball that is enclosing the origin. So, $V(0)=0$ and $V(x)>0$ when $x \neq 0$ in this ball. This $V(x)$ be considered as an \textit{"energy"} function. Also, let $\dot{V}(x)$ denote the time derivative of $V(x)$ throughout any trajectory of the system. In other words,  $\dot{V}(x)$ varies as $x(t)$ varies proportionally to equation (\ref{Lyapunov_nonlinear_equation}). If this derivative is negative in all the region (with the exclusion of the origin), then this means that the energy is decreasing with time in a strict manner. Moreover, since the lower bound of the energy is 0, then the energy must go to 0 with time. This means that all trajectories will converge to the origin (zero state). This idea is formalized below.
+As an example, a continuous and scalar function $V(x)$ that is equal to 0 at the origin and positive elsewhere is considered in some ball that is enclosing the origin. So, $V(0)=0$ and $V(x)>0$ when $x \neq 0$ in this ball. This $V(x)$ can be considered as an \textit{"energy"} function. Also, let $\dot{V}(x)$ denote the time derivative of $V(x)$ throughout any trajectory of the system. In other words,  $\dot{V}(x)$ varies as $x(t)$ varies proportionally to equation (\ref{Lyapunov_nonlinear_equation}). If this derivative is negative in all the region (with the exclusion of the origin), then this means that the energy is decreasing with time in a strict manner. Moreover, since the lower bound of the energy is 0, then the energy must go to 0 with time. This means that all trajectories will converge to the origin (zero state). This idea is formalized below.
 
 
 
@@ -928,14 +936,14 @@ As an example, a continuous and scalar function $V(x)$ that is equal to 0 at the
 
 \paragraph{Lyapunov Functions}
 
-Assuming V is a continuous map from $\mathbb{R}^n$ to $\mathbb{R}$. $V(x)$ is called a \textit{locally positive definite} (lpd) function about x=0 if 
+Assuming V is a continuous map from $\mathbb{R}^n$ to $\mathbb{R}$, $V(x)$ is called a \textit{locally positive definite} (lpd) function about x=0 if 
 
 \begin{enumerate}
 	\item $V(0)=0$.
 	\item $V(x)>0$, $0<\|x\|<r$ for a given $r$.
 \end{enumerate}
 
-Also, the function is called locally \textit{positive semidefinite} (lpsd) id the strict inequality applied on the function in the second condition is changed to $V(x) \geq 0$. The function $V(x)$ is locally \textit{negative definite} (lnd) if $-V(x)$ is lpd. Moreover, $V(x)$ is locally \textit{negative semidefinite} (lnsd) if $-V(x)$ is lpsd. In order to graphically illustrate the locally positive definite function $V(x)$, it is useful to imaging having "contours" of constant $V$ that form (at least in a tiny region about the origin) a set of nested surfaces that are encircling the origin. An example is given in figure \ref{Lyapunov_figure} below. 
+Also, the function is called locally \textit{positive semi-definite} (lpsd) if the strict inequality applied on the function in the second condition is changed to $V(x) \geq 0$. The function $V(x)$ is locally \textit{negative definite} (lnd) if $-V(x)$ is lpd. Moreover, $V(x)$ is locally \textit{negative semidefinite} (lnsd) if $-V(x)$ is lpsd. In order to graphically illustrate the locally positive definite function $V(x)$, it is useful to imaging having "contours" of constant $V$ that form (at least in a tiny region about the origin) a set of nested surfaces that are encircling the origin. An example is given in figure \ref{Lyapunov_figure} below. 
 
 
 \begin{figure}[h]
@@ -992,7 +1000,7 @@ Since $V(x)$ is continuous, then $m$ is positive and well defined. Then a value 
 
 \paragraph{Lyapunov Theorem of Global Asymptotic Stability}
 
-The region in the state space for which the earlier results hold is determined by the region over which $V(x)$ represents a Lyapunov function. It is interesting to determine the "basin of attraction" of an equilibrium point that is asymptotically stable. In other words, the basin of attraction is the set of initial conditions whose following trajectories conclude at the equilibrium point. Thus, an equilibrium point is \textit{"globally asymptotically stable"} ( also called asymptotically stable "in the large") if its basin of attraction is the entire state space.\\
+The region in the state space for which the earlier results hold is determined by the region over which $V(x)$ represents a Lyapunov function. It is interesting to determine the \textit{"basin of attraction"} of an equilibrium point that is asymptotically stable. In other words, the basin of attraction is the set of initial conditions whose following trajectories conclude at the equilibrium point. Thus, an equilibrium point is \textit{"globally asymptotically stable"} ( also called asymptotically stable "in the large") if its basin of attraction is the entire state space.\\
 
 \noindent
 If a function $V(x)$ has the following criteria below, 
@@ -1028,7 +1036,7 @@ V(\text{next state}) - V(\text{present state})
  \subsection{Model Predictive Control}
  \subsubsection{General Idea}\label{MPC_General_Idea}
  
- There exist "open-loop" methods \cite{Kirillova2000} in which the control input sequence $\textbf{\textsc{u}}(t)$ is designed using a model of the system and a set of constraints. However, the problem with this approach is that modeling error and noise are not taken into consideration. So, these inputs will not necessarily generate the desired response from the system. Because of that, a "closed-loop" strategy is required in order to cancel out these errors. So, an approach that can be used is called \textit{"Model Predictive Control"} (MPC). This approach is also known as \textit{"receding horizon control"} \cite{How2008} since the \textit{"prediction horizon"} (finite horizon) shifts forward by one time step after the current optimization problem is solved . In short, MPC is a \textit{feedback control} algorithm which uses a model of the system to predict the future outputs of the system and it solves an optimization problem on-line in order to select an optimal control.
+ There exist "open-loop" methods \cite{Kirillova2000} in which the control input sequence $\textbf{\textsc{u}}(t)$ is designed using a model of the system and a set of constraints. However, the problem with this approach is that modeling errors and noise are not taken into consideration. So, these inputs will not necessarily generate the desired response from the system. Because of that, a \textit{"closed-loop"} strategy is required in order to cancel out these errors. So, an approach that can be used is called \textit{"Model Predictive Control"} (MPC). This approach is also known as \textit{"receding horizon control"} \cite{How2008} since the \textit{"prediction horizon"} (finite horizon) shifts forward by one time step after the current optimization problem is solved . In short, MPC is a \textit{feedback control} algorithm which uses a model of the system to predict the future outputs of the system and it solves an optimization problem on-line in order to select an optimal control.
 
 \newpage 
  
@@ -1038,7 +1046,7 @@ The basic strategy of MPC is following:
 
 
 \begin{itemize}
-	\item At time instant $k$, the system model and an optimizer will be used in order to design a sequence of control inputs
+	\item At time step $k$, the system model and an optimizer will be used in order to design a sequence of control inputs
 	
 	$$ \textbf{\textsc{u}}(k|k), \textbf{\textsc{u}}(k+1|k), \textbf{\textsc{u}}(k+2|k), \textbf{\textsc{u}}(k+3|k),...,\textbf{\textsc{u}}(k+N|k) $$
 	
@@ -1065,7 +1073,7 @@ The basic strategy of MPC is following:
  	\item MPC can easily handle nonlinear dynamics and time-varying plant dynamics, because the controller is explicitly a function of the model of the system which can be modified in real-time.
  \end{itemize}
 
-\noindent The main drawback of MPC is that it usually requires a powerful and fast processor with a large memory in order to properly solve the problem at hand, because it solves an optimization problem at each time instant.
+\noindent The main drawback of MPC is that it usually requires a powerful and fast processor with a large memory in order to properly solve the problem at hand, because it solves an optimization problem at each time step.
  
 \noindent There have been many commercial applications of MPC starting from the early 1970s in the process industry. The table \ref{table_MPC} below shows the different companies that have used MPC in different industries in 2014.
  
@@ -1074,7 +1082,7 @@ The basic strategy of MPC is following:
 \begin{table}[h]
 \setlength{\tabcolsep}{15pt} % Default value: 6pt
 \renewcommand{\arraystretch}{1} % Default value: 1
- \caption{MPC applications in different industries in 2014.\cite{Kozak2014}}
+ \caption{MPC applications in different industries in 2014 \cite{Kozak2014}.}
  \label{table_MPC}
 \begin{tabular}{l c c c c c r}
 Application & Aspen & Honeywell & Adersa & CCI & Pavilion & Total \\
@@ -1096,7 +1104,7 @@ Total & 1470 & 416 & 401 & 57 & 79 & 2423 \\
 \noindent However, as computational power has increased throughout the years thanks to the advancement of technology, there has been a renewed curiosity in applying this control approach to systems with fast dynamics for which the computational complexity is significantly larger when compared to the industrial applications for which computational complexity was not a concern (since MPC was applied on systems with slow dynamics in that case).
  
 \subsubsection{Design Parameters}
-The different parameters that can be tuned in a MPC controller are the following:
+The different parameters that can be tuned in a MPC controller (\cite{MathWorks2018, MathWorks2018b, MathWorks2018c}) are the following:
 
 \begin{itemize}
 	\item The sample time $T_s$.
@@ -1112,28 +1120,28 @@ The different parameters that can be tuned in a MPC controller are the following
 
 The sample time determine the rate at which the controller executes the control algorithm. \begin{itemize}
 	\item If $T_s$ is too large, then when a disturbance occurs, the controller will be unable to react to the disturbance quick enough.
-	\item If $T_s$ is too small, the controller will have much faster reaction times to disturbances and setpoint changes. However, this comes at the cost of an excessive computational load \cite{MathWorks2018}.
+	\item If $T_s$ is too small, the controller will have much faster reaction times to disturbances and setpoint changes. However, this comes at the cost of an excessive computational load.
 \end{itemize}
 
-\noindent In order to find reasonable balance between controller performance and computational effort, the general recommendation is to have between 10\% and 25\% of the minimum desired close-loop response time \cite{MathWorks2018}.
+\noindent In order to find reasonable balance between controller performance and computational effort, the general recommendation is to have between 10\% and 25\% of the minimum desired close-loop response time .
 
 \paragraph{Prediction horizon $N$} 
 
-The prediction horizon $N$ (sometimes referred to with the variable $p$ \cite{MathWorks2018}, however, $N$ will be used instead for the remaining of this paper) is the number of predicted future time steps of the system. It shows how far the controller predicts into the future. Thus, a prediction horizon must be chosen in such a way that it covers the significant dynamics of the system. However, it should be noted that a large prediction horizon should not be selected, since unexpected phenomenons could occur that may affect the dynamics system, which will cause a waste of computational power. The general recommendation is to increase $N$ until additional increases will have little impact on the performance. The maximum $N$ is the number of control intervals needed for the open-loop step response of the system to become infinite. However, having $N>50$ is hardly ever required unless $T_s$ is very small \cite{MathWorks2018}.
+The prediction horizon $N$ (sometimes referred to with the variable $p$, however, $N$ will be used instead for the remaining of this paper) is the number of predicted future time steps of the system. It shows how far the controller predicts into the future. Thus, a prediction horizon must be chosen in such a way that it covers the significant dynamics of the system. However, it should be noted that a large prediction horizon should not be selected, since unexpected phenomenons could occur that may affect the dynamics of the system, which will cause a waste of computational power. The general recommendation is to increase $N$ until additional increases will have little impact on the performance. The maximum $N$ is the number of control intervals needed for the open-loop step response of the system to become infinite. However, having $N>50$ is hardly ever required unless $T_s$ is very small.
 
 \paragraph{Control horizon m}
 
-The control horizon is the set of future actions which will lead to the predicted plant output. It represent the number of control moves until time step $m$. After the first $m$ steps, the remain inputs will remain constant as shown in figure \ref{MPC_basic_idea} for the \textit{"Optimal" future inputs}. Moreover, each control input element in the control horizon is a free variable that will be computed by the optimizer. Thus, the smaller the control horizon, the fewer the computations. However, setting $m=1$ may not give the best possible output for the system. And, similarly to the prediction horizon, if the control horizon is increased, this will lead to better predictions at the cost of increasing the computational complexity. Moreover, the general recommendation for the control horizon is to keep it much smaller than the prediction horizon \cite{MathWorks2018},because:
+The control horizon is the set of future actions which will lead to the predicted plant output. It represents the number of control moves until time step $m$. After the first $m$ steps, the remaining inputs will remain constant as shown in figure \ref{MPC_basic_idea} for the \textit{"Optimal"} future inputs. Moreover, each control input element in the control horizon is a free variable that will be computed by the optimizer. Thus, the smaller the control horizon, the fewer the computations. However, setting $m=1$ may not give the best possible output for the system. And, similarly to the prediction horizon, if the control horizon is increased, this will lead to better predictions at the cost of increasing the computational complexity. Moreover, the general recommendation for the control horizon is to keep it much smaller than the prediction horizon, because:
 
 \begin{itemize}
 	\item A smaller control horizon $m$ will lead to less variables to optimize in the QP that will be solved at each control input interval. This will encourage quicker computation times.
-	\item If delays are considered, then having $m<N$ is mandatory. If not, some control input elements within the control horizon  may not have any effect on the plant outputs before the prediction horizon ends, which will lead to a QP Hessian matrix which is singular. 
+	\item If delays are considered, then having $m<N$ is mandatory. Otherwise, some control input elements within the control horizon  may not have any effect on the plant outputs before the prediction horizon ends, which will lead to a QP Hessian matrix which is singular. 
 	\item Having a small value for $m$ encourages having an internally stable controller. However, this is not guaranteed.
 \end{itemize}
 
-\paragraph{Constraints} A model predictive controller can integrate constraints on the inputs, the rate of change of the inputs and the outputs. In addition, the constraints can be \textit{"soft"} constraints or \textit{"hard"} constraints. However, it should be noted that hard constraints cannot be violated. In addition, applying hard constraints on both the inputs and outputs at the same time may cause conflict to occur between the constraints, which may lead to an unfeasible solution. Moreover, the general recommendation is to used soft constraints on the outputs and to avoid having hard constraints on both the inputs and the rate of change of the inputs \cite{MathWorks2018b}.
+\paragraph{Constraints} A model predictive controller can integrate constraints on the inputs, the rate of change of the inputs and the outputs. In addition, the constraints can be \textit{"soft"} constraints or \textit{"hard"} constraints. However, it should be noted that hard constraints cannot be violated. In addition, applying hard constraints on both the inputs and outputs at the same time may cause conflict to occur between the constraints, which may lead to an unfeasible solution. Moreover, the general recommendation is to use soft constraints on the outputs and to avoid having hard constraints on both the inputs and the rate of change of the inputs .
 
-\paragraph{Weights} Model Predictive Control could have many goals. One goal could be to have the outputs converge to their set-points as fast as possible. Another goal can be to have smooth control inputs in order to avoid aggressive control maneuvers. So, in order to achieve a balanced performance between these two competing goals, the input rates and the outs can be weighted relative to each other. It is also possible to adjust relative weights within the input rates and the outputs \cite{MathWorks2018c}.
+\paragraph{Weights} Model Predictive Control could have many goals. One goal could be to have the outputs converge to their set-points as fast as possible. Another goal can be to have smooth control inputs in order to avoid aggressive control maneuvers. So, in order to achieve a balanced performance between these two competing goals, the input rates and the outputs can be weighted relative to each other. It is also possible to adjust relative weights within the input rates and the outputs.
 
 
 
@@ -1175,14 +1183,14 @@ J = \sum_{j=0}^{N} \{ \|\textbf{\textsc{z}}(k+j|k)\|_{R_{zz}} + \|\textbf{\texts
  	
 \end{itemize}  
  
-It should be noted that if  $N \rightarrow \infty$, and there are no additional constraints on  $\textbf{\textsc{z}}$ or $\textbf{\textsc{u}}$, then the problem falls back to the discrete LQR problem \cite{Kostova2013}. Moreover, when limits are added on 
-  $\textbf{\textsc{x}}$ or $\textbf{\textsc{u}}$, then the general solution cannot be found anymore in analytical form, and it has to be solved numerically.
+It should be noted that if  $N \rightarrow \infty$, and there are no additional constraints on  $\textbf{\textsc{z}}$ and/or $\textbf{\textsc{u}}$, then the problem falls back to the discrete LQR problem \cite{Kostova2013}. Moreover, when limits are added on 
+  $\textbf{\textsc{x}}$ and/or $\textbf{\textsc{u}}$, then the general solution cannot be found anymore in analytical form, and it has to be solved numerically.
 
-Moreover, solving for a very long sequence of control input is useless if the model used for the computations is expected to be erroneous or there are distrubances applied on the system, since only the first element the optimized control sequence only will be implemented. This is why MPC is designed by using a small $N$. 
+Moreover, solving for a very long sequence of control input is useless if the model used for the computations is expected to be erroneous or there are distrubances applied on the system, since only the first element the optimized control sequence will be implemented. This is why MPC is designed by using a small $N$. 
   
   \paragraph{Typical problem statement}
   
-  For a finite $N$ and $F=0$ the problem can be expressed as follows: 
+  For a finite $N$ and with $F=0$ the problem can be expressed as follows: 
   
 \begin{mini}|s|
 {u}{ J = \sum_{j=0}^{N}{  \{ \|\textbf{\textsc{z}}(k+j|k)\|_{R_{zz}} + \|\textbf{\textsc{u}}(k+j|k)\|_{R_{uu}} \} }}
@@ -1279,7 +1287,7 @@ with $W_1$ denoting the weighting matrix.
  \noindent Thus, the elements of the cost function in (\ref{optim_problem}) can now be expressed as follows:
   
 
-  \begin{align}
+  \begin{align}\label{cost_function_of_MPC_opt}
   	Z(k)^{\intercal}W_1Z(k) + U(k)^{\intercal}W_2U(k) &=(G\textbf{\textsc{x}}(k) + HU(k))^{\intercal}W_1(G\textbf{\textsc{x}}(k) +HU(k)) + U(k)^{\intercal}W_2U(k) \nonumber \\
   &= \textbf{\textsc{x}}(k)^{\intercal}H_1\textbf{\textsc{x}}(k) + H_2^{\intercal} U(k) + \frac{1}{2}U(k)^{\intercal}H_3U(k)
   \end{align}
@@ -1290,7 +1298,7 @@ with $W_1$ denoting the weighting matrix.
   H_1 = G^{\intercal} W_1 G, \text{\hspace{0.5cm}} H_2 = 2(\textbf{\textsc{x}}(k)^{\intercal}G^{\intercal}W_1H), \text{\hspace{0.5cm}} H_3 = 2(H^{\intercal} W_1 H + W_2)
   \end{equation*}
 
-\noindent Since the term $\textbf{\textsc{x}}(k)^{\intercal} H_1 \textbf{\textsc{x}}(k)$ does not contain the component to be minimized $U(k)$, this means that it will be constant throughout the optimization process. As a result, it can be omitted.
+\noindent Since the term $\textbf{\textsc{x}}(k)^{\intercal} H_1 \textbf{\textsc{x}}(k)$ in (\ref{cost_function_of_MPC_opt}) does not contain the component to be minimized $U(k)$, this means that it will be constant throughout the optimization process. As a result, it can be omitted.
 Finally, the MPC problem can be re-written as:
 
  \begin{mini}|s|
@@ -1314,7 +1322,7 @@ I_N\\
 The current form of (\ref{MPC_problem}) assumes that the full state of the system is available. Moreover, a state estimator can also be used. In addition, the corresponding control is also assumed to be sensed and applied immediately on the system, this is usually a safe and reasonable assumption for most control systems. However, given that the optimization problem will be solved at each time step, then there is a possibility that accounting for this computation delay could be mandatory.
 
 \paragraph{Case of no imposed constraints} 
-If there are no active constraints on \ref{MPC_problem}, then the solution of the QP becomes
+If there are no active constraints on (\ref{MPC_problem}), then the solution of the QP becomes
 
 \begin{equation}
 U(k) = - H_3^{-1}H_2
@@ -1356,7 +1364,7 @@ The MPC methods that are mainly used are the following:
 
 \noindent The method to be used is chosen based on the complexity of the system at hand and on the required goals to be reached. 
 
-\paragraph{In case of linear systems} The method to be used is called Linear time-invariant MPC. The constraints must be linear and the cost function must be quadratic. These characteristics will result in a convex optimization problem \cite{ZEMAN2003325} which has a global optimum. An example of a convex function is shown in figure \ref{convex_function} below.
+\paragraph{In case of linear systems} The method to be used is called linear time-invariant MPC. The constraints must be linear and the cost function must be quadratic. These characteristics will result in a convex optimization problem \cite{ZEMAN2003325} which has a global optimum. An example of a convex function is shown in figure \ref{convex_function} below.
 
 \begin{figure}[h]
 \centering
@@ -1384,7 +1392,7 @@ The MPC methods that are mainly used are the following:
 \paragraph{Gain-Scheduled MPC} In this case, linearization of the nonlinear model is done offline at the operating points of interest. Then, a linear MPC controller is designed for each operating point. However, it should be noted that unlike Adaptive MPC, each controller is now independent from the other. In other words, the number of elements in the state and the constraints are different across different operating conditions.
 It should also be noted that for this method, an algorithm must be designed to switch between the predefined MPC controllers for different operating conditions. Moreover, Gain-Scheduled MPC also uses more memory than Adaptive MPC \cite{7347864}.
 
-\paragraph{Non-linear MPC} If the system is nonlinear and cannot be linearized, and both the constraints and the cost function are also nonlinear, then Nonlinear MPC can be used in that case. It is the most powerful method between all the different methods mentioned earlier, since it used the most accurate representation of the plant. Thus, predictions are more accurate. However, Nonlinear MPC is the most difficult method to solve in real-time. Because, in that case the problem becomes a non-convex optimization problem. Thus, the cost function may have many local minima, and finding the global minimum may be hard in that case. An example of a non-convex function is shown in figure \ref{nonconvex_function} below.
+\paragraph{Non-linear MPC} If the system is nonlinear and cannot be linearized, and both the constraints and the cost function are also nonlinear, then Nonlinear MPC can be used in that case. It is the most powerful method of all the different methods mentioned earlier, since it uses the most accurate representation of the plant. Thus, predictions are more accurate. However, Nonlinear MPC is the most difficult method to solve in real-time. Because, in that case the problem becomes a non-convex optimization problem. Thus, the cost function may have many local minima, and finding the global minimum may be hard in that case. An example of a non-convex function is shown in figure \ref{nonconvex_function} below.
 
 
 \begin{figure}[h]
@@ -1398,7 +1406,7 @@ It should also be noted that for this method, an algorithm must be designed to s
 
 \subsubsection{Strategies to Improve Computational Time}
 
-As demonstrated in (\ref{MPC_problem}), an MPC problem is formulated as a QP problem that tries to minimize a quadratic cost function in general. Moreover, MPC computations become more complex as the number of state elements, the number of constraints and the MPC parameters increase. Moreover, as stated in section \ref{MPC_General_Idea}, if the MPC controller is running on applications with slow dynamics, then computational complexity is not a concern. However, if MPC is running on applications with fast dynamics, then the computational complexity becomes important. In addition, it is important to note that the matrices that are stored in the processor of the system for MPC computations grows with the increasing number of optimization variables. Thus, this will cause a memory problem. So, to reduce the complexity and computational time of MPC, the following methods can be used:
+As demonstrated in (\ref{MPC_problem}), an MPC problem is formulated as a QP problem that tries to minimize a quadratic cost function in general. Moreover, MPC computations become more complex as the number of state elements, the number of constraints and the MPC parameters increase. Moreover, as stated in section \ref{MPC_General_Idea}, if the MPC controller is running on applications with slow dynamics, then computational complexity is not a concern. However, if MPC is running on applications with fast dynamics, then the computational complexity becomes crucial. In addition, it is important to note that the matrices that are stored in the processor of the system for MPC computations grows with the increasing number of optimization variables. Thus, this could cause a memory problem. So, to reduce the complexity and computational time of MPC, the following methods can be used:
 
 \paragraph{Order reduction techniques} They are used to discard states that do not contribute to the dynamics of the system \cite{4421358}. And, using order reduction techniques will also reduce the memory usage of the controller.
 
@@ -1436,10 +1444,10 @@ Another example of an Explicit MPC applied on a two-dimensional system is shown 
 
 \noindent As can be observed from figure \ref{Explicit_MPC_2D}, the Explicit MPC finds the  region that the current state lies in and evaluates the linear function that creates the current control input.
 
-\noindent Thus, it can be concluded that if the iterative optimization process is reduced to linear function evaluations, then this will greatly simplify the online computations. However, if there is a large number of regions that the state can lie in, then searching for the current state region could sometimes be time consuming. Also, having many regions could cause memory problems for the processor. Thus, the number of regions can be reduced by merging some regions together. However, computed solution in that case is not optimal anymore \cite{Hovland2008}.
+\noindent Thus, it can be concluded that if the iterative optimization process is reduced to linear function evaluations, then this will greatly simplify the online computations. However, if there is a large number of regions that the state can lie in, then searching for the current state region could sometimes be time consuming. Also, having many regions could cause memory problems for the processor. Thus, the number of regions can be reduced by merging some regions together. However, thee computed solution in that case is not optimal anymore \cite{Hovland2008}.
 
 \paragraph{Suboptimal Solution}
-It is another method to improve the computational time of the MPC controller. In a MPC problem, the optimal solution is very unpredictable and can drastically change between each time step. In addition, the computational time may exceed the sample time $T_s$. So, it is mandatory to make sure that a solution can be found within $T_s$ and that there still exists additional time for other tasks that need to be executed \cite{Gulez2014}. A simple example is provided in figure \ref{Suboptimal_solution_example} below where a maximum value for the iterations is determined and as an example, it is taken as 5. 
+It is another method to improve the computational time of the MPC controller. In a MPC problem, the optimal solution is very unpredictable and can drastically change between each time step. In addition, the computational time may exceed the sample time $T_s$. So, it is mandatory to make sure that a solution can be found within $T_s$ and that there still exists additional time for other tasks that need to be executed \cite{Gulez2014}. A simple example is provided in figure \ref{Suboptimal_solution_example} below where a maximum value for the iterations is determined, and it is taken as 5 for illustration purposes. 
 
 
 \begin{figure}[h]
@@ -1457,8 +1465,8 @@ It is another method to improve the computational time of the MPC controller. In
   \begin{itemize}
   	\item \textbf{Model Predictive Control Toolbox}\footnotemark : it is made by MathWorks (closed-source).
   	\item \textbf{MPCtools}\footnotemark : it is a free and open-source toolbox for MATLAB and Simultink that  permits to create and simulate basic MPC controllers by using linear state space models.
-  	\item \textbf{do-mpc}\footnotemark : it is a free and comprehensive open-source toolbox for robust model predictive control (MPC) which is written in Python language.
-  	\item \textbf{Control Toolbox}\footnotemark : it is an efficient library for control, estimation, optimization and motion planning in robotics problem that is written in C++ language.
+  	\item \textbf{do-mpc}\footnotemark : it is a free and comprehensive open-source toolbox for robust model predictive control which is written in Python language.
+  	\item \textbf{Control Toolbox}\footnotemark : it is an efficient library for control, estimation, optimization and motion planning in robotics, which is written in C++ language.
   \end{itemize}
   
 
@@ -1482,30 +1490,13 @@ It is another method to improve the computational time of the MPC controller. In
 Sliding mode control (SMC) is a control technique that is nonlinear presenting exceptional attributes of robustness,
 accuracy, easy tuning and execution.
  
-The aim of SMS systems is to drive the system states to a specific surface in the state space, called sliding surface. Upon
-reaching the sliding surface, sliding mode control allows the states to remain on the close neighborhood of the sliding
-surface. Therefore, the sliding mode control consists of a controller design with two parts. The first part includes the
-design of a sliding surface in order for the sliding motion to fulfill design requirements. The second deals with selecting a
-control law that makes the switching surface interesting with respect to the system state \cite{Utkin1997}.
+The aim of SMS systems is to drive the system states to a specific surface in the state space, called  \textit{"sliding surface"}. Upon reaching the sliding surface, sliding mode control allows the states to remain on the close neighborhood of the sliding surface. Therefore, the sliding mode control consists of a controller design with two parts. The first part includes the design of a sliding surface in order for the sliding motion to fulfill design requirements. The second deals with selecting a control law that makes the switching surface interesting with respect to the system state \cite{Utkin1997}.
 
+There exists two main benefits of sliding mode control. Firstly, the behavior of the dynamics of the system can be changed according to a specific selection of the sliding function. Secondly, the response of the closed loop system becomes completely insensitive to some special uncertainties. This principle goes beyond bounded model parameter uncertainties, interference and non-linearity. In a practical sense, SMC allows the control of nonlinear processes that are affected by external noise and heavy model uncertainties.
 
+The most important principles of SMC are shown in the following significant references \cite{Utkin1997,DeCarlo1998,Hung1993}. Researchers have also studied the problems appearing in the practical execution of this class of techniques. \cite{Young1999}
 
-
-There exists two main benefits of sliding mode control. Firstly, the behavior of the dynamics of the system can be changed
-according to a specific selection of the sliding function. Secondly, the response of the closed loop system becomes completely
-insensitive to some special uncertainties. This principle goes beyond bounded model parameter uncertainties, interference and non-linearity.
-
-In a practical sense, SMC allows the control of nonlinear processes that are affected by external noise and heavy model uncertainties.
-
-
-
-The most important principles of SMC are shown in the following significant references \cite{Utkin1997,DeCarlo1998,Hung1993}\\
-
-
-
-Researchers have also studied the problems appearing in the practical execution of this class of techniques. \cite{Young1999}
-
-Moreover, the following book presents a very modern overview of the most promising current line of theoretical and practical research in the domain.
+Moreover, the book \cite{Bartolini2008} presents a very modern overview of the most promising current line of theoretical and practical research in the domain.
 
  
  \subsubsection{Simple Description}
@@ -1560,10 +1551,8 @@ The most common choices for the sliding manifold are the following:
 \end{align} 
 
 
-The 
- 
 
-The number of derivatives that should be included ( $k$ in (\ref{equation_with_k})) must be $k=r-1$, where $r$ is the input output relative
+The number of derivatives that should be included ( $k$ in (\ref{equation_with_k})) must be $k=r-1$, where $r$ is the input-output relative
 degree of  (\ref{SISO_1})-(\ref{SISO_2}).
 
 
@@ -1591,14 +1580,11 @@ k&=2 \text{\hspace{0.5cm}} \sigma = \ddot{e} + 2p \dot{e} + p^2 e
 \noindent The parameter p can be chosen randomly, and it defines the particular pole of the derived \textit{"reduced dynamics"} of the system when sliding.
  
 
-\noindent The integer parameter k is on the other hand somewhat crucial, it is required be equal to $r-1$, with $r$ being the relative
-degree between y and u.
+\noindent The integer parameter $k$ is on the other hand somewhat crucial, it is required be equal to $r-1$, with $r$ being the relative
+degree between y and u. This signifies that the relative degree of the $\sigma$ variable is one.
 
 
-\noindent This signifies that the relative degree of the $\sigma$ variable is one.
-
-
-\noindent The next phase (\textbf{Phase 2 }) is determining a control action that guides the trajectories of the system onto the sliding manifol. This means that the control is capable of driving the $\sigma$ variable to zero in finite time.
+\noindent The next phase (\textbf{Phase 2 }) is about determining a control action that guides the trajectories of the system onto the sliding manifol. This means that the control is capable of driving the $\sigma$ variable to zero in finite time.
 
 
 \noindent There exist many approaches that are based on the approach of sliding mode control:
@@ -1660,7 +1646,7 @@ and u=-U, which can be observed in figure \ref{control_evolution}.
 
 
 
-\noindent The discontinuous switching control with high frequency  in figure \ref{control_evolution} is suitable in” electrical” implementation (where PWM control signals are usually used) but cause an increase in oscillations and numerous different problems in several areas, such as the control of mechanical systems.
+\noindent The discontinuous switching control with high frequency  in figure \ref{control_evolution} is suitable in electrical implementations (where PWM control signals are usually used) but it results in an increase in oscillations and numerous different problems in several areas, such as the control of mechanical systems.
 
 
 In order to find a solution for the problem presented above (referred to as \textit{”chattering phenomenon”}) roughly (smoothed) execution of sliding mode control techniques have been proposed where the discontinuous \text{“sign”} term is substituted with a  continuous and smooth approximation using one of the two functions below.
@@ -1695,14 +1681,14 @@ Second order sliding mode control algorithms are effective approaches that entir
 There has been many studies on second order sliding mode control. Two of the most interesting papers are \cite{Levant1993, Bartolini1999}. An overview of the mentioned papers is shown below.
 
 
-\paragraph{\textit{"SuperTwisting" Algorithm}}
+\paragraph{SuperTwisting Algorithm}
 
 It is of the most used (2-SMC) algorithms. This algorithm is expressed with the following equations:
 
 \begin{equation}
 \begin{aligned}
-	u &= \lambda \sqrt{|\sigma|}sgn(\sigma) + w \\
-	\dot{w} &= -W sgn (\sigma) \\
+	u &= \lambda \sqrt{|\sigma|}sign(\sigma) + w \\
+	\dot{w} &= -W sign (\sigma) \\
 \end{aligned}
 \end{equation}
 
@@ -1966,10 +1952,11 @@ In the subsequent works, a backstepping control approach \cite{Chen2017} has bee
  \min\limits_{t_0,t_F,\bm{x}(t),\bm{u}(t)} \underbrace{J \big(t_0,t_f,\bm{x}(t_0),\bm{x}(t_F)\big)}_\text{Mayer Term} + \underbrace{\int_{t_0}^{t_F} w(\tau, \bm{x}(\tau),\bm{x}(\tau),\bm{u}(\tau)) d \tau}_\text{Lagrange Term}
  \end{equation}
  
-\noindent In optimization, the term \textit{decision variable} is used to depict the variables that will be adjusted through the optimizer to minimize the objective function. As an example, the decision variables in equation (\ref{trajectory_optimization_function}) are the initial and final time ($t_0, t_f$) in addition to the trajectories of the state and the control input $(\bm{x}(t),\bm{u}(t))$
+\noindent In optimization, the term \textit{decision variable} is used to depict the variables that will be adjusted through the optimizer to minimize the objective function. As an example, the decision variables in equation (\ref{trajectory_optimization_function}) are the initial and final time ($t_0, t_f$) in addition to the trajectories of the state and the control input $(\bm{x}(t),\bm{u}(t))$.
+Numerous limits and constraints are imposed on the optimization problem at hand, which are detailed in the following equations (\ref{system_dynamcics_equation_tr}-\ref{bound_on_final_state}). 
 
-Numerous limits and constraints are imposed on the optimization problem at hand, which are detailed in the following equations \ref{}. The first, and possibly the most crucial of all the imposed constraints is the system dynamics, which are generally nonlinear and depict how the system varies with time.
-\begin{equation}
+The first, and possibly the most crucial of all the imposed constraints is the system dynamics, which are generally nonlinear and depict how the system varies with time.
+\begin{equation}\label{system_dynamcics_equation_tr}
 	\bm{\dot{x}} = \bm{f}\big(t,\bm{x}(t),\bm{u}(t)\big) \space{\hspace{2cm} \textbf{system dynamics}}
 \end{equation}
  
@@ -2003,7 +1990,7 @@ Lastly, it is generally crucial to incorporate particular limitations on the ini
 \begin{align}
 t_{low} \leq t_0 < t_F &\leq t_{upp} \text{\hspace{2.35cm} \textbf{bounds on initial and final time}}\\
 \bm{x}_{0,low} \leq t_0 < \bm{x}(t_0) &\leq \bm{x}_{0,upp} \text{\hspace{2cm} \textbf{bound on initial state}}\\
-\bm{x}_{F,low} \leq t_0 < \bm{x}(t_F) &\leq \bm{x}_{F,upp} \text{\hspace{2cm} \textbf{bound on final state}}
+\bm{x}_{F,low} \leq t_0 < \bm{x}(t_F) &\leq \bm{x}_{F,upp} \text{\hspace{2cm} \textbf{bound on final state}}\label{bound_on_final_state}
 \end{align}
  
  
@@ -2096,11 +2083,11 @@ Besides the collocation constraints, which implement the dynamics of the system,
  \end{equation} 
  
  
- When dealing with constraints, the following must points must be takes into consideration: 
+ When dealing with constraints, the following points must be takes into consideration: 
  
  \begin{itemize}
  	\item Trajectory optimization problems with path constraints are likely to be considerably harder to solve than trajectory optimization problems without path constraints. The details are beyond the scope of this paper. However, they are properly explained by Betts \cite{Betts2010}.
- 	\item The limits of the trajectories are always considered as collocation points in trapezoidal collocation. There exist different methods for whichj the trajectory limits are not considered as collocation points. For these methods, special attention must be given when boundary constraints are being handled (\cite{Benson2006, Garg2010}.
+ 	\item The limits of the trajectories are always considered as collocation points in trapezoidal collocation. There exist different methods for which the trajectory limits are not considered as collocation points. For these methods, special attention must be given when boundary constraints are being handled (\cite{Benson2006, Garg2010}.
  \end{itemize}
  
  \newpage
@@ -2119,7 +2106,7 @@ Besides the collocation constraints, which implement the dynamics of the system,
  \end{figure}
  
  
- First, the control strategy must be constructed, which is a simple spline which is linear. Since both the time and control are known at each knot point, then it is easy to derive the expression for $bm{u}$ on the interval $t \in [t_k,t_{k+1}]$. In order to keep the math readable,$\tau$ and $h_k$ are defined such that:
+ First, the control strategy must be constructed, which is a simple spline that is linear. Since both the time and control are known at each knot point, then it is easy to derive the expression for $\bm{u}$ on the interval $t \in [t_k,t_{k+1}]$. In order to keep the math readable,$\tau$ and $h_k$ are defined such that:
  
  \begin{equation*}
  	\tau = t-t_k \text{\hspace{2cm}}h_k = t_{k+1} - t_k
@@ -2132,7 +2119,7 @@ Besides the collocation constraints, which implement the dynamics of the system,
  \end{equation}
  
  
- The state trajectory is expressed by a \textit{quadratic spline} (a piece-wise quadratic function). This may seem perplexing, however it follows directly from the collocation equations \ref{system_dynamics_equation}. The trapezoidal collocation equations are accurate when the dynamics of the system vary linearly between any two knot points, which is a fact the is used to approximate the dynamics of the system over a single segment $t \in [t_k, t_{k+1}]$ as expressed below.
+ The state trajectory is expressed by a \textit{quadratic spline} (a piece-wise quadratic function). This may seem perplexing, however it follows directly from the collocation equations \ref{system_dynamics_equation}. The trapezoidal collocation equations are accurate when the dynamics of the system vary linearly between any two knot points, which is a fact that is used to approximate the dynamics of the system over a single segment $t \in [t_k, t_{k+1}]$ as expressed below.
  
  
  \begin{equation}\label{approximation_of_state_dynamics}
@@ -2163,13 +2150,13 @@ Then, the constant of integration $\bm{c}$ can be computed by utilizing the valu
  
  
  
-\noindent Figure\ref{trapezoid_collocation_state_control_fig} represents how a linear control segment and quadratic state segment are built. The spline equations (\ref{spline_a}) and (\ref{spline_b}) are particularly for trapezoidal collocation, since there is a one-to-one correlation between the collocation equations and the interpolation spline. Generally, if the control is a spline of order $n$, then the state is depicted by a spline of order $n+1$ \cite{Betts2010}.
+\noindent Figure \ref{trapezoid_collocation_state_control_fig} represents how a linear control segment and quadratic state segment are built. The spline equations (\ref{spline_a}) and (\ref{spline_b}) are particularly for trapezoidal collocation, since there is a one-to-one correlation between the collocation equations and the interpolation spline. Generally, if the control is a spline of order $n$, then the state is depicted by a spline of order $n+1$ \cite{Betts2010}.
  
  
 
 \section{Hermite-Simpson Collocation Method}
 
-The Hermite-Simpson collocation is  comparable to trapezoidal collocation, however it offers a solution that is higher-order accurate. This is due to the fact that trapezoidal collocation approximates the objective function and the dynamics of the system as piece-wise quadratic functions, as shown in figure \ref{function_approximation_b}. An added benefit of the Hermite-Simpson collocation method is that the trajectory is a cubic Hermite spline, which has a first-order derivative which is continuous.
+The Hermite-Simpson collocation is  comparable to the trapezoidal collocation, however it offers a solution that is higher-order accurate. This is due to the fact that trapezoidal collocation approximates the objective function and the dynamics of the system as piece-wise quadratic functions, as shown in figure \ref{function_approximation_b}. An added benefit of the Hermite-Simpson collocation method is that the trajectory is a cubic Hermite spline, which has a first-order derivative which is continuous.
 
 
  \begin{figure}[h]
@@ -2192,9 +2179,9 @@ It can be observed that this approximation is significantly more accurate than t
 \end{equation*}  
   
   
-\section{System Dynamics}
+\subsection{System Dynamics}
 
-Regardless of the collocation method that is being used, the \textit{collocation constraints} are the group of constraints that are built to approximate the dynamics of the system. In the hermite-Simpson collocation method, these constraints are built by writing the system dynamics in integral form: the change in state between any two knot points $t_k$ must be equal to the integral of the dynamics of the system $\bm{f}(\cdot)$ between those points.
+Regardless of the collocation method that is being used, the \textit{collocation constraints} are the group of constraints that are built to approximate the dynamics of the system. In the Hermite-Simpson collocation method, these constraints are built by writing the system dynamics in integral form: the change in state between any two knot points $t_k$ must be equal to the integral of the dynamics of the system $\bm{f}(\cdot)$ between those points.
   
   
   \begin{align}
@@ -2202,7 +2189,7 @@ Regardless of the collocation method that is being used, the \textit{collocation
   	\int_{t_k}^{t_{k+1}} \dot{\bm{x}} &= \int_{t_k}^{t_k+1} \bm{f} dt  	\label{continuous_integral}
   \end{align}
   
-  The transcription from continuous dynamics to a group of collocation equations takes place when the continuous integral is approximated in  \ref{continuous_integral} with Simpson quadrature and then implemented between every pair of knot points. 
+  The transcription from continuous dynamics to a group of collocation equations takes place when the continuous integral is approximated in  \ref{continuous_integral} with the Simpson quadrature and then implemented between every pair of knot points. 
   
   \begin{equation}\label{first_Hermite_collocation_equation}
   	\bm{x}_{k+1} - \bm{x}_k = \frac{1}{6} h_k(\bm{f}_k + 4 \bm{f}_{k + \frac{1}{2}} + \bm{f}_{k+1})
@@ -2224,7 +2211,7 @@ and (\ref{second_Hermite_collocation_equation})  can be found in the book of Net
 
 
 
-\section{Constraints}
+\subsection{Constraints}
 
 
 Additionally to collocation constraints, which implement the dynamics of the system, there might also be limits on the state and control, path constraints and boundary constraints. These constraints are all handled by imposing them at particular collocation points. For instance, simple limits on the state of the system and the control are approximated as follows:
@@ -2261,7 +2248,7 @@ Additionally to collocation constraints, which implement the dynamics of the sys
 
 \noindent Similarly to the case of trapezoidal collocation, trajectory optimization problems with path constraints always happen to be much more difficult to solve than trajectory optimization problems that do not have path constraints \cite{Betts2010}. In addition, the boundaries of the trajectory are always collocation points. There exist some methods for which the trajectory boundaries are not collocation points. So, special care must be taked when handling boundary constraints for these methods \cite{Benson2006, Garg2010}
   
-\section{Interpolation}
+\subsection{Interpolation}
  
  After solving the nonlinear program, the value of the state of the system and the control trajectories at each collocation point are now know. The subsequent step is to build a continuous trajectory to interpolate the solution between the collocation points. Similarly to what was done in trapezoidal collocation, a polynomial interpolant, which is derived from the collocation equations will be used.
   
@@ -2272,8 +2259,8 @@ Additionally to collocation constraints, which implement the dynamics of the sys
  \label{Hermite-Simpson_figure_}
  \end{figure}
 
-Hermite-Simpson collocation operates by using Simpson quadrature in order to approximate every segment of the trajectory. 
-Simpson quadrature utilizes a quadratic segment, fitted through three equally spaced points in order to approximate the intergrand \cite{Kelly2017}. The general equation for quadratic interpolation is provided in \textit{Numerical Recipes in C} \cite{Press1992}, and it is repeated below for a curve $\bm{u}$(t) that passes through 3 points: $(t_A,\bm{u}_A)$, $(t_B,\bm{u}_B)$ and $(t_C,\bm{u}_C)$
+Hermite-Simpson collocation operates by using the Simpson quadrature in order to approximate every segment of the trajectory. 
+The Simpson quadrature utilizes a quadratic segment, fitted through three equally spaced points in order to approximate the intergrand \cite{Kelly2017}. The general equation for quadratic interpolation is provided in \textit{Numerical Recipes in C} \cite{Press1992}, and it is demonstrated below for a curve $\bm{u}$(t) that passes through 3 points: $(t_A,\bm{u}_A)$, $(t_B,\bm{u}_B)$ and $(t_C,\bm{u}_C)$
 
 \begin{equation}
 \bm{u}(t) = \frac{(t-t_B)(t-t_C)}{(t_A-t_B)(t_A-t_C)}\bm{u}_A + 
@@ -2282,7 +2269,7 @@ Simpson quadrature utilizes a quadratic segment, fitted through three equally sp
 \end{equation}
 
 For this specific case, this equation can be greatly simplified, because the points are uniformly distributed.
-Then, by using the points $k, k+\frac{1}{2}$ and k+1 in place of $A,B$ and $C$. The next step is to recall from previous sections that $h_k = t_{k+1}-t_k$, and  $t_{k + \frac{1}{2}}=\frac{1}{2}(t_k + t_{k+1})$. And, $\tau$ = $t-t_k$. After doing the proper substitutions and performing some algebra, the following simplified equation for interpolating the control trajectory is the following:
+Then, the points $k, k+\frac{1}{2}$ and k+1 can be used in place of $A,B$ and $C$ respectively. The next step is to recall from previous sections that $h_k = t_{k+1}-t_k$, and  $t_{k + \frac{1}{2}}=\frac{1}{2}(t_k + t_{k+1})$. And, $\tau$ = $t-t_k$. After doing the proper substitutions and performing some algebra, the following simplified equation for interpolating the control trajectory is the following:
 
 \begin{equation}
 	\bm{u}(t) = \frac{2}{h_k^2} (\tau - \frac{h_k}{2})(\tau - h_k)\bm{u}_k - \frac{4}{h_k^2}(\tau)(\tau - h_k)\bm{u}_{k+\frac{1}{2}} + \frac{2}{h_k^2}(\tau)(\tau-\frac{h_k}{2})\bm{u}_{k+1} 
@@ -2314,7 +2301,8 @@ The interpolant of the state and control trajectories are represented in figure 
  \chapter*{Conclusion}
  \addcontentsline{toc}{chapter}{Conclusion}
  
- 
+ There are several aspects that must be considered when it is required to perform flips with quadrotors in constrained. The dynamic model of the system must be as thorough as possible in order not to have a large error due to aerodynamic effects. Moreover, several control methods can be used during this master thesis and the main focus will be on model predictive control, which itself has many approaches for its implementation.  
+ Finally, the trajectory can be designed using the trajectory optimization techniques reach a certain desired position after staring from an initial position, given the constraints that are imposed on the system and on the path.  
  
  
 
