@@ -782,7 +782,7 @@ f_i \\
 
 $f_i = k_f \omega^2; i=1,\ldots,4$\\
 $\omega_i$: rotational velocity of every motor $M_i$\\
-$k_f$: constant\\
+$k_f$: Thrust coefficient\\
 
 The consequent lift is the full thrust of the UAV and is expressed by $u=\sum \overrightarrow{f_i}$. It is lying on the same line as the $u_z$ axis of the $R_U$ frame where the final expression of $\overrightarrow{F_{\xi}}$ is made of two parts . The first part (the weight)  is expressed in the fixed frame and the second part (the total thrust $u$) is expressed in the mobile frame: 
 
@@ -844,8 +844,8 @@ l(f_3 - f_1)\\
 \sum \tau_{M_i}\\
 \end{bmatrix}$\\
 $\sum \tau_{M_i} = \sum k_{\tau} \omega_i^2=k_{\tau}(\omega_1^2-\omega_2^2+\omega_3^2-\omega_4^2); i=1,\ldots 4$: motor torque about the axis.\\
-$k_{\tau}$: constant that is different from $k_f$.\\
-$l$: distance between the center of gravity $U$ of the quadrotor and the axis of motor $M_i$.
+$k_{\tau}$: drag coefficient.\\
+$l$: distance between the center of gravity (CoG) of the quadrotor and the axis of motor $M_i$.
 
 	\item $\tau_G=\overrightarrow{\omega}\times J_r \begin{bmatrix}
 0 \\
@@ -886,10 +886,10 @@ Thus, there exists two types of forces and torques that are acting on the quadro
 Rather than controling the velocities of the motors, the control in torque and thrust is synthesized, from which motor velocities are effortlessly inferred. Thus, the quadrotor has four control inputs, which are the inputs of its motors:
 
 \begin{align*}
-U_1 &= u \text{ (thrust)} \\
-U_2 &= \tau_{\phi}\\
-U_3 &= \tau_{\theta}\\
-U_4 &= \tau_{\psi}\\
+u_1 &= u \text{ (thrust)} \\
+u_2 &= \tau_{\phi}\\
+u_3 &= \tau_{\theta}\\
+u_4 &= \tau_{\psi}\\
 \end{align*}
 
 The various torques and forces which are taken into account in this study are illustrated in figure \ref{Fantoni_a}.
