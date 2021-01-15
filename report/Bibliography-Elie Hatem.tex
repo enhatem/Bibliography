@@ -12,6 +12,7 @@
 \usepackage{xcolor}
 \usepackage{tabularx}
 \usepackage{optidef}
+\usepackage{mathtools}
 
 \setlength{\columnseprule}{1pt}
 \def\columnseprulecolor{\color{black}}
@@ -49,11 +50,15 @@ I would like to thank my family as well: my parents Naji and Yolla, my sister Re
   $b$ & thrust factor \\
   $l$ & horizontal distance: from the center of the propeller to the CoG \\
   $\Omega$ & spinning speed of a propeller\\
-  $C_{R_m}$ & rolling moment coefficient \\
-  $C_T$ & thrust coefficient \\
-  $H$ & hub force\\
+ % $C_{R_m}$ & rolling moment coefficient \\
+ % $C_T$ & thrust coefficient \\
+ % $H$ & hub force\\
   $CT$ & continuous time \\
   $DT$ & discrete time \\
+  $R_O$ & Working frame related to the environment\\
+  $R_U$ & UAV frame\\
+  $X$ & A vector expressed in its proper frame\\
+  ${}^{R}[X]$ & X expressed in the frame R\\
 
 \end{tabular}\\
  
@@ -220,8 +225,15 @@ The rest of the bibliography is structured as follows:
 \newpage
 
 \chapter{System Modeling}
-The goal of this chapter is to present the dynamic model of the quadrotor. The mathematical notation and the physics of the quadrotor platform are expressed using the Newton-Euler formalism. Then, the state-space model that will be coded on the controller of the quadrotor will be derived.
 
+The principal objective of this chapter is to demonstrate the dynamic model of the quadrotor. In this case, both the Euler-Lagrange and the Newton-Euler formalism are used for expressing the mathematical and physical model of the quadrotor platform. However, the notion of position and orientation will be explained first. The lecture notes of Dr. Fantoni is considered as the reference \cite{Fantoni2016}.
+
+
+After that, the derivation of the state space model which will be coded on the controller of the quadrotor is performed \cite{Bouabdalla2007}.
+
+
+
+\begin{comment}
 \section{Concepts and Generalities}
 The dynamic model of the quadrotor will be derived based on the following assumptions:
 
@@ -261,7 +273,10 @@ Friction & All helicopter motions & $C \dot{\phi},\dot{\theta},\dot{\psi}$\\
 
 \newpage 
 
- \section{Modelling with Euler-Lagrange Formalism} 
+
+
+
+ \section{Modeling with Euler-Lagrange Formalism} 
  The dynamics of the rotation of a simple quadrotor are modeled using the Euler-Lagrange Formalism in this section. A fixed frame $E$ for the world frame and body fixed frame $B$ for the quadrotor are considered as represented in figure \ref{coordinate_system_simple}. The orientation of the quadrotor frame in space is provided by a rotation $R$ from $B$ to $E$, where $R\in SO3$ is a $3 \times 3 $ rotation matrix.
  
  
@@ -653,9 +668,694 @@ m \ddot{y} = ( - c \psi s \phi + s \psi s \theta c \phi) \sum_{i=1}^4 T_i - \sum
 
 \newpage
 
+\end{comment}
+
+
+\section{Notion of Position and Orientation}
+
+The configuration of a vehicle, namely the \textit{pose}, includes the parameters that pertmits to describe the mobile frame $R_M$ with respect to the working frame $R_O$. In addition, there are several methods to describe the rotation of a rigid body in space, for instance, Euler angles, Cardan angles, etc. \cite{Goldstein1980}. The main distinction between the Euler angles and the Cardan angles is that Cardan angles express rotations around three different axes (e.g. $x-y-z$, or $x-y'' -z''$), whereas Euler angles utilize the same axis for both the first and third elemental rotations(e.g., $z-x-z$, or $z-x'-z''$)
+
+A common representation of the pose of a vehicle in 3D Euclidean space is the following:
+
+
+
+\begin{equation}
+q=[\begin{array}{c c c c c c }
+x & y & z & \psi & \theta & \phi
+\end{array}]^{\intercal}
+\end{equation}
+
+The pose can be described as the transformation from the working frame related to the environment $R_O$ to the mobile frame $R_M$ based on the four following procedures \cite{Fantoni2016}:
+
+\begin{itemize}
+	\item The translation $\overrightarrow{OM}$ from $R_O$ to $R_M$: $(M,\overrightarrow{s_0}, \overrightarrow{n_0}, \overrightarrow{a_0} )$.
+	\item The rotation $(\psi, \overrightarrow{a_0})$ where $\psi$ is the yaw angle from $R_O(M,\overrightarrow{s_0}, \overrightarrow{n_0}, \overrightarrow{a_0} )$ to $R_1(M,\overrightarrow{s_1}, \overrightarrow{n_1}, \overrightarrow{a_0} )$.
+	\item The rotation $(\theta, \overrightarrow{n_1})$ where $\theta$ is the pitch angle from $R_1$ to $R_2 (M,\overrightarrow{s_2}, \overrightarrow{n_1}, \overrightarrow{a_1} )$.
+	\item The rotation $(\phi, \overrightarrow{s_2})$ where $\phi$ is the roll angle from $R_2$ to $R_M (M,\overrightarrow{s_2}, \overrightarrow{n_2}, \overrightarrow{a_2} ) = R_M$ 
+\end{itemize}
+
+
+
+\newpage
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{Images/Modeling/Fantoni_d}
+\caption{Representation of the Euler Transformations \cite{Fantoni2016} }
+\label{Fantoni_d}
+\end{figure}
+
+The related change of coordinates matrices are expressed as follows:
+
+
+\begin{equation}
+	L = {}^{O}A_1 = Rot(\psi, \overrightarrow{a_0}) = \begin{bmatrix}
+	\cos \psi && - \sin \psi && 0 \\
+	\sin \psi && \cos \psi && 0 \\
+	0 && 0 && 1 
+	\end{bmatrix}
+\end{equation}
+
+\begin{equation}
+	T = {}^{1}A_2 = Rot(\theta, \overrightarrow{n_1}) = \begin{bmatrix}
+	\cos \theta && 0 && \sin \theta \\
+	0 && 1 && 0 \\
+	- \sin \theta && 0 && \cos \theta 
+	\end{bmatrix}
+\end{equation}
+
+\begin{equation}
+	R = {}^{2}A_M = Rot(\phi, \overrightarrow{s_2}) = \begin{bmatrix}
+	1 && 0 && 0 \\
+	0 && \cos \phi && - \sin \phi \\
+	0 && \sin \phi && \cos \phi 
+	\end{bmatrix}
+\end{equation}
+
+with $L, T$ and $R$ denoting rotation matrices of roll, pitch and yaw respectively.
+Hereafter, $Rot(\psi, \overrightarrow{a_0})$, $Rot(\theta, \overrightarrow{n_1})$ and $Rot(\phi, \overrightarrow{s_2})$ will denote the corresponding change of coordinate matrices.
+
+Thus, the transition matrix from the mobile frame to the fixed frame is then expressed as follows: 
+
+\begin{align}
+	LTR &= {}^{O}A_M = Rot(\psi, \overrightarrow{a_0}) Rot(\theta, \overrightarrow{n_1}) Rot(\phi, \overrightarrow{s_2}) \nonumber \\
+	&= \begin{bmatrix}
+	\cos \psi \cos \theta && - \sin \psi \cos \phi + \cos \psi \sin \theta \sin \phi && \sin \psi \sin \theta + \cos \psi \sin \theta \cos \phi \\
+	\cos \theta \sin \psi && \cos \psi \cos \phi + \sin \psi \sin \theta \sin \phi && - \sin \phi \cos \psi + \sin \psi \sin \theta \cos \phi \\
+	-\sin \theta && \cos \theta \sin \phi && \cos \theta \cos \phi
+	\end{bmatrix}
+\end{align}
+
+
+
+
+
+\newpage
+
+
+\section{Inputs}
+
+The principal forces and torques that the quadrotor is subject to, are generated by the rotations of the propellers. 
+
+\paragraph{The forces} The forces that are acting on the quadrotor are the weight and the consequent lift which is created by the 4 rotors:
+
+\begin{equation}
+\overrightarrow{F_{\xi}}= \overrightarrow{P} + \sum \overrightarrow{f_i}
+\end{equation} 
+
+with the weight is expressed as 
+$ \overrightarrow{P}= \begin{bmatrix}
+0 \\ 
+0 \\
+-mg \\
+\end{bmatrix}$
+
+And, $\overrightarrow{f_{i}}$ is the lift resulting from every individual motor $M_i$ given that the motors $M_1$ and $M_3$ are rotating in the counter-clockwise direction and the motors $M_2$ and $M_4$ are rotating in the clockwise direction. So, $\overrightarrow{f_i}$ is expressed as $\overrightarrow{f_i}=\begin{bmatrix}
+0 \\ 
+0 \\
+f_i \\
+\end{bmatrix}=k_f \begin{bmatrix}
+0 \\ 
+0 \\
+\omega_i^2 \\
+\end{bmatrix} $  
+
+$f_i = k_f \omega^2; i=1,\ldots,4$\\
+$\omega_i$: rotational velocity of every motor $M_i$\\
+$k_f$: constant\\
+
+The consequent lift is the full thrust of the UAV and is expressed by $u=\sum \overrightarrow{f_i}$. It is lying on the same line as the $u_z$ axis of the $R_U$ frame where the final expression of $\overrightarrow{F_{\xi}}$ is made of two parts . The first part (the weight)  is expressed in the fixed frame and the second part (the total thrust $u$) is expressed in the mobile frame: 
+
+\begin{equation}
+\overrightarrow{F_{\xi}}  = \begin{bmatrix}
+0 \\
+0 \\
+-mg \\
+\end{bmatrix} 
++ 
+k_f \begin{bmatrix}
+0 \\ 
+0 \\
+\omega_1^2 + \omega_2^2 + \omega_3^2 + \omega_4^2\\
+\end{bmatrix}=
+\overrightarrow{F_{\xi}}  =  
+\prescript{O}{}{\begin{bmatrix}
+0 \\
+0 \\
+-mg \\
+\end{bmatrix}}
++ k_f \prescript{U}{}{\begin{bmatrix}
+0 \\ 
+0 \\
+\omega_1^2 + \omega_2^2 + \omega_3^2 + \omega_4^2\\
+\end{bmatrix}}
+\end{equation}
+
+
+
+
+
+
+
+
+\newpage
+
+\paragraph{The torques}
+Regarding the torques, they are also divided into two parts. The first part is the result of the relations between the velocities of the rotors. Whereas the other part is generated by the gyroscopic effects that are resulting from the change of attitude direction of the rotors. In fact, a rotation around the $u_x$ or $u_y$ axis coupled to the rotation of the rotors that is executed around the $u_z$ axis, generates a torque respectively on $u_x$ or $u_y$ axis.
+
+By taking $\tau=\begin{bmatrix}
+\tau_1 && \tau_2 && \tau_3 
+\end{bmatrix}^{\intercal}$ to be the consequent torque of the quadrotor. It is divided into two parts, namely $\tau_a$ which contains the rotation torques (roll,pitch and yaw) on the 3 axes ($\tau_{\phi}, \tau_{\theta}, \tau_{\psi}$) and the torque $\tau_G$ which is the result of the gyroscopic effects of the rotors, which is usually neglected in many works.
+
+\begin{equation}
+	\tau = \tau_a + \tau_G
+\end{equation}
+
+with:
+
+\begin{itemize}
+	\item $\tau_a = \begin{bmatrix}
+\tau_{\phi}\\
+\tau_{\theta}\\
+\tau_{\psi}\\
+\end{bmatrix}= \begin{bmatrix}
+l(f_4 - f_2)\\
+l(f_3 - f_1)\\
+\sum \tau_{M_i}\\
+\end{bmatrix}$\\
+$\sum \tau_{M_i} = \sum k_{\tau} \omega_i^2=k_{\tau}(\omega_1^2-\omega_2^2+\omega_3^2-\omega_4^2); i=1,\ldots 4$: motor torque about the axis.\\
+$k_{\tau}$: constant that is different from $k_f$.\\
+$l$: distance between the center of gravity $U$ of the quadrotor and the axis of motor $M_i$.
+
+	\item $\tau_G=\overrightarrow{\omega}\times J_r \begin{bmatrix}
+0 \\
+0 \\
+\omega_1 - \omega_2 + \omega_3 - \omega_4 \\
+\end{bmatrix} = \begin{bmatrix}
+-q J_r (\omega_1 - \omega_2 + \omega_3 - \omega_4)\\
+p J_r (\omega_1 - \omega_2 + \omega_3 - \omega_4)\\
+0 \\
+\end{bmatrix}$
+
+$\overrightarrow{\omega} = \begin{bmatrix}
+p \\
+q \\
+r \\
+\end{bmatrix}$: angular velocities.
+$\omega_i$: spinning speeds of motors $M_i$.
+$J_r$: rotor inertia.
+\end{itemize}
+
+Thus, the total torque $\tau$ is expressed as follows:
+
+\begin{equation}\label{total_torque_equation}
+\tau = \begin{bmatrix}
+\tau_1\\
+\tau_2\\
+\tau_3\\
+\end{bmatrix} = \tau_a + \tau_G = \begin{bmatrix}
+l(f_4-f_2) - qJ_r(\omega_1-\omega_2+\omega_3-\omega_4)\\
+l(f_3-f_1) + pJ_r(\omega_1-\omega_2+\omega_3-\omega_4)\\
+k_{\tau}(\omega_1^2-\omega_2^2+\omega_3^2-\omega_4^2)\\
+\end{bmatrix}
+\end{equation}
+
+\subsubsection*{System Inputs}
+
+Thus, there exists two types of forces and torques that are acting on the quadrotor platform: the translation force $F_{\xi}$ which is called the thrust $u$, and the torque $\tau$ which represents all the torques about the distinct axes ($\tau_{\phi}, \tau_{\theta}, \tau_{\psi} $). \\
+Rather than controling the velocities of the motors, the control in torque and thrust is synthesized, from which motor velocities are effortlessly inferred. Thus, the quadrotor has four control inputs, which are the inputs of its motors:
+
+\begin{align*}
+U_1 &= u \text{ (thrust)} \\
+U_2 &= \tau_{\phi}\\
+U_3 &= \tau_{\theta}\\
+U_4 &= \tau_{\psi}\\
+\end{align*}
+
+The various torques and forces which are taken into account in this study are illustrated in figure \ref{Fantoni_a}.
+
+\newpage
+
+\section{Dynamical equations}
+
+The dynamics equations of motion of a mechanism can be expressed by using either the Euler-Lagrange formalism or the Newton-Euler formalism.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{Images/Modeling/Fantoni_a}
+\caption{Model of the quadrotor represented with motor torques and Euler angles \cite{Fantoni2016}.}
+\label{Fantoni_a}
+\end{figure}
+
+The quadrotor's model \cite{Bouabdalla2007}, when the Euler-Lagrange formalism is used \cite{houston_2001}, is founded on the equations of energy of the mechanical system. The Newton-Euler formalism is given in \cite{Murray1994}. In both cases, the model is computed based on the following assumptions:
+
+\begin{itemize}
+	\item The quadrotor has a rigid structure.
+	\item The quadrotor has a symmetrical structure.
+	\item The center of gravity (CoG) and the fixed frame at the center of the body are assumed to be coincident.
+	\item The propellers of the quadrotor are assumed to be rigid.
+	\item The thrust and drag forces are assumed to be proportional to the square of the spinning speed of each propeller.
+\end{itemize}
+
+
+\newpage
+
+\subsection{Euler-Lagrange Formalism}
+
+The Lagrangian is expressed as follows:
+
+\begin{equation}
+	L(q,\dot{q}) = T_{Trans} + T_{rot} - U = L_{Trans} + L_{Rot}
+\end{equation}
+
+with:
+
+\begin{itemize}
+	\item $q$: generalized coordinates.
+	\item $U$: Potential energy ($U=mgU_z$)
+	\item $L_{Rot} = T_{Rot}$ 
+\end{itemize}
+
+By utilizing the Euler-Lagrange equations expressed in (\ref{Euler_Lagrange_equations}) below, the equations of motion can be inferred:
+
+
+\begin{equation}\label{Euler_Lagrange_equations}
+	\frac{d}{dt}\bigg(\frac{\partial L(q_i, \dot{q}_i)}{\partial \dot{q}_i} \bigg) -\frac{\partial L (q_i,\dot{q_i})}{\partial q_i} = \tau_i = \begin{bmatrix}
+	F_{\xi}\\
+	\tau \\
+	\end{bmatrix}
+\end{equation}
+
+with $F_{\xi}$ depicting the translation forces expressed in the mobile frame and $\tau$ depicting the torques. Thus, the Euler-Lagrange equations can be decomposed into two parts, the part dealing with the translation, and the second part dealing with the rotation. \\
+First, the focus will be on the part related to the translation.
+
+\subsection*{Translation Model}
+
+The translational equations on the fixed frame are expressed as follows:
+
+\begin{equation}\label{E_L_Translation}
+\frac{d}{dt}\bigg(\frac{\partial L_{Trans}}{\partial \dot{\xi}}\bigg) - \frac{\partial L_{Trans}}{\partial \xi} = F_{\xi}
+\end{equation} 
+
+The Lagrangian of translation in the frame $R_O$ is expressed as follows:
+
+\begin{equation}
+	L_{Tran}=T_{Trans}-U = \frac{1}{2}m \dot{\xi}^{\intercal} \dot{\xi} - mgz
+\end{equation}
+
+With $T_{Trans}=\frac{1}{2}m \dot{\xi}^{\intercal} \dot{\xi}$ representing the kinetic energy which is expressed in the fixed frame such that $\dot{\xi}=\begin{bmatrix}
+\dot{x} && \dot{y} && \dot{z} \\
+\end{bmatrix}^{\intercal}$ is expressed the fixed frame $R_O$. \\
+$F_{\xi}$ must be expressed in $R_{O}$ for the purpose of obtaining the equations of translation in the fixed frame, because $F_{\xi}$ is typically measured in the mobile frame $R_U$.
+
+First, the derivative of $L_{Trans}$ must be calculated with respect to $\dot{\xi}$
+
+\begin{equation}\label{Translational_E_L_a}
+	\frac{\partial L_{Trans}}{\dot{\xi}} = \frac{\partial (\frac{1}{2} m \dot{\xi}^{\intercal} \dot{\xi})}{\partial \dot{\xi}}= m \dot{\xi}
+\end{equation}
+
+After that, equation (\ref{Translational_E_L_a}) can be differentiated with respect to time as follows: 
+
+\begin{equation}
+	\frac{d}{dt}\bigg( \frac{\partial L_{Trans}}{\dot{\xi}} \bigg) = \frac{d}{dt}(m \dot{\xi}) = m \ddot{\xi}
+\end{equation} 
+
+Then, $L_{Trans}$ is now differentiated with respect to $\xi$ as follows:
+
+\begin{equation}
+	\frac{\partial L_{Trans}}{\partial \xi}=mg\overrightarrow{U_z}
+\end{equation}
+
+\newpage
+
+Thus, the final model of the translation in the mobile frame becomes:
+
+\begin{equation}
+	\frac{d}{dt}\bigg( \frac{\partial L_{Trans}}{\partial \dot{\xi}} \bigg) - \frac{\partial L_{Trans}}{\partial \xi} = F_{\xi} \Rightarrow m\ddot{\xi} + mg \overrightarrow{U_z} = F_{\xi}
+\end{equation}
+
+Finally, all that is left is to transform the forces of translation and express them in the fixed frame in order to obtain the equations of translation in the fixed frame:
+
+\begin{multline}
+F_{\xi}= \prescript{O}{}{\begin{bmatrix}
+0\\
+0\\
+-mg
+\end{bmatrix}} + \prescript{U}{}{\begin{bmatrix}
+0 \\
+0 \\
+u \\
+\end{bmatrix}} \Rightarrow {}^{O}F_{\xi} = \prescript{O}{}{\begin{bmatrix}
+0\\
+0\\
+-mg
+\end{bmatrix}} + \prescript{O}{}{\begin{bmatrix}
+0 \\
+0 \\
+u \\
+\end{bmatrix}}\\
+\Rightarrow {}^{O}F_{\xi} =  \prescript{O}{}{\begin{bmatrix}
+0 \\
+0 \\
+-mg \\
+\end{bmatrix}} + {}^{O}A_U  \prescript{O}{}{\begin{bmatrix}
+0 \\
+0 \\
+u \\
+\end{bmatrix}} = \prescript{O}{}{\begin{bmatrix}
+(\sin \psi \sin \phi + \cos \psi \sin \theta \cos \phi)u \\
+(- \sin \phi \cos \psi + \sin \psi \sin \theta \cos \phi )u \\
+\cos \theta \cos \phi u -mg \\
+\end{bmatrix}}
+\end{multline}
+
+Thus, the translational model of the quadrotor can finally be expressed as follows:
+
+
+\begin{equation}\label{translational_model_E_L}
+\begin{cases}
+m \ddot{x} = (\sin \psi \sin \phi + \cos \psi \sin \theta \cos \phi)u \\
+m \ddot{y} = (- \sin \phi \cos \psi + \sin \psi \sin \theta \cos \phi )u \\
+m \ddot{z} = \cos \theta \cos \phi u -mg \\
+\end{cases}
+\end{equation}
+
+The translation model in (\ref{translational_model_E_L}) can be simplified if small angles of order 2 for pitch and roll are used:
+
+
+
+\begin{equation}\label{translational_model_E_L_Simplified}
+\begin{cases}
+m \ddot{x} = (\phi \sin \psi + \theta \cos \psi)u \\
+m \ddot{y} = (- \phi \cos \psi + \theta \sin \psi)u \\
+m \ddot{z} = u - mg \\
+\end{cases}
+\end{equation}
+
+Thus, it can be observed that in this case, the vertical dynamics is fully decoupled from the rest of the system.
+
+Now, as for the physical interpretation of this case:
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{Images/Modeling/Fantoni_b}
+\caption{Angles of rotation \cite{Fantoni2016}.}
+\label{Fantoni_b}
+\end{figure}
+
+\newpage
+
+If small angles are considered for the following types:
+
+\begin{itemize}
+	\item Case 1: $\theta$ small, $\phi=0$
+	
+	
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{Images/Modeling/Fantoni_c}
+\caption{Top view of the quadrotor \cite{Fantoni2016}.}
+\label{Fantoni_c}
+\end{figure}	
+	
+	\begin{equation}\label{E_L_simplified_case_1}
+	\begin{cases}
+	m \ddot{x} = \theta \cos \psi u \\
+	m \ddot{y} = \theta \sin \psi u \\
+	m \ddot{z} = u - mg 
+	\end{cases}
+	\end{equation}
+	
+	As can be observed from equation (\ref{E_L_simplified_case_1}), the pitch angle $\theta$ is not zero. This means that the quadrotor is tilted forward. Thus, equation(\ref{E_L_simplified_case_1}) shows that the more the UAV is tilted, the more it accelerates. And, if for example $\psi=\frac{\pi}{2}$, it means that $m \ddot{x}=0$ and $m\ddot{y}=\theta u$, so the quadrotor will progress forward along the axis of $n_0$ (figure \ref{Fantoni_c}).  And if $\psi = 0$, it means that $m\ddot{x}= \theta u$ and $m\ddot{y}=0$, so the quadrotor will progress forward along the axis of $s_o$ (figure \ref{Fantoni_c}).
+	
+	\item Case 2: $\theta=0$, $\phi$ is small
+	\begin{equation}\label{E_L_simplified_case_3}
+	\begin{cases}
+	m \ddot{x} = \phi \sin \psi u \\
+	m \ddot{y} = -\phi \cos \psi u \\
+	m \ddot{z} = u - mg 
+	\end{cases}
+	\end{equation}	
+	
+	In this case, the quadrotor is tiled on the left or right side. If, for instance, $\psi=0$:
+	
+	\begin{itemize}
+		\item $m\ddot{x}=0$ which is natural because in this case, the quadrotor can only roll.
+		\item $m\ddot{y}=-\phi u$. So, if the quadrotor has to move forward along the $n_0$ axis (figure \ref{Fantoni_c}), the $\phi$ must be negative.
+	\end{itemize}
+\end{itemize}
+
+Now, moving on to the rotational model.
+
+\subsection*{Rotational Model}
+
+Contrarily to translational model, the rotational model in the fixed frame is tedious to compute. It is usually computed in the mobile frame for computational simplicity. Indeed, $L_{rot} $ includes the expression of the inertia, which is constant with respect to the mobile frame. Whereas in the fixed frame, the expression of inertia will not be constant anymore, and when $L_{rot}$ is differentiated with respect to time, the complexity of the calculation will increase \cite{Etkin1996}. Furthermore, gyroscopic effects are not neglected.
+
+\subsubsection*{Angular Velocities}
+
+A relationship exists between the body-fixed angular velocity vector $\begin{bmatrix}
+p && q && r \\
+\end{bmatrix}^{\intercal}$, and the rate of change of the Euler angles $\begin{bmatrix}
+\dot{\phi} && \dot{\theta} && \dot{\psi}
+\end{bmatrix}^{\intercal}$. This relationship can be found by resolving the Euler rates into the body-fixed coordinate frame.
+
+Based on the theorem of decomposition of rotations, which is expressed as follows:
+
+\begin{equation*}
+\overrightarrow{\Omega} = \Omega_x \overrightarrow{x} + \Omega_y \overrightarrow{y} + \Omega_z \overrightarrow{z} + 
+\end{equation*}
+
+In the equation above, the three vectors express the rotation vectors and the vector $\overrightarrow{\Omega}$ is the vector of rotation in general. Moreover, the angular velocity of the body-fixed frame usually called $\eta = \begin{bmatrix}
+p \\  
+q \\
+r \\
+\end{bmatrix}$
+
+The expression of $\eta$ can be expressed in terms of the variations of Euler angles:
+
+\begin{equation*}
+{}^{U}\eta = \dot{\psi} \overrightarrow{a_0} + \dot{\theta} \overrightarrow{n_1} + \dot{\psi} \overrightarrow{s_2}
+\end{equation*}
+
+where $\overrightarrow{n_1}$ represents the intermediate axis of rotation which is observed in figure \ref{Fantoni_d}.
+
+\begin{equation*}
+	{}^{U}\overrightarrow{\eta} = Rot(-\phi)Rot(-\theta)\begin{bmatrix}
+	0 \\
+	0 \\
+	\dot{\psi}
+	\end{bmatrix} + Rot(-\phi) \begin{bmatrix}
+	0 \\
+	\dot{\psi} \\
+	0 
+	\end{bmatrix} + \begin{bmatrix}
+	\dot{\phi}\\
+	0\\
+	0
+	\end{bmatrix}
+\end{equation*}
+
+\begin{equation}\label{eta_Euler_angles_equation}
+	{}^{U}\overrightarrow{\eta} = \begin{bmatrix}
+	1 && 0 && -\sin \theta \\
+	0 && \cos \phi && \cos \theta \sin \phi \\
+	0 && - \sin \phi && \cos \phi \cos \theta 
+	\end{bmatrix}
+	\begin{bmatrix}
+	\dot{\phi}\\
+	\dot{\theta}\\
+	\dot{\psi}
+	\end{bmatrix}
+\end{equation}
+
+Then, the transition matrix $R_r$ which expresses the decomposition of the angular velocity vector $\overrightarrow{\eta}$ with respect to $\begin{bmatrix}
+\dot{\phi} && \dot{\theta} && \dot{\psi}
+\end{bmatrix}^{\intercal}$ in the mobile frame \cite{Etkin1996} and \cite{Goldstein1980} is defined as follows:
+
+
+\begin{equation}
+R_r = \begin{bmatrix}
+1 && 0 && -\sin \theta \\
+0 && \cos \phi && \cos \theta \sin \phi \\
+0 && -\sin \phi && \cos \phi \cos \theta \\
+\end{bmatrix}
+\end{equation}
+
+
+So, the angular velocity vector expressed in the mobile frame is: 
+
+\begin{equation}
+{}^{U}\overrightarrow{\eta}= R_r \begin{bmatrix}
+\dot{\phi} \\
+\dot{\theta} \\
+\dot{\psi} \\
+\end{bmatrix}
+\end{equation}
+
+Thus, by expanding equation (\ref{eta_Euler_angles_equation}), the following is obtained:
+
+\begin{equation}\label{p_q_r}
+	\begin{cases}
+		p = \dot{\phi} - \dot{\psi} \sin \theta \\
+		q = \dot{\theta} \cos \phi + \dot{\psi} \cos{\theta} \sin{\phi}\\
+		r = -\dot{\theta}\sin{\phi} + \dot{\psi} \cos{\phi} \cos{\theta}
+	\end{cases}
+\end{equation}
+
+
+\newpage
+
+\subsection{Newton-Euler Formalism}\label{N_E_section}
+
+\subsection*{Translational Model}
+
+Based on the Newton's second law:
+
+\begin{equation}
+	\sum \overrightarrow{F}=m\overrightarrow{a}
+\end{equation}
+
+with
+
+
+
+\begin{itemize}
+	\item $\overrightarrow{F}=\overrightarrow{F}_{\xi}=\begin{bmatrix}
+F_x \\
+F_y \\
+F_z \\
+\end{bmatrix}$ : vector of external forces.
+
+\item $\overrightarrow{a} = \begin{bmatrix}
+\ddot{x} \\
+\ddot{y} \\
+\ddot{z} \\
+\end{bmatrix}$: accelerations vector.
+\item $m$: mass of the quadrotor.
+\end{itemize}
+
+So, by applying Newton's second law on the quadrotor problem at hand:
+
+\begin{equation*}
+	m\begin{bmatrix}
+	\ddot{x}\\
+	\ddot{y}\\
+	\ddot{z}\\
+	\end{bmatrix} = \prescript{O}{}{\begin{bmatrix}
+	0 \\
+	0 \\
+	-mg 
+	\end{bmatrix}} + \prescript{U}{}{\begin{bmatrix}
+	0 \\
+	0 \\
+	u 
+	\end{bmatrix}} = \prescript{O}{}{\begin{bmatrix}
+	0 \\
+	0 \\
+	-mg 
+	\end{bmatrix}} + k_f \prescript{U}{}{\begin{bmatrix}
+	0 \\
+	0 \\
+	\omega_1^2 + \omega_2^2 + \omega_3^2 + \omega_4^2
+	\end{bmatrix}}
+\end{equation*}
+
+
+If $u$ is then expressed in the fixed frame, the equations of the translational model  in (\ref{translational_model_E_L}) that were found using the Euler-Lagrange formalism, are found again here:
+
+\begin{equation}\label{translation_model_N_E}
+\begin{cases}
+m \ddot{x} = (\sin \psi \sin \phi + \cos \psi \sin \theta \cos \phi)u \\
+m \ddot{y} = (- \sin \phi \cos \psi + \sin \psi \sin \theta \cos \phi )u \\
+m \ddot{z} = \cos \theta \cos \phi u -mg \\
+\end{cases}
+\end{equation}
+
+
+
+\subsection*{Rotational Model}
+
+Based on the Newton-Euler equations, for a rotating frame \cite{Murray1994}: 
+
+\begin{equation}\label{rotational_model_N_E_general_formula}
+I \dot{\omega} + \omega \times I \omega = \tau
+\end{equation}
+with
+
+\begin{itemize}
+	\item $I = \begin{bmatrix}
+	I_{xx} && 0 && 0 \\
+	0 && I_{yy} && 0 \\
+	0 && 0 && I_{zz} \\
+	\end{bmatrix}$
+	\item $\eta=\begin{bmatrix}
+	p \\
+	q \\
+	r \\
+	\end{bmatrix}$
+	\item $\tau = \begin{bmatrix}
+	\tau_1 \\
+	\tau_2 \\
+	\tau_3 \\
+	\end{bmatrix}$
+\end{itemize}
+
+Thus, equation (\ref{rotational_model_N_E_general_formula}) becomes:
+
+\begin{equation}
+\begin{bmatrix}
+I_{xx}\dot{p}\\
+I_{yy}\dot{q}\\
+I_{zz}\dot{r}\\
+\end{bmatrix}+ \begin{bmatrix}
+qr(I_{zz}-I_{yy})\\
+pr(I_{xx}-I_{zz})\\
+pq(I_{yy}-I_{xx})
+\end{bmatrix} = \begin{bmatrix}
+\tau_1 \\
+\tau_2 \\
+\tau_3
+\end{bmatrix}
+\end{equation}
+
+
+If equation \ref{total_torque_equation} is used, then input vector $\tau$ can be substituted to acquire the final model of the rotation in the body frame:
+
+\begin{equation}
+\begin{cases}
+\dot{p} = qr \frac{(I_{yy}-I_{zz})}{I_{xx}} + \frac{l}{I_{xx}}(f_4-f_2) - \frac{1}{I_{xx}}qJ_r (\omega_1 - \omega_2 + \omega_3 - \omega_4) \\
+\dot{q} = pr \frac{(I_{zz}-I_{xx})}{I_{yy}} + \frac{l}{I_{yy}}(f_3-f_1) + \frac{1}{I_{yy}}pJ_r (\omega_1 - \omega_2 + \omega_3 - \omega_4) \\
+\dot{r} = pq \frac{(I_{xx}-I_{yy})}{I_{zz}} + \frac{1}{I_{zz}} k_{\tau} (\omega_1^2 -\omega_2^2 + \omega_3^2 - \omega_4^2)
+\end{cases}
+\end{equation}
+
+If the nonlinear model is then simplified by using very small angles, then $\begin{bmatrix}
+p \\ 
+q \\
+r \\ 
+\end{bmatrix} = \begin{bmatrix}
+\dot{\phi} \\
+\dot{\theta} \\
+\dot{\psi} \\
+\end{bmatrix}$ will be obtained from equation (\ref{p_q_r}), and the following model of rotation is obtained:
+
+\begin{equation}\label{N_E_rotation_equation_small_angles}
+\begin{cases}
+\ddot{\phi} = \dot{\theta} \dot{\psi} \frac{(I_{yy}-I_{zz})}{I_{xx}} + \frac{l}{I_{xx}}(f_4-f_2) - \frac{1}{I_{xx}} \dot{\theta} J_r (\omega_1 - \omega_2 + \omega_3 - \omega_4) \\
+\ddot{\theta} = \dot{\psi} \dot{\phi} \frac{(I_{zz}-I_{xx})}{I_{yy}} + \frac{l}{I_{yy}}(f_3-f_1) + \frac{1}{I_{yy}} \dot{\phi} J_r (\omega_1 - \omega_2 + \omega_3 - \omega_4) \\
+\ddot{\psi} = \dot{\theta} \dot{\phi} \frac{(I_{xx}-I_{yy})}{I_{zz}} + \frac{1}{I_{zz}} k_{\tau} (\omega_1^2 -\omega_2^2 + \omega_3^2 - \omega_4^2)
+\end{cases}
+\end{equation}
+
+It should be noted that equation (\ref{N_E_rotation_equation_small_angles}) is only valid for very small angles.
+
+
+
+\newpage
 
  \section{State-Space Model}
-The model \ref{detailed_dynamic_model} that was developed in subsecton \ref{detail_equation_of_motin} expresses the differential equations of the system. However, for the purpose of control design, it is desirable to reduce the complexity and simplify the model to satisfy the real-time limitations of the embedded control loop. Thus, the thrust and the drag coefficients are assumed to be constant and the hub forces and rolling moments are neglected. As a result, the system can be expressed in state-space form \\ $\dot{\textbf{\textsc{x}}}=f(\textbf{\textsc{x}},\textbf{\textsc{u}})$ with $\textbf{\textsc{x}}$ the state vector and $\textbf{\textsc{u}}$ the control input vector.
+The translational and rotational models \ref{translation_model_N_E} and \ref{N_E_rotation_equation_small_angles} respectively that was developed in subsection \ref{N_E_section} expresses the differential equations of the system. However, for the purpose of control design, it is desirable to reduce the complexity and simplify the model to satisfy the real-time limitations of the embedded control loop. Thus, the thrust and the drag coefficients are assumed to be constant and the hub forces and rolling moments are neglected. As a result, the system can be expressed in state-space form \\ $\dot{\textbf{\textsc{x}}}=f(\textbf{\textsc{x}},\textbf{\textsc{u}})$ with $\textbf{\textsc{x}}$ the state vector and $\textbf{\textsc{u}}$ the control input vector.
 
 The state vector has the following form:
 
