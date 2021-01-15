@@ -88,7 +88,7 @@ I would like to thank my family as well: my parents Naji and Yolla, my sister Re
  
  \chapter*{Introduction}
  \addcontentsline{toc}{chapter}{Introduction}	 % non-numbered chapters do not appear in table of contents by default
- 	The aim of this section is to provide a general summary of the robotic robotic platform that is used for this master thesis and to illustrate the main objective of the research work.
+ 	The aim of this section is to provide a general summary of the robotic platform that is used for this master thesis and to illustrate the main objective of the research work.
 In specific, in the sections below, quadrotors and parallel robots are briefly presented.
 
 
@@ -96,7 +96,7 @@ In specific, in the sections below, quadrotors and parallel robots are briefly p
  
  \section*{The quadrotor platform}
 
-A quadrotor is a type of unmanned aerial vehicle (UAV) with four rotors and six degrees of freedom. Typically, drones have a small size and low inertia which allows them to be controller by simple flight control systems. It is typically designed in a cross-configuration such that the electronics are held in the center of the platform and the rotors are placed at the borders.
+A quadrotor is a type of unmanned aerial vehicle (UAV) with four rotors and six degrees of freedom. Typically, drones have a small size and low inertia which allows them to be controlled by simple flight control systems. It is typically designed in a cross-configuration such that the electronics are held in the center of the platform and the rotors are placed at the borders.
 An example of a real quadrotor, namely the DJI Phantom, is shown in fig. \ref{fig:drone}. The quadrotor is typically built in a way such that a pair of opposite rotors rotate clockwise, whereas the other pair of rotors rotates in counter-clockwise.
 The attitude and the position of the drone are controlled by changing the spinning speed of the rotors. An example is shown in figure \ref{fig:propeller_directions}.
 
@@ -114,14 +114,14 @@ The attitude and the position of the drone are controlled by changing the spinni
      \begin{subfigure}[b]{0.45\textwidth}
          \centering
          \includegraphics[width=0.6\textwidth]{Images/Introduction/propeller_direction.svg}
-         \caption{Typical quadrotor configuration The width of the arrows is proportional to the angular speed of the propellers.\cite{Bouabdalla2007}}
+         \caption{Representation of the concept of a quadrotor. The width of the arrows is proportional to the angular speed of the propellers.\cite{Bouabdalla2007}}
          \label{fig:propeller_directions}
      \end{subfigure}
-        \caption{A commercial quadrtotor platform, with a typical quadrotor configuration.}
+        \caption{A commercial quadrtotor platform with a representation of the quadrotor concept.}
         \label{fig:three graphs}
 \end{figure}
 
-\noindent The distinctive mechanical design of the quadrotor permits the actuation system to control all of the six degrees of freedom, even though it is under-actuated. This is due to the fact that the rotational and translational dynamics are tightly coupled. Thus, all the translational and rotational motions can be carried off by properly controlling the magnitude and direction of the spinning speed of the rotors.   
+\noindent The distinctive mechanical design of the quadrotor permits the actuation system to control all of the six degrees of freedom even though it is under-actuated. This is due to the fact that the rotational and translational dynamics are tightly coupled. Thus, all the translational and rotational motions can be carried off by properly controlling the magnitude and direction of the spinning speed of the rotors.   
 
 \noindent \footnotetext[1]{\url{https://en.wikipedia.org/wiki/Quadcopter\#/media/File:Quadcopter_camera_drone_in_flight.jpg}, accessed on 01/08/2021.}
 
@@ -134,11 +134,11 @@ Over the last few years, quadrotors have gained a large popularity in academia a
 
     \item Quadrotors are very simple to design and they can be easily assembled using relatively cheap components.  
     \item As quadrotors became more and more affordable and dependable, the number of real-world applications for quadrotors  has grown significantly. They are being used for aerial photography, agriculture, surveillance, inspection tasks, in addition to many other uses as well. 
-    \item Quadrotors are quite agile and maneuverable during flight. Especially when compared to other types of UAVs.
+    \item Quadrotors are quite agile and maneuverable during flight, especially when compared to other types of UAVs.
     
 \end{enumerate}
 
-However, one the main challenges in the quadrotors community is the capability to design control and planning methods that will allow the quadrotors to carry out aggressive maneuvers.  The fast dynamics associated with typically small dimensions of such agile quadrotors, in addition to several aerodynamic effects that will become crucial during aggressive flight maneuvers, are just a few of the main problems that are faced during the system control design. Moreover, accurate tracking of the provided trajectory is a big issue in the case of aggressive maneuvers when the rotors are commanded high speeds and accelerations, which will cause rotors to become saturated and may also cause delays.
+However, one of the main challenges in the quadrotors community is the capability to design control and planning methods that will allow the quadrotors to carry out aggressive maneuvers.  The fast dynamics associated with typically small dimensions of such agile quadrotors, along with several aerodynamic effects that will become crucial during aggressive flight maneuvers, are just a few of the main problems that are faced during the system control design. Moreover, accurate tracking of the provided trajectory is a big issue in the case of aggressive maneuvers when the rotors are commanded high speeds and accelerations, which will cause rotors to become saturated and may also cause delays.
 
 
  \section*{Parallel manipulators}
@@ -173,8 +173,8 @@ A parallel manipulator is a mechanical system that consists of two connected pla
 
 \pagebreak
 
-However, parallel manipulators are subject to singularities, which can lead to big problems in the robot workspace in case they were not handled correctly. Thus, the study of the singular configuartions of parallel manipulators is very important. Because, even just before reaching a singularity, the performance of the parallel manipulator will decrease dramatically. Moreover, the robot may loose the ability of moving in a certain direction, gain uncontrollable motions and the mechanism could even break. The main difference between serial and parallel manipulators is that singularity configurations may also appear inside the workspace of the robot (depending on the dimensions of the robot) and not just at the boundaries of the robot workspace, which can significantly decrease the area of the robot workspace.
-As a result, many works have been developed by robotics researchers in order to allow parallel manipulator manipulators to safely cross these singularities by using trajectory planning and specific control methods.
+However, parallel manipulators are subject to singularities which can lead to big problems in the robot workspace in case they were not handled correctly. Thus, the study of the singular configuartions of parallel manipulators is very important. Because, even just before reaching a singularity, the performance of the parallel manipulator will decrease dramatically. Moreover, the robot may loose the ability of moving in a certain direction, gain uncontrollable motions and the mechanism could even break. The main difference between serial and parallel manipulators is that singularity configurations may also appear inside the workspace of the robot (depending on the dimensions of the robot) and not just at the boundaries of the robot workspace, which can significantly decrease the area of the robot workspace.
+As a result, many works have been developed by robotics researchers in order to allow parallel manipulators to safely cross these singularities by using trajectory planning and specific control methods.
 
 \section*{The goal of this thesis}
 
@@ -1334,7 +1334,7 @@ If the nonlinear model is then simplified by using very small angles, then $\beg
 p \\ 
 q \\
 r \\ 
-\end{bmatrix} = \begin{bmatrix}
+\end{bmatrix} \approx \begin{bmatrix}
 \dot{\phi} \\
 \dot{\theta} \\
 \dot{\psi} \\
@@ -1355,7 +1355,7 @@ It should be noted that equation (\ref{N_E_rotation_equation_small_angles}) is o
 \newpage
 
  \section{State-Space Model}
-The translational and rotational models \ref{translation_model_N_E} and \ref{N_E_rotation_equation_small_angles} respectively that was developed in subsection \ref{N_E_section} expresses the differential equations of the system. However, for the purpose of control design, it is desirable to reduce the complexity and simplify the model to satisfy the real-time limitations of the embedded control loop. Thus, the thrust and the drag coefficients are assumed to be constant and the hub forces and rolling moments are neglected. As a result, the system can be expressed in state-space form \\ $\dot{\textbf{\textsc{x}}}=f(\textbf{\textsc{x}},\textbf{\textsc{u}})$ with $\textbf{\textsc{x}}$ the state vector and $\textbf{\textsc{u}}$ the control input vector.
+The translational and rotational models (\ref{translation_model_N_E}) and (\ref{N_E_rotation_equation_small_angles}) respectively that were developed in subsection \ref{N_E_section} express the differential equations of the system. However, for the purpose of control design, it is desirable to reduce the complexity and simplify the model to satisfy the real-time limitations of the embedded control loop. Thus, the thrust and the drag coefficients are assumed to be constant. As a result, the system can be expressed in state-space form \\ $\dot{\textbf{\textsc{x}}}=f(\textbf{\textsc{x}},\textbf{\textsc{u}})$ with $\textbf{\textsc{x}}$ the state vector and $\textbf{\textsc{u}}$ the control input vector.
 
 The state vector has the following form:
 
@@ -1417,7 +1417,7 @@ u_4 = d(-\Omega_1^2 + \Omega_2^2 - \Omega_3^2 + \Omega_4^2) \\
 \end{cases}
 \end{equation}
 
-The transformation matrix between the rate change of the attitude angles ($\dot{\phi},\dot{\theta},\dot{\psi}$) and the angular velocities of the body $(p,q,r)$ can be regarded as the identity matrix if the disturbances due to hover flight are small. As a result, the following can be written:
+As stated earlier when defining equation (\ref{N_E_rotation_equation_small_angles}), the  transformation matrix between the rate of change of the attitude angles ($\dot{\phi},\dot{\theta},\dot{\psi}$) and the angular velocities of the body $(p,q,r)$ can be regarded as the identity matrix if the disturbances due to hover flight are small. As a result, the following can be written:
 
 \begin{equation}
 (\dot{\phi},\dot{\theta},\dot{\psi})  \approx (p,q,r)
@@ -1427,7 +1427,7 @@ Simulation tests have demonstrated that this assumption is reasonable \cite{Boua
 
 \newpage
 
-From equations (\ref{detailed_dynamic_model}),(\ref{state_vector}),(\ref{control_input_vector}), the following expression is obtained after simplification:
+From equations (\ref{translation_model_N_E}), (\ref{N_E_rotation_equation_small_angles}),(\ref{state_vector}) and (\ref{control_input_vector}), the following expression is obtained after simplification:
 
 \begin{equation}\label{state_space_model}
 f(\textbf{\textsc{x}},\textbf{\textsc{u}}) = \begin{pmatrix}
@@ -1515,7 +1515,7 @@ x && y && z && \psi \\
 \end{bmatrix}^{\intercal}
 \end{equation}
 
-Consequently, the problem of generating a feasible trajectory for a quadrotor then trajecing it can be dimensionally decreased from a 6-dimensional space to a 4-dimensional space. By reason of the tight coupling between the rotational and translational dynamics, then defining a trajectory in function of the flat outputs $\textbf{\textsc{y}}$ is sufficient to properly define the full dynamics $\textbf{\textsc{x}}$.
+Consequently, the problem of generating a feasible trajectory for a quadrotor then tracking it can be dimensionally decreased from a 6-dimensional space to a 4-dimensional space. By reason of the tight coupling between the rotational and translational dynamics, then defining a trajectory in function of the flat outputs $\textbf{\textsc{y}}$ is sufficient to properly define the full dynamics $\textbf{\textsc{x}}$.
 
 
 \newpage 
@@ -1586,7 +1586,7 @@ can now be linearized around the hover point $(\overline{\textbf{\textsc{x}}},\o
 \end{bmatrix}_{(\bar{\textbf{\textsc{x}}},\bar{\textbf{\textsc{u}}})} \textbf{\textsc{u}} = \textbf{\textsc{A}}\textbf{\textsc{x}} + \textbf{\textsc{B}} \textbf{\textsc{u}}
 \end{equation}
 
-It can be demonstrated that both matrices $\textbf{\textsc{A}}$ and $\textbf{\textsc{B}}$ can be used to determine a linear system that is both controllable and observable \cite{Sabatino2015}. Thus, any control technique that is linear can now be used on the quadrotor in order to keep it areound a desired equilibrium point, such as optimal LQR/LQG \cite{Cowling2007,Minh2010} control or simple PD or PID controller \cite{Han2012,Altug2007}.
+It can be demonstrated that both matrices $\textbf{\textsc{A}}$ and $\textbf{\textsc{B}}$ can be used to determine a linear system that is both controllable and observable \cite{Sabatino2015}. Thus, any control technique that is linear can now be used on the quadrotor in order to keep it around a desired equilibrium point, such as optimal LQR/LQG \cite{Cowling2007,Minh2010} control or simple PD or PID controller \cite{Han2012,Altug2007}.
 
 
 
@@ -1643,13 +1643,13 @@ Assuming V is a continuous map from $\mathbb{R}^n$ to $\mathbb{R}$, $V(x)$ is ca
 	\item $V(x)>0$, $0<\|x\|<r$ for a given $r$.
 \end{enumerate}
 
-Also, the function is called locally \textit{positive semi-definite} (lpsd) if the strict inequality applied on the function in the second condition is changed to $V(x) \geq 0$. The function $V(x)$ is locally \textit{negative definite} (lnd) if $-V(x)$ is lpd. Moreover, $V(x)$ is locally \textit{negative semidefinite} (lnsd) if $-V(x)$ is lpsd. In order to graphically illustrate the locally positive definite function $V(x)$, it is useful to imaging having "contours" of constant $V$ that form (at least in a tiny region about the origin) a set of nested surfaces that are encircling the origin. An example is given in figure \ref{Lyapunov_figure} below. 
+Also, the function is called locally \textit{positive semi-definite} (lpsd) if the strict inequality applied on the function in the second condition is changed to $V(x) \geq 0$. The function $V(x)$ is locally \textit{negative definite} (lnd) if $-V(x)$ is lpd. Moreover, $V(x)$ is locally \textit{negative semidefinite} (lnsd) if $-V(x)$ is lpsd. In order to graphically illustrate the locally positive definite function $V(x)$, it is useful to imagine having "contours" of constant $V$ that form (at least in a tiny region about the origin) a set of nested surfaces that are encircling the origin. An example is given in figure \ref{Lyapunov_figure} below. 
 
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.6\textwidth]{Images/Control/Lyapunov_function}
-\caption{Diffrenet values for a Lyapunov function, where $c_1<c_2<c_3$. \cite{Dahleh2011}}
+\caption{Different values for a Lyapunov function, where $c_1<c_2<c_3$. \cite{Dahleh2011}}
 \label{Lyapunov_figure}
 \end{figure}
 
@@ -1886,7 +1886,7 @@ J = \sum_{j=0}^{N} \{ \|\textbf{\textsc{z}}(k+j|k)\|_{R_{zz}} + \|\textbf{\texts
 It should be noted that if  $N \rightarrow \infty$, and there are no additional constraints on  $\textbf{\textsc{z}}$ and/or $\textbf{\textsc{u}}$, then the problem falls back to the discrete LQR problem \cite{Kostova2013}. Moreover, when limits are added on 
   $\textbf{\textsc{x}}$ and/or $\textbf{\textsc{u}}$, then the general solution cannot be found anymore in analytical form, and it has to be solved numerically.
 
-Moreover, solving for a very long sequence of control input is useless if the model used for the computations is expected to be erroneous or there are distrubances applied on the system, since only the first element the optimized control sequence will be implemented. This is why MPC is designed by using a small $N$. 
+Moreover, solving for a very long sequence of control input is irrelevant if the model used for the computations is expected to be erroneous or there are disturbances applied on the system, since only the first element the optimized control sequence will be implemented. This is why MPC is designed by using a small $N$. 
   
   \paragraph{Typical problem statement}
   
@@ -2263,7 +2263,7 @@ With correctly chosen $c_i$ coefficients, if $\sigma$ is driven to 0, then the e
 Provided that such property holds, the goal of the  control system is to drive $\sigma$ to 0.
 
 
-From a geometrical perspective, the equation $\sigma=0$ represents a surface in the error space that is called \textit{"sliding surface"}. The trajectories of the system that is being controller are forced to be on the sliding surface, along which the behavior of the system satisfies the design requirements.
+From a geometrical perspective, the equation $\sigma=0$ represents a surface in the error space that is called \textit{"sliding surface"}. The trajectories of the system that is being controlled are forced to be on the sliding surface, along which the behavior of the system satisfies the design requirements.
 
 
 A common form for the sliding surface depends on a  scalar paramete $p$, and is expressed as follows:
@@ -2434,7 +2434,7 @@ Although the approaches that have been mentioned so far are potentially useful f
 	\item [] \textbf{Backstepping control} The main idea is to divide the system into successive subsystems and to apply a recursive algorithm which will stabilize each subsystem after the other \cite{Madani2006}. However, this method is not robust, but it is computationally fast. In order to handle disturbances, Fang et al. \cite{Gao2011} implemented an integral backstepping control law, in which the integral term was shown to reduce steady state errors and the response time of the system greatly. 
 
 	\item [] \textbf{Adaptive control} This method is required when the parameters that are characterizing the system contain errors or are unknown. This type of control algorithms contains a parameter adaptation law, which is enclosed in the control to track the desired trajectory of the system, even if the model of the system is not completely known.
-For instance, Diao et al. \cite{Diao2011} obtained good performance even though the interial parameters of the quadrotor and the aerodynamic coefficients were not perfectly known.
+For instance, Diao et al. \cite{Diao2011} obtained good performance even though the inertial parameters of the quadrotor and the aerodynamic coefficients were not perfectly known.
 This method is convenient in some cases. such as the existence of unpredictable wind \cite{Antonelli2013} or pick-and-place applications with small loads. 
 	 
  \end{itemize}
@@ -2445,7 +2445,7 @@ This method is convenient in some cases. such as the existence of unpredictable 
  \chapter{Multi-flips maneuver with quadrotors}
 
 
-The aim of this chapter is to explain the physics of the multi-flip maneuver, in addition to the major diffucuties that relate to the implementation of flipping maneuvers with quadrotors. Furthermore, a review of the existing limitations of the existing approaches are shown and the existing scientific literature is presented. 
+The aim of this chapter is to explain the physics of the multi-flip maneuver, in addition to the major difficulties that relate to the implementation of flipping maneuvers with quadrotors. Furthermore, a review of the existing limitations that the current approaches have are shown and the existing scientific literature is presented. The content of this chapter were thoroughly covered by the previous master students Marco Orsingher and Antonio Marino for which their papers were used as references for this chapter. In fact, Orsingher \cite{Orsingher2019} managed to perform the flipping maneuver in simulations on MATLAB and ROS by using polynomial trajectory generation techniques, however real experiments were unsuccessful. Marino \cite{Marino2020} tackled the same problem the very next year by using trajectory optimization techniques. After successful simulations in ROS, Marino was able to perform a single flip in real experimentation. However, due to the pandemic, no further experiments were possible.
 
 
 \section{Physics of a quadrotor flip}\label{multiflip_physics}
@@ -2470,7 +2470,6 @@ In order to perform the tedious process of multi-flip maneuvers with a quadrotor
 \label{flipping_physics}
 \end{figure}
 
-\newpage
 
  \section{Control Approaches for Multi-Flip Maneuvers}
  
@@ -2512,7 +2511,7 @@ In fact, the aim of the control input $\textbf{\textsc{u}}$ is to keep the state
 One of the main issues that is related to performing aggressive maneuvers with quadrotors is that having an exact physical modeling of the quadrotor during an intense flight procedure is very complicated. In addition, generating reference trajectories for aerobatic flight is not an easy operation. Beginning from these factors, Lupashin et al. (\cite{Lupashin2010,Lupashin2011,Lupashin2012})
 designed a simple open-loop iterative learning method to perform multi-flip maneuvers without performing any aerodynamic modeling nor trajectory planning. The workflow of this method is shown in figure \ref{Open_Loop_iterative_Learning} on the left.
 
-\newpage
+
 
 \begin{figure}[h]
      \centering
@@ -2533,7 +2532,7 @@ designed a simple open-loop iterative learning method to perform multi-flip mane
         \label{Open_Loop_iterative_Learning}
 \end{figure}
 
-\noindent The first step which is needed is to determine the desired motion in a parameterized manner, so that it is possible to optimize vector $\textbf{\textsc{p}}$ over such parameters. $\textbf{\textsc{p}}$ contains the time and the accelerations needed during each phase of the flip maneuver.  The second procedure which is needed to initialize the iterative learning algoritm is to calculate the nominal motion and to build the correction matrix. Starting from a simplified model of the quadrotor and a coarse initial guess $\textbf{\textsc{p}}^g$, then a numerical solver is utilized to calculate the nominal parameters $\textbf{\textsc{p}}^0$ in order to execute the multi-flip maneuver. In fact, assuming that the desired final state $\textbf{\textsc{x}}^{*}$ can be attained with the control input $\textbf{\textsc{u}}(\textbf{\textsc{p}},t)$ and by referring to $\bm{\Phi}(\textbf{\textsc{p}},\hat{\textbf{\textsc{s}}})$ as the final state of the nominal system after the maneuver is executed.(with the vector $\hat{\textbf{\textsc{s}}}$ representing physical constants), then the nominal set of parameters $\textbf{\textsc{p}}^0$ is the solution of the following optimization problem, as shown in figure \ref{Open_Loop_iterative_Learning}:
+\noindent The first step which is needed is to determine the desired motion in a parameterized manner, so that it is possible to optimize vector $\textbf{\textsc{p}}$ over such parameters. $\textbf{\textsc{p}}$ contains the time and the accelerations needed during each phase of the flip maneuver.  The second procedure which is needed to initialize the iterative learning algorithm is to calculate the nominal motion and to build the correction matrix. Starting from a simplified model of the quadrotor and a coarse initial guess $\textbf{\textsc{p}}^g$, then a numerical solver is utilized to calculate the nominal parameters $\textbf{\textsc{p}}^0$ in order to execute the multi-flip maneuver. In fact, assuming that the desired final state $\textbf{\textsc{x}}^{*}$ can be attained with the control input $\textbf{\textsc{u}}(\textbf{\textsc{p}},t)$ and by referring to $\bm{\Phi}(\textbf{\textsc{p}},\hat{\textbf{\textsc{s}}})$ as the final state of the nominal system after the maneuver is executed.(with the vector $\hat{\textbf{\textsc{s}}}$ representing physical constants), then the nominal set of parameters $\textbf{\textsc{p}}^0$ is the solution of the following optimization problem, as shown in figure \ref{Open_Loop_iterative_Learning}:
 
 \begin{equation}
 	\textbf{\textsc{p}}^0 = \text{arg}\min \|\bm{\Phi}(\textbf{\textsc{p}},\hat{\textbf{\textsc{s}}})-\textbf{\textsc{x}}^{*}\|
@@ -2552,20 +2551,18 @@ designed a simple open-loop iterative learning method to perform multi-flip mane
 \textbf{\textsc{p}}^{i+1} = \textbf{\textsc{p}}^i - \gamma \textbf{\textsc{C}}\textbf{\textsc{e}}^i
 \end{equation}
 
-with $\gamma$ being a step size which is defined by the user. This method is very simple does not require complex computations. But, it is by definition an open-loop method. Thus, there are no guarantees that the maneuver will be performed successfully. In fact, a triple flip maneuver has been done during experiments with this method, however the repeatability of this results is a big problem. In addition, "creating a parameterized input trajectory formulation that results in a robust learning strategy remains a difficult and tedious task" \cite{Lupashin2012}.
+with $\gamma$ being a step size which is defined by the user. This method is very simple does not require complex computations. But, it is by definition an open-loop method. Thus, there are no guarantees that the maneuver will be performed successfully. In fact, a triple flip maneuver has been done during experiments with this method, however the repeatability of this result is a big problem. In addition, "creating a parameterized input trajectory formulation that results in a robust learning strategy remains a difficult and tedious task" \cite{Lupashin2012}.
 
-
-\newpage
 
  
  \subsection{Closed-Loop Attitude Control}
  
  The most known strategy for obtaining great results in flipping maneuvers of quadrotors is to use closed-loop control just for the attitude part of the platform, thus the position of the center of mass during the flipping maneuver is ignored. Many research works can be recognized under this context, and all of them follow the same ideology: a proper reference on attitude or angular velocity is planned and then tracked in closed-loop with a nonlinear control law. Each paper is distinguished from the others based on the strategy that is chosen to build the control law: attractive ellipsoid method \cite{Castillo2018}, geometric control \cite{Lee2010},  energy-based control\cite{Badawy2016} , direct Lyapunov method \cite{Wang2014}.
-Particularly, Chen et al. (\cite{Chen2016}, \cite{Chen2017} ,\cite{Chen2018}) generated interesting series of papers  within this framework that should be mentioned because they applied the method on the same physical platform of this thesis (Crazyflie 2.0); mreover, significant theoretical contributions have been provided in these papers to greatly comprehend the issue of quadrotor flipping. Particularly, three elements have been investigated:
+Particularly, Chen et al. (\cite{Chen2016}, \cite{Chen2017} ,\cite{Chen2018}) generated interesting series of papers  within this framework that should be mentioned because they applied the method on the same physical platform of this thesis (Crazyflie 2.0); moreover, significant theoretical contributions have been provided in these papers to greatly comprehend the issue of quadrotor flipping. Particularly, three elements have been investigated:
 
 \begin{enumerate}
 	\item A new depiction of the flipping angle, called $\phi_g$, such that a flip around a random axis $\textbf{\textsc{a}}$ through the center of mass of the quadrotor can be determined. This has permitted to execute multiple flips about the body-fixed axis $\textbf{\textsc{b}}_1$, and another general axis, rotated by $45 ^{\circ}$ on the ($\textbf{\textsc{b}}_1$,$\textbf{\textsc{b}}_2$) plane.
-	\item A meticulous angular speed planning approach using cubic splines to produce the reference signal $\bm{\omega}_d$ in such a way that the dynamics of actuation are respected by ensuring that $w_{max}$ is never surpassed. Particularly, the reference is made out of three distinct stages, corresponding to the physical stages presented in figure \ref{}. In fact, throughout the \textit{climb phase} a rising-speed section  $\bm{\omega}_{d,1}$ is needed to reach  $\bm{\omega}_{max}$, then a stage of constant-speed at  $\bm{\omega}_{d,2}= \bm{\omega}_{max}$ is held while the quadrotor is flipping (\textit{multi-flip phase}), and in the end, the angular velocity $\bm{\omega}_{d,3}$ is reduced to zero within the \textit{descent} and \textit{re-stabilization phase}. The use of cubic functions ensures that the angular accelerations is kept continuous during all the process. Other works, such as \cite{Castillo2018}, suggested equivalent shape, however linear functions were used instead of splines. Considering that the time derivative of a linear function is just a constant, this resulted in undesirable jumps in the angular reference.\\
+	\item A meticulous angular speed planning approach using cubic splines to produce the reference signal $\bm{\omega}_d$ in such a way that the dynamics of actuation are respected by ensuring that $w_{max}$ is never surpassed. Particularly, the reference is made out of three distinct stages, corresponding to the physical stages presented in figure \ref{closed_loop_a}. In fact, throughout the \textit{climb phase} a rising-speed section  $\bm{\omega}_{d,1}$ is needed to reach  $\bm{\omega}_{max}$, then a stage of constant-speed at  $\bm{\omega}_{d,2}= \bm{\omega}_{max}$ is held while the quadrotor is flipping (\textit{multi-flip phase}), and in the end, the angular velocity $\bm{\omega}_{d,3}$ is reduced to zero within the \textit{descent} and \textit{re-stabilization phase}. The use of cubic functions ensures that the angular accelerations is kept continuous during all the process. Other works, such as \cite{Castillo2018}, suggested equivalent shape, however linear functions were used instead of splines. Considering that the time derivative of a linear function is just a constant, this resulted in undesirable jumps in the angular reference.\\
 Considering the desired number of rotations accumulated with each stage $\Phi_{g,i}1$, the time of each stage is changed based on the current flipping angle $\phi_g$:
 
 \begin{equation}
@@ -2632,7 +2629,7 @@ In the subsequent works, a backstepping control approach \cite{Chen2017} has bee
  \chapter{Trajectory optimization} 
   
  
- In order to understand what trajectory optimization means, an example of a moving satellite between two planets can taken.  The term \textit{trajectory} is used to depict the path that the satellite takes between the two planets. Generally, this path would incorporate both the state (position and velocity) and control (thrust) in function of time. the term \textit{trajectory optimization} alludes to a set of  approaches that can be utilized to identify the best trajectory option, generally by choosing the inputs to the system, also known as \textit{controls}, as functions of time.   
+ In order to understand what trajectory optimization means, an example of a moving satellite between two planets can be considered.  The term \textit{trajectory} is used to depict the path that the satellite takes between the two planets. Generally, this path would incorporate both the state (position and velocity) and control (thrust) in function of time. the term \textit{trajectory optimization} alludes to a set of  approaches that can be utilized to identify the best trajectory option, generally by choosing the inputs to the system, also known as \textit{controls}, as functions of time.   
  
  \section{The trajectory optimization problem}
 
@@ -2724,7 +2721,7 @@ Sometimes, a direct collocation method can result in a linear or quadratic progr
  
  \section{Trapezoidal Collocation Method}
  
- Trapezoidal collocation operates by transcribing a continuous-trajectory optimization into a non-linear program. This is performed by utilizing trapezoidal quadrature, which is also named the \textit{trapezoidal rule} for integration, to transcribe every continuous element of the problem into a discrete approximation. In this section, the trapezoidal method will be thoroughly examined by demonstrating how the transformation is achieve for each element of a trajectory optimization problem.
+ Trapezoidal collocation operates by transcribing a continuous-trajectory optimization into a non-linear program. This is performed by utilizing trapezoidal quadrature, which is also named the \textit{trapezoidal rule} for integration, to transcribe every continuous element of the problem into a discrete approximation. In this section, the trapezoidal method will be thoroughly examined by demonstrating how the transformation is achieved for each element of a trajectory optimization problem.
  
 \subsection{Integrals}
 
@@ -2783,7 +2780,7 @@ Besides the collocation constraints, which implement the dynamics of the system,
  \end{equation} 
  
  
- When dealing with constraints, the following points must be takes into consideration: 
+ When dealing with constraints, the following points must be taked into consideration: 
  
  \begin{itemize}
  	\item Trajectory optimization problems with path constraints are likely to be considerably harder to solve than trajectory optimization problems without path constraints. The details are beyond the scope of this paper. However, they are properly explained by Betts \cite{Betts2010}.
@@ -2950,7 +2947,7 @@ Additionally to collocation constraints, which implement the dynamics of the sys
   
 \subsection{Interpolation}
  
- After solving the nonlinear program, the value of the state of the system and the control trajectories at each collocation point are now know. The subsequent step is to build a continuous trajectory to interpolate the solution between the collocation points. Similarly to what was done in trapezoidal collocation, a polynomial interpolant, which is derived from the collocation equations will be used.
+ After solving the nonlinear program, the value of the state of the system and the control trajectories at each collocation point are now known. The subsequent step is to build a continuous trajectory to interpolate the solution between the collocation points. Similarly to what was done in trapezoidal collocation, a polynomial interpolant, which is derived from the collocation equations will be used.
   
  \begin{figure}[h]
  \centering 
@@ -3001,10 +2998,26 @@ The interpolant of the state and control trajectories are represented in figure 
  \chapter*{Conclusion}
  \addcontentsline{toc}{chapter}{Conclusion}
  
- There are several aspects that must be considered when it is required to perform flips with quadrotors in constrained. The dynamic model of the system must be as thorough as possible in order not to have a large error due to aerodynamic effects. Moreover, several control methods can be used during this master thesis and the main focus will be on model predictive control, which itself has many approaches for its implementation.  
- Finally, the trajectory can be designed using the trajectory optimization techniques reach a certain desired position after staring from an initial position, given the constraints that are imposed on the system and on the path.  
  
+
+
+
+As can be deduced from the previous chapters, performing multi-flip maneuvers with quadrotors is not an easy task to handle. There are several aspects that must be studied and tuned in order to properly control the quadrotor and perform the multi-flip maneuver. 
+First, the dynamic model of the quadrotor must be very thorough and robust in order to have a good representation of the system in simulations and to reduce the errors which result from aerodynamic effects that are usually hard to properly estimate. But, on the other hand, the complexity of the dynamics of the quadrotor must be reduced and simplified in order to satisfy the real-time limitations of the embedded control loop. This is why the very first step to do in this master thesis is to perform the identification of the base dynamic parameters for the quadrotor, since some of the standard parameters of the system have no effect on the dynamic model. So, these irrelevant dynamic parameters can be eliminated and other parameters can also be grouped together, which will greatly reduce the computational cost, regardless of which controller will be used.
+Furthermore, several control methods which can be used during this master thesis have been discussed. However, the most interesting control method to be used is model predictive control (MPC), since MPC is a closed-loop controller which will be able to account for modeling errors and disturbances on the system. In addition, MPC will solve an optimization problem at each time step in order to select the optimal control. However, MPC controllers must be properly tuned in order to be able to solve the optimization problem at each time step in real time. This is why simulations are required, since they will be very useful for tuning the control parameters in order to find the best balance between system stability, performance and robustness.
+Finally, the trajectory optimization method, which is an open-loop optimization method that was proven to be successful by Marino \cite{Marino2020} for a single-flip maneuver, can be revisited for further experimentation and to add the supplementary constraint of performing the multi-flip maneuvers in  constrained environments.
  
+ \paragraph{Planning}
+ 
+The milestones for this master thesis are organized as follows:
+
+\begin{itemize}
+	\item Perform the identification of the base dynamic parameters of the quadrotor that will be used for the experiments, namely the \textit{"Crazyflie 2.0"}.
+	\item Design a model predictive controller and tune the parameters in a way that the controller can be used on the Crazyflie 2.0 in real-time applications.
+	\item Perform simulations using ROS and Gazebo to make sure that the controller is working properly.
+	\item Perform real experimentation in the LS2N lab.
+	\item Compare the performance of MPC to the performance of trajectory optimization techniques (Closed-loop Vs Open-loop).
+\end{itemize}
 
 
  \addcontentsline{toc}{chapter}{Bibliography}
