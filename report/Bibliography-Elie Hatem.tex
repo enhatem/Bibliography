@@ -774,15 +774,15 @@ And, $\overrightarrow{f_{i}}$ is the lift resulting from every individual motor 
 0 \\ 
 0 \\
 f_i \\
-\end{bmatrix}=k_f \begin{bmatrix}
+\end{bmatrix}=b \begin{bmatrix}
 0 \\ 
 0 \\
 \omega_i^2 \\
 \end{bmatrix} $  
 
-$f_i = k_f \omega^2; i=1,\ldots,4$\\
+$f_i = b \omega^2; i=1,\ldots,4$\\
 $\omega_i$: rotational velocity of every motor $M_i$\\
-$k_f$: Thrust coefficient\\
+$b$: Thrust coefficient\\
 
 The consequent lift is the full thrust of the UAV and is expressed by $u=\sum \overrightarrow{f_i}$. It is lying on the same line as the $u_z$ axis of the $R_U$ frame where the final expression of $\overrightarrow{F_{\xi}}$ is made of two parts . The first part (the weight)  is expressed in the fixed frame and the second part (the total thrust $u$) is expressed in the mobile frame: 
 
@@ -793,7 +793,7 @@ The consequent lift is the full thrust of the UAV and is expressed by $u=\sum \o
 -mg \\
 \end{bmatrix} 
 + 
-k_f \begin{bmatrix}
+b \begin{bmatrix}
 0 \\ 
 0 \\
 \omega_1^2 + \omega_2^2 + \omega_3^2 + \omega_4^2\\
@@ -804,7 +804,7 @@ k_f \begin{bmatrix}
 0 \\
 -mg \\
 \end{bmatrix}}
-+ k_f \prescript{U}{}{\begin{bmatrix}
++ b \prescript{U}{}{\begin{bmatrix}
 0 \\ 
 0 \\
 \omega_1^2 + \omega_2^2 + \omega_3^2 + \omega_4^2\\
@@ -843,8 +843,8 @@ l(f_4 - f_2)\\
 l(f_3 - f_1)\\
 \sum \tau_{M_i}\\
 \end{bmatrix}$\\
-$\sum \tau_{M_i} = \sum k_{\tau} \omega_i^2=k_{\tau}(\omega_1^2-\omega_2^2+\omega_3^2-\omega_4^2); i=1,\ldots 4$: motor torque about the axis.\\
-$k_{\tau}$: drag coefficient .\\
+$\sum \tau_{M_i} = \sum d \omega_i^2=d(\omega_1^2-\omega_2^2+\omega_3^2-\omega_4^2); i=1,\ldots 4$: motor torque about the axis.\\
+$d$: drag coefficient .\\
 $l$: distance between the center of gravity (CoG) of the quadrotor and the axis of motor $M_i$.
 
 	\item $\tau_G=\overrightarrow{\omega}\times J_r \begin{bmatrix}
@@ -876,7 +876,7 @@ Thus, the total torque $\tau$ is expressed as follows:
 \end{bmatrix} = \tau_a + \tau_G = \begin{bmatrix}
 l(f_4-f_2) - qJ_r(\omega_1-\omega_2+\omega_3-\omega_4)\\
 l(f_3-f_1) + pJ_r(\omega_1-\omega_2+\omega_3-\omega_4)\\
-k_{\tau}(\omega_1^2-\omega_2^2+\omega_3^2-\omega_4^2)\\
+d(\omega_1^2-\omega_2^2+\omega_3^2-\omega_4^2)\\
 \end{bmatrix}
 \end{equation}
 
@@ -1254,7 +1254,7 @@ So, by applying Newton's second law on the quadrotor problem at hand:
 	0 \\
 	0 \\
 	-mg 
-	\end{bmatrix}} + k_f \prescript{U}{}{\begin{bmatrix}
+	\end{bmatrix}} + b \prescript{U}{}{\begin{bmatrix}
 	0 \\
 	0 \\
 	\omega_1^2 + \omega_2^2 + \omega_3^2 + \omega_4^2
@@ -1326,7 +1326,7 @@ If equation \ref{total_torque_equation} is used, then input vector $\tau$ can be
 \begin{cases}
 \dot{p} = qr \frac{(I_{yy}-I_{zz})}{I_{xx}} + \frac{l}{I_{xx}}(f_4-f_2) - \frac{1}{I_{xx}}qJ_r (\omega_1 - \omega_2 + \omega_3 - \omega_4) \\
 \dot{q} = pr \frac{(I_{zz}-I_{xx})}{I_{yy}} + \frac{l}{I_{yy}}(f_3-f_1) + \frac{1}{I_{yy}}pJ_r (\omega_1 - \omega_2 + \omega_3 - \omega_4) \\
-\dot{r} = pq \frac{(I_{xx}-I_{yy})}{I_{zz}} + \frac{1}{I_{zz}} k_{\tau} (\omega_1^2 -\omega_2^2 + \omega_3^2 - \omega_4^2)
+\dot{r} = pq \frac{(I_{xx}-I_{yy})}{I_{zz}} + \frac{1}{I_{zz}} d (\omega_1^2 -\omega_2^2 + \omega_3^2 - \omega_4^2)
 \end{cases}
 \end{equation}
 
@@ -1344,7 +1344,7 @@ r \\
 \begin{cases}
 \ddot{\phi} = \dot{\theta} \dot{\psi} \frac{(I_{yy}-I_{zz})}{I_{xx}} + \frac{l}{I_{xx}}(f_4-f_2) - \frac{1}{I_{xx}} \dot{\theta} J_r (\omega_1 - \omega_2 + \omega_3 - \omega_4) \\
 \ddot{\theta} = \dot{\psi} \dot{\phi} \frac{(I_{zz}-I_{xx})}{I_{yy}} + \frac{l}{I_{yy}}(f_3-f_1) + \frac{1}{I_{yy}} \dot{\phi} J_r (\omega_1 - \omega_2 + \omega_3 - \omega_4) \\
-\ddot{\psi} = \dot{\theta} \dot{\phi} \frac{(I_{xx}-I_{yy})}{I_{zz}} + \frac{1}{I_{zz}} k_{\tau} (\omega_1^2 -\omega_2^2 + \omega_3^2 - \omega_4^2)
+\ddot{\psi} = \dot{\theta} \dot{\phi} \frac{(I_{xx}-I_{yy})}{I_{zz}} + \frac{1}{I_{zz}} d (\omega_1^2 -\omega_2^2 + \omega_3^2 - \omega_4^2)
 \end{cases}
 \end{equation}
 
