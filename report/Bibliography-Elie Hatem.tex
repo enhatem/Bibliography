@@ -47,18 +47,41 @@ I would like to thank my family as well: my parents Naji and Yolla, my sister Re
  
  \section*{Notations}
  \begin{tabular}{cp{0.8\textwidth}}
+ $M_i$ & motor $i$\\
+ $J_r$ & rotor inertia\\
+  $\overrightarrow{f_i}$ & lift due to $M_i$\\
   $b$ & thrust factor \\
+  $d$ & drag coefficient \\
+  $\omega$ & angular velocity according to $(G,  \overrightarrow{a_G})$ axis of the vehicle \\
+$\omega_i$ & rotation velocity of motor $Mi$\\
+$\omega_r$ & overall residual propeller angular speed\\
+$\psi$ & yaw angle\\
+$\theta$ & pitch angle\\  
+  $\phi$ & roll angle\\
   $l$ & horizontal distance: from the center of the propeller to the CoG \\
-  $\Omega$ & spinning speed of a propeller\\
- % $C_{R_m}$ & rolling moment coefficient \\
- % $C_T$ & thrust coefficient \\
- % $H$ & hub force\\
+  $\tau$ & resulting torque of the quadrotor\\
+  $\tau_a$ & rotational torque of the quadrotor\\
+  $\tau_G$ & rotational torque due to the gyroscopic effects of the rotors\\
+  ${}^{O}A_M$ & transformation matrix from the mobile frame $M$ to the fixed frame $O$\\
+  ${}^{M}A_O$ & transformation matrix from the mobile frame $O$ to the fixed frame $M$\\
   $CT$ & continuous time \\
   $DT$ & discrete time \\
   $R_O$ & Working frame related to the environment\\
+  $R_M$ & general mobile frame\\
   $R_U$ & UAV frame\\
   $X$ & A vector expressed in its proper frame\\
   ${}^{R}[X]$ & X expressed in the frame R\\
+  $\xi = \begin{bmatrix}
+  x && y && z 
+  \end{bmatrix}^{\intercal}$ & Position of the center of mass vector and expressed in the fixed frame\\
+  $\eta = \begin{bmatrix}
+  p && q && r
+\end{bmatrix}^{\intercal}$ & angular velocity vector of the UAV expressed in the robot frame.\\
+$t_k$ & time at knot point $k$\\
+$h_k=t_{k+1} - t_k$ & duration of spline segment $k$\\
+$\bm{x}_k=\bm{x}(t_k)$ & state at knot point $k$\\
+$\bm{u}_k=\bm{u}(t_k)$ & control at knot point $k$\\
+
 
 \end{tabular}\\
  
@@ -69,13 +92,14 @@ I would like to thank my family as well: my parents Naji and Yolla, my sister Re
   \section*{Abbreviations}
  \begin{tabular}{cp{0.8\textwidth}}
   \textbf{UAV} & unmanned aerial vehicle \\
-  \textbf{IGE} & in ground effect \\
-  \textbf{OGE} & out of ground effect \\
+  %\textbf{IGE} & in ground effect \\
+  %\textbf{OGE} & out of ground effect \\
   \textbf{CoG} & center of gravity \\
   \textbf{i.s.L.} & in sense of Lyapunov \\
   \textbf{lpd} & locally positive definite \\
   \textbf{lpsd} & locally positive semi-definite \\
   \textbf{lnd} & locally positive negative definite \\
+  \textbf{MPC} & model predictive control \\
 \end{tabular}\\
  \newpage
  
@@ -646,7 +670,7 @@ friction & $\frac{1}{2}C_y A_c \rho \dot{y}|\dot{y}|$
 
 \end{tabular}
 
-\subsection{Equations of Motion}\label{detail_equation_of_motin}
+\subsection{Equations of Motion}\label{detail_equation_of_motion}
 
 The equations of motion are derived from (\ref{NE_Formalism}) in addition to all the forces and the moments that were listed in subsection \ref{forces_and_moments}.
 
@@ -1407,13 +1431,13 @@ Where the control inputs are mapped by:
 
 \begin{equation}\label{Control_input_mapping}
 \begin{cases}
-u_1 = b(\Omega_1^2 + \Omega_2^2 + \Omega_3^2 + \Omega_4^2)\\
+u_1 = b(\omega_1^2 + \omega_2^2 + \omega_3^2 + \omega_4^2)\\
 \\
-u_2 = b(-\Omega_2^2 + \Omega_4^2)\\
+u_2 = b(-\omega_2^2 + \omega_4^2)\\
 \\
-u_3 = b(\Omega_1^2 - \Omega^3)\\
+u_3 = b(\omega_1^2 - \omega^3)\\
 \\
-u_4 = d(-\Omega_1^2 + \Omega_2^2 - \Omega_3^2 + \Omega_4^2) \\
+u_4 = d(-\omega_1^2 + \omega_2^2 - \omega_3^2 + \omega_4^2) \\
 \end{cases}
 \end{equation}
 
@@ -1625,7 +1649,7 @@ If the following continuous-time system is considered
 \begin{equation} \label{Lyapunov_nonlinear_equation}
 \dot{x}(t) = f(x(t))
 \end{equation}
-which has an equilibrium point at the origin (x=0).This system is called a time-invariant system because $f$ does not depend explicitly on the time t. In such a system, the stability analysis of the equilibrium point is in general a tedious task. This is because there is no way to write a simple formula which relates the trajectory to the initial state. The main idea of \textit{Lyapunov's direct method} is to establish properties of the equilibrium point (of the nonlinear system in general) by evaluating how a certain carefully chosen scalar function of the changes as the state of the system changes. (The term \textit{"direct"} is used to distinguish this method from the Lypunov's \textit{"indirect"} method, which tries to establish properties of the equilibrium point by assessing the behavior of the \textit{linearized} system at that point \cite{MELCHORAGUILAR2004175}.
+which has an equilibrium point at the origin (x=0).This system is called a time-invariant system because $f$ does not depend explicitly on the time t. In such a system, the stability analysis of the equilibrium point is in general a tedious task.This is due to the fact that writing a simple formula which relates the trajectory to the initial state is not possible. The main idea of \textit{Lyapunov's direct method} is to determine properties of the equilibrium point (of the nonlinear system in general) by evaluating how a certain carefully chosen scalar function of the changes as the state of the system changes. (The word \textit{"direct"} is utilized to differentiate this method from the Lypunov's \textit{"indirect"} method, which tries to establish properties of the equilibrium point by assessing the behavior of the \textit{linearized} system at that point \cite{MELCHORAGUILAR2004175}.
 
 As an example, a continuous and scalar function $V(x)$ that is equal to 0 at the origin and positive elsewhere is considered in some ball that is enclosing the origin. So, $V(0)=0$ and $V(x)>0$ when $x \neq 0$ in this ball. This $V(x)$ can be considered as an \textit{"energy"} function. Also, let $\dot{V}(x)$ denote the time derivative of $V(x)$ throughout any trajectory of the system. In other words,  $\dot{V}(x)$ varies as $x(t)$ varies proportionally to equation (\ref{Lyapunov_nonlinear_equation}). If this derivative is negative in all the region (with the exclusion of the origin), then this means that the energy is decreasing with time in a strict manner. Moreover, since the lower bound of the energy is 0, then the energy must go to 0 with time. This means that all trajectories will converge to the origin (zero state). This idea is formalized below.
 
@@ -1700,7 +1724,7 @@ Since $V(x)$ is continuous, then $m$ is positive and well defined. Then a value 
 
 \paragraph{Lyapunov Theorem of Global Asymptotic Stability}
 
-The region in the state space for which the earlier results hold is determined by the region over which $V(x)$ represents a Lyapunov function. It is interesting to determine the \textit{"basin of attraction"} of an equilibrium point that is asymptotically stable. In other words, the basin of attraction is the set of initial conditions whose following trajectories conclude at the equilibrium point. Thus, an equilibrium point is \textit{"globally asymptotically stable"} ( also called asymptotically stable "in the large") if its basin of attraction is the entire state space.\\
+The region in the state space for which the earlier results hold is determined by the region over which $V(x)$ represents a Lyapunov function. It is useful to find the \textit{"basin of attraction"} of an equilibrium point that is asymptotically stable. In other words, the basin of attraction is the set of initial conditions whose following trajectories conclude at the equilibrium point. Thus, an equilibrium point is called \textit{"globally asymptotically stable"} ( namely, asymptotically stable "in the large") if its basin of attraction constitutes the full state space of the system.\\
 
 \noindent
 If a function $V(x)$ has the following criteria below, 
@@ -1736,7 +1760,7 @@ V(\text{next state}) - V(\text{present state})
  \subsection{Model Predictive Control}
  \subsubsection{General Idea}\label{MPC_General_Idea}
  
- There exist "open-loop" methods \cite{Kirillova2000} in which the control input sequence $\textbf{\textsc{u}}(t)$ is designed using a model of the system and a set of constraints. However, the problem with this approach is that modeling errors and noise are not taken into consideration. So, these inputs will not necessarily generate the desired response from the system. Because of that, a \textit{"closed-loop"} strategy is required in order to cancel out these errors. So, an approach that can be used is called \textit{"Model Predictive Control"} (MPC). This approach is also known as \textit{"receding horizon control"} \cite{How2008} since the \textit{"prediction horizon"} (finite horizon) shifts forward by one time step after the current optimization problem is solved . In short, MPC is a \textit{feedback control} algorithm which uses a model of the system to predict the future outputs of the system and it solves an optimization problem on-line in order to select an optimal control.
+ There exist "open-loop" methods \cite{Kirillova2000} in which the control input sequence $\textbf{\textsc{u}}(t)$ is designed using a model of the system and a set of constraints. However, the problem with this approach is that modeling errors and noise are not taken into consideration. So, these inputs will not necessarily generate the desired response from the system. Because of that, a \textit{"closed-loop"} strategy is required in order to cancel out these errors. So, an approach that can be used is called \textit{"Model Predictive Control"} (MPC). This method is also known as \textit{"receding horizon control"} \cite{How2008} because the \textit{"prediction horizon"} (which is a finite horizon) translates forward by one time step after the current optimization problem is solved . In short, MPC is a \textit{feedback control} algorithm which uses a model of the system to predict the future outputs of the system and it solves an optimization problem on-line in order to select an optimal control.
 
 \newpage 
  
@@ -1839,9 +1863,9 @@ The control horizon is the set of future actions which will lead to the predicte
 	\item Having a small value for $m$ encourages having an internally stable controller. However, this is not guaranteed.
 \end{itemize}
 
-\paragraph{Constraints} A model predictive controller can integrate constraints on the inputs, the rate of change of the inputs and the outputs. In addition, the constraints can be \textit{"soft"} constraints or \textit{"hard"} constraints. However, it should be noted that hard constraints cannot be violated. In addition, applying hard constraints on both the inputs and outputs at the same time may cause conflict to occur between the constraints, which may lead to an unfeasible solution. Moreover, the general recommendation is to use soft constraints on the outputs and to avoid having hard constraints on both the inputs and the rate of change of the inputs .
+\paragraph{Constraints} A model predictive controller can integrate constraints on the inputs, the rate of change of the inputs and the outputs. In addition, the constraints can be \textit{"soft"} constraints or \textit{"hard"} constraints. However, it should be noted that hard constraints cannot be violated. In addition, applying hard constraints on both the inputs and outputs at the same time may cause conflict to occur between the constraints, which may lead to an unfeasible solution. Moreover, the general recommendation is to use soft constraints on the outputs and to avoid having hard constraints on both the inputs together with the rate of change of the inputs .
 
-\paragraph{Weights} Model Predictive Control could have many goals. One goal could be to have the outputs converge to their set-points as fast as possible. Another goal can be to have smooth control inputs in order to avoid aggressive control maneuvers. So, in order to achieve a balanced performance between these two competing goals, the input rates and the outputs can be weighted relative to each other. It is also possible to adjust relative weights within the input rates and the outputs.
+\paragraph{Weights} Model Predictive Control could have many goals. A could could possible be to have the outputs converge to their set-points as fast as possible. Another goal can be to have smooth control inputs in order to avoid aggressive control maneuvers. So, in order to achieve a balanced performance between these two competing goals, the input rates and the outputs can be weighted relative to each other. It is also possible to adjust relative weights within the input rates and the outputs.
 
 
 
@@ -2190,7 +2214,7 @@ It is another method to improve the computational time of the MPC controller. In
 Sliding mode control (SMC) is a control technique that is nonlinear presenting exceptional attributes of robustness,
 accuracy, easy tuning and execution.
  
-The aim of SMS systems is to drive the system states to a specific surface in the state space, called  \textit{"sliding surface"}. Upon reaching the sliding surface, sliding mode control allows the states to remain on the close neighborhood of the sliding surface. Therefore, the sliding mode control consists of a controller design with two parts. The first part includes the design of a sliding surface in order for the sliding motion to fulfill design requirements. The second deals with selecting a control law that makes the switching surface interesting with respect to the system state \cite{Utkin1997}.
+The aim of SMS systems is to drive the system states to a specific surface in the state space, called  \textit{"sliding surface"}. Upon reaching the sliding surface, sliding mode control allows the states to remain on the close neighborhood of the sliding surface. Therefore, the sliding mode control consists of a controller design with two parts. The first part contains the design of a sliding surface in order for the sliding motion to fulfill design requirements. The second deals with selecting a control law that makes the switching surface interesting with respect to the system state \cite{Utkin1997}.
 
 There exists two main benefits of sliding mode control. Firstly, the behavior of the dynamics of the system can be changed according to a specific selection of the sliding function. Secondly, the response of the closed loop system becomes completely insensitive to some special uncertainties. This principle goes beyond bounded model parameter uncertainties, interference and non-linearity. In a practical sense, SMC allows the control of nonlinear processes that are affected by external noise and heavy model uncertainties.
 
@@ -2228,7 +2252,7 @@ As stated earlier, the synthesis of SMC requires two phases:
 In the first phase, a specific scalar function $\sigma$ of the system state is defined such that:
 
 \begin{equation*}
-	\sigma{\textsc{x}}:\mathbb{R}^n \rightarrow \mathbb{R}.
+	\sigma({\textsc{x}}):\mathbb{R}^n \rightarrow \mathbb{R}.
 \end{equation*}
 
 
@@ -2266,7 +2290,7 @@ Provided that such property holds, the goal of the  control system is to drive $
 From a geometrical perspective, the equation $\sigma=0$ represents a surface in the error space that is called \textit{"sliding surface"}. The trajectories of the system that is being controlled are forced to be on the sliding surface, along which the behavior of the system satisfies the design requirements.
 
 
-A common form for the sliding surface depends on a  scalar paramete $p$, and is expressed as follows:
+A common form for the sliding surface depends on a  scalar parameter $p$, and is expressed as follows:
 
 \begin{equation}
 \sigma = \bigg(\frac{d}{dt}+p\bigg)^k e
@@ -2280,7 +2304,7 @@ k&=2 \text{\hspace{0.5cm}} \sigma = \ddot{e} + 2p \dot{e} + p^2 e
 \noindent The parameter p can be chosen randomly, and it defines the particular pole of the derived \textit{"reduced dynamics"} of the system when sliding.
  
 
-\noindent The integer parameter $k$ is on the other hand somewhat crucial, it is required be equal to $r-1$, with $r$ being the relative
+\noindent The integer parameter $k$ is on the other hand somewhat crucial, it is required be equal to $r-1$, and $r$ should be the relative
 degree between y and u. This signifies that the relative degree of the $\sigma$ variable is one.
 
 
@@ -2295,7 +2319,7 @@ degree between y and u. This signifies that the relative degree of the $\sigma$ 
 \end{itemize}
 
 
-Emphasis is dedicated to the second order sliding mode approach, and some references to the higher order approaches
+Focus is devoted to the second order sliding mode method, and a few references to the higher order approaches
 are also granted. Frequent characteristic of all sliding mode-based techniques is that no specific information about the
 original system dynamics is required. In other words, the controlled system will be treated as an entirely uncertain “black box” object.
 
@@ -2349,7 +2373,7 @@ and u=-U, which can be observed in figure \ref{control_evolution}.
 \noindent The discontinuous switching control with high frequency  in figure \ref{control_evolution} is suitable in electrical implementations (where PWM control signals are usually used) but it results in an increase in oscillations and numerous different problems in several areas, such as the control of mechanical systems.
 
 
-In order to find a solution for the problem presented above (referred to as \textit{”chattering phenomenon”}) roughly (smoothed) execution of sliding mode control techniques have been proposed where the discontinuous \text{“sign”} term is substituted with a  continuous and smooth approximation using one of the two functions below.
+In order to find a solution for the problem presented above (referred to as \textit{”chattering phenomenon”}) roughly (smoothed) execution of sliding mode control techniques have been proposed where the discontinuous \textit{“sign”} term is substituted with a  continuous and smooth estimation using any of the two functions below.
 
 
 \begin{equation}
@@ -2402,7 +2426,7 @@ An appropriate way for tuning its parameters is by using the following relations
 
 
 
-\noindent Where U is a positive constant to be taken sufficiently large.
+\noindent With $U$ being a positive constant that should be taken sufficiently large.
 
 
 
@@ -2927,7 +2951,7 @@ Additionally to collocation constraints, which implement the dynamics of the sys
 \end{cases}
 \end{equation}
 
-\noindent Path constraints are managed tackled in a similar manner: they are implemented at all the collocation points as shown below.
+\noindent Path constraints are tackled in a similar manner: they are implemented at all the collocation points as shown below.
 
 
 \begin{equation}
@@ -2978,7 +3002,7 @@ Hermite-Simpson collocation also describes the dynamics of the system $\bm{f}(\c
 	\bm{f}(t) = \dot{\bm{x}} = \frac{2}{h_k^2} (\tau - \frac{h_k}{2})(\tau - h_k)\bm{f}_k - \frac{4}{h_k^2}(\tau)(\tau - h_k)\bm{f}_{k+\frac{1}{2}} + \frac{2}{h_k^2}(\tau)(\tau-\frac{h_k}{2})\bm{f}_{k+1} 
 \end{equation}
 
-Generally, the main interest is to obtain an expression for the state trajectory $\bm{x}(t)$ instead of its derivative $\dot{\bm{x}}(t)$. In order to obtain the state trajectory, equation \ref{state_trajectory_derivative} will be integrated, after arranging the expressing for it to be in standard polynomial form, the following expression is then obtained.
+Generally, the main interest is to obtain an expression for the state trajectory $\bm{x}(t)$ instead of its derivative $\dot{\bm{x}}(t)$. In order to obtain the state trajectory, equation \ref{state_trajectory_derivative} will be integrated, after arranging the expression for it to be in standard polynomial form, the following expression is then obtained.
 
 \begin{equation}
 	\bm{x}(t)=\int \dot{\bm{x}}(t)=\int \left[ \bm{f}_k + \bigg(-3 \bm{f}_k + 4 \bm{f}_{k + \frac{1}{2}} -\bm{f}_{k+1}\bigg) \bigg( \frac{\tau}{h_k}\bigg) + \bigg( 2 \bm{f}_k -4 \bm{f}_{k+ \frac{1}{2}} + 2 \bm{f}_{k+1}\bigg)\bigg(\frac{\tau}{h_k}\bigg)^2 \right]dt
@@ -2993,7 +3017,328 @@ The integral can be calculated by using basic calculus. Then, the constant of in
 
 The interpolant of the state and control trajectories are represented in figure \ref{Hermite-Simpson_figure_}.
 
+
+\section{Practical Consideration}
+
+In this section, many topics related to trajectory optimization will be covered.
+
+
+\subsection{Initialization}
+
+Almost every trajectory optimization technique requires a reasonable initial guess in order to start the optimization process. In the best case scenario, a reasonable initialization makes sure that the solver will rapidly converge to the globally optimal solution. In the worst case scenario, it will not allow the non-linear programming solver to solve an otherwise proper optimization problem. The choice of an initial guess can greatly influence which local minimum will the optimizer converge to in the end. In addition, the presence of constraints makes it even worse. In fact, there could be some initial guesses from which the optimization cannot even find a feasible solution. This is an essential problem with non-linear programming solvers since they cannot always find a solution, and if if does find a solution, then it is only ensured to be locally optimal. Furthermore, the best initializations for trajectory optimization problems normally require certain problem-specific information, but there are some general methods that can be helpful. In this manner, initialization is more of an art than a science. A great practice is to test many different initialization methods and check if they all converge the identical local optimum.
+
+One of the most straight forward initialization approaches is to assume that the trajectory is a straight line between the first state and the final state. This method is easy to execute, and will usually work properly for straight forward boundary value trajectory optimization problems.
+
+If an approximate idea of what the problem should look like is known, then this approximate idea can be used as an initial guess for the optimizer. As an example, if a robot is required to perform a back-flip maneuver, then the robot can be sketched out at different points along the back-flip, then the points in the state-space for configuration can be deduced, and then linear interpolation can be used between those points. 
+
+For complex problem, a better approach must be used.  One of the best techniques in that case is to simplify the trajectory optimization problem until a good solution can be reached by using a simple initialization technique. After that, the solution of the simplified problem is then used to initialize the original problem. If this method does not work as intended, then a chain of optimization problems is then built, such that each optimization problem is marginally closer to th desired problem and which utilizes the prior solutions as the initial guess.
+
+\subsection{Mesh refinement}
+
+The direct transcription procedure estimates a trajectory thanks to the use of polynomial spline, which permits the trajectory optimization problem to be transformed into a non-linear program. The collocation constraints in the resulting nonlinear program are functioning as implicit Runge-Kutata integration schemes \cite{Betts2010}. And, similarly to any integration schemes, there exist numerical errors that are linked with the selected time step and method order. Thus , if short time steps (meaning dense meshing) and a high-order method are used, then the output will be an accurate approximation, however this comes at the cost of a high computational load.
+
+
+Mesh \textit{refinement} is the procedure by which a trajectory optimization problem is solved on a series of distinct collocation meshes, namely \textit{collocation grids}. The mesh grid is related to the choice of discretization along the trajectory. Typically, the initial mesh is unrefined, and contains a small number of collocation points and/or a collocation method of low-order. Succeeding meshes contain more points and/or a collocation method of high-order. This iterating approach is executed in order to have accurate solution with the smallest amount of computational cost. In addition, the solutions that are found by using the initial meshes are simple to solve but inexact, whereas the solutions of the succeeding meshes are more computationally heavy to solve, but they are nonetheless more accurate.
+
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{Images/Trajectory/mesh_refinement}
+\caption{Representation of mesh refinement by sub-dividing segments. The number of sub-segments is defined by the maximum error in each segment \cite{Kelly2017}.}
+\label{mesh_refinement}
+\end{figure}
+
+
+
+As can be observed from figure \ref{mesh_refinement}, an easy example is shown in order to represent how the mesh for a linear spline can be improved to provide a representation which is more accurate by simply adding a few points. The segments which contain small errors are not altered, whereas segments with a larger amount of error are sub-divided into 2, 3 or 4 sub-segments for the following iteration.
+
+In more complex mesh-refinement approaches, the accuracy of a certain segment can be enhanced by sub-dividing it or by increasing the order of the polynomial in the segment. These type of algorithms are called \textit{hp-adaptive} meshing. The choice of sub-dividing the mesh or increasing the order of the polynomial is done by examining the error profile inside an individual segment. If there is a steep increase in the error, it means that the the segment must be sub-divided, or the order of polynomial must be increased, for instance, the trapezoidal collocation can be changed to Hermite-Simpson collocation \cite{Kelly2017}.
+
+
+
+\subsection{Error Analysis}
+
+There exist two different types of numerical errors that are normally present in the solution of a trajectory optimization problem. These errors are the transcription errors and errors in the solution of the non-linear program. The main focus will be on the accuracy of the transcription procedure, in order to measure how much error has been introduced by the discretization that has been selected. These error estimations can then be used in order to calculate a new discretization. 
+
+There exists various possible ways to measure errors for trajectory optimization problems \cite{Betts2010}. Here, an error estimate will be constructed based on how good the candidate trajectory fulfills the system dynamics between the collocation points. The main idea here is that if the dynamics of the system are exactly satisfied between the collocation points, then the polynomial spline will be considered as an accurate depiction of the system, which means that the non-linear problem is an exact accurate depiction of the original trajectory optimization problem.
+
+A true solution $\bm{x}^*(t),\bm{u}^*(t)$ is not actually known. However, what is known is that it must fulfill accurately the dynamics of the system:
+
+\begin{equation*}
+\dot{\bm{x}}^*(t) = \bm{f}(t,\bm{x}^*(t),\bm{u}^*(t))
+\end{equation*}
+
+Thus, an expression for the error in the solution to the dynamics of the system throughout the candidate trajectory can then be built. It is crucial that the solution $\bm{x}(t)$ and $\bm{u}(t)$ is computed by using method consistent interpolation \cite{Betts2010}.
+
+\begin{equation*}
+	\epsilon (t) = \dot{\bm{x}}(t) - \bm{f}(t,\bm{x}(t), \bm{u}(t))
+\end{equation*}
+
+The error $\epsilon(t)$ will be equal to zero at each collocation point and it is non-zero otherwise. Then, the integral of the error can be numerically computed in order to find out how far did the candidate solution have diverted from the actual solution along every dimension of the state. The following expression for the error is generally  computed by utilizing the Rhomberg quadrature \cite{Betts2010}.
+
+\begin{equation*}
+	\bm{\eta}_k = \int_{t_k}^{t_{k+1}} | \epsilon (\tau) | d \tau
+\end{equation*}
+
+Once the error is found in each state and over each segment of the trajectory, this error can now be utilized in order to find how to re-mesh the trajectory in order for the optimization to converge to an optimal solution that fulfills the continuous dynamics of the system. Interested readers are referred to \cite{Betts2010} and \cite{Darby2011} for more in-depth details on how to compute error estimates and how to accomplish mesh refinement.
+
+
+
+\section{Cart-Pole Swing-Up Example}
+
+The cart pole is a system that is made out of a cart that travels along a horizontal track and a pendulum that is not actuated and dangles freely from the cart. A motor is installed on the cart-pole such that it is able to drive the cart ahead or in reverse along the road. It is possible to stimulate the cart in a way such that the pendulum, which is originally hanging below the cart, to swing up and balance above the cart. This part of the paper, the direct collocation method is going to be utilized to compute the minimum-force trajectory that is capable of executing the \textit{swing-up} maneuver.
+
+\subsection{System Dynamics}
+
+The cart-pole is a second-order dynamical system. The position of the cart is provided by $q_1$, and the pole angle is provided by $q_2$. In addition, the control force is provided by $u$. The mass of the cart is given by $m_1$, and the mass of the pole is given by $m_2$. Furthermore, the length of the pole is $l$, and the acceleration due to gravity is $g$, as observed in figure \ref{cart_pole}. Thus, the dynamics of the the cart-pole system are expressed as follows \cite{Kelly2017}:
+
+\begin{equation}\label{ex_eq_1}
+	\ddot{q}_1 =\frac{lm_2 \sin(q_2) \dot{q}_2^2 + u + m_2 g \cos (q_2) \sin(q_2)}{m_1 + m_2(1-\cos^2 (q_2))}
+\end{equation}
+
+
+\begin{equation}\label{ex_eq_2}
+	\ddot{q}_2 = - \frac{lm_2 \cos(q_2) \sin (q_2) \dot{q}^2_2 + u \cos (q_2) + (m_1 + m_2) g \sin (q_2)}{lm_1 + lm_2(1-\cos^2 (q_2))}
+\end{equation}
+
+All conventional trajectory optimization approaches necessitate that the system dynamics be in first-order form. This can be done by including the minimal coordinates $q_1$ and $q_2$ along with their derivatives in the  state space representation of the system, with $\ddot{q}_1$ and $\ddot{q}_2$ which  are defined in  equations (\ref{ex_eq_1}) and (\ref{ex_eq_2}) respectively.
+
+\begin{equation}
+\bm{x} = \begin{bmatrix}
+q_1\\
+q_2\\
+\dot{q}_1\\
+\dot{q}_2\\
+\end{bmatrix}
+\text{ \hspace{2 cm} } \dot{\bm{x}} = \bm{f}(\bm{x},u)= \begin{bmatrix}
+\dot{q}_1 \\
+\dot{q}_2 \\
+\ddot{q}_1 \\
+\ddot{q}_2 \\
+\end{bmatrix}
+\end{equation}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{Images/Trajectory/cart_pole}
+\caption{Representation of the cart-pole problem \cite{Kelly2017}.}
+\label{cart_pole}
+\end{figure}
+
+\newpage
+
+\subsection{Objective function}
+
+One of the most general objective functions that can be used in trajectory optimization problems is the integral of the control input squared.
+
+\begin{equation}\label{objective_function}
+J = \int_0^T u^2 (\tau) d \tau
+\end{equation}
+
+This objective (\ref{objective_function}) is generally used because it usually results in smooth trajectories. And this characteristic is desirable because most of the majority of the transcription approaches presume that the solution of the optimization problem is properly estimated by a polynomial spline. So, a problem which contains a smooth solution can be solved faster and in a more exact manner than a problem which contains a solution which is not smooth. In addition, smooth trajectories are usually simpler to stabilize with standard controllers when applied on a real system.
+
+\subsection{Boundary Constraints}
+
+Various trajectory optimization problems contain \textit{boundary constraints}, which limit  the system state at the boundaries of the trajectory. In the example, the full state of the cart-pole system will be constrained at the initial and the final points of the trajectory. Presuming that it is desired that the cart must start in the center on the railroad, and it must traverse a distance $d$ while it is performing the swing-up operation. Thus, the boundary constraints in this situation (which are constant) are provided below.
+
+\begin{multicols}{2}
+ 
+\begin{equation*}
+\begin{aligned}
+q_1(t_0) = 0 \\
+q_2(t_0) = 0 \\
+\dot{q}_1(t_0) = 0 \\
+\dot{q}_2(t_0) = 0 \\
+\end{aligned}
+\end{equation*}
+
+\columnbreak
+
+\begin{equation*}
+\begin{aligned}
+q_1(t_F) = d \\
+q_2(t_F) = \pi \\
+\dot{q}_1(t_F) = 0 \\
+\dot{q}_2(t_F) = 0 \\
+\end{aligned}
+\end{equation*}
+
+\end{multicols}
+
+
+\subsection{State and Control Bounds}
+
+The swing-up problem of the cart-pole contains some simple constraints. By looking first at the state space of the cart-pole, it is known that the cart will traverse on a track which has a limited length, so it is required to add a simple constraint which limits the horizontal range that can be traveled by the cart. In addition, the force which is due to the motor (control input) will be bounded by a maximum and a minimum value.
+Thus, the following constraint equations are obtained.
+
+\begin{equation}
+\begin{aligned}
+-d_{max} &\leq q_1(t) \leq d_{max}\\
+-u_{max} &\leq u(t) \leq u_{max}
+\end{aligned}
+\end{equation}
+
+\subsection{Trapezoidal collocation}
+
+Now, all the equations that were derived in the previous sections of this example problem can be combined with the trapezoidal collocation approach in order to express the cart-pole swing-up problem as a nonlinear program as follows.
+
+
+minimize:
+
+\begin{align}
+&J = \sum_{k=0}^{N-1} \frac{h_k}{2}(u_k^2 + u^2_{k+1}) \textbf{ \hspace{4cm} objective function} \\
+&\text{decision variables:} \nonumber \\
+&\bm{x}_0 \ldots\bm{x}_N \text{\hspace{0.5cm}} u_0 \ldots u_N \\
+\text{subject to:} \nonumber \\
+&\frac{1}{2} h_k( \bm{f}_{k+1} + \bm{f}_k) = \bm{x}_{k+1} - \bm{x}_k \text{\hspace{1cm} } k \in 0 \ldots (N-1) \textbf{\hspace{1cm} collocation constraints }\\
+&-d_{max} \leq q_1(t) \leq d_{max} \textbf{\hspace{4cm} path constraints} \\
+&-u_{max} \leq u(t) \leq u_{max} \textbf{\hspace{4cm} path constraints} \\
+&\bm{x}_0 = \bm{0} \text{\hspace{0.5cm}} \bm{x}_N=[d,\pi,0,0]^{\intercal} \textbf{\hspace{3.5cm} boundary constraints}
+\end{align}
+
+
+It should be noted that $h_k = t_{k+1} - t_k$. Here, a uniform grid will be used. thus, $t_k = k \frac{T}{N}$, where $N$ is the number of segments that were utilized in the process of transcription. However, this problem can be typically solved on an arbitrary grid, which means that $h_k$ could be different.
+
+\subsection{Hermite-Simpson Collocation}
+
+The Hermite-Simpson collocation method can also be utilized in order to build a nonlinear program for the cart-pole to perform the swing-up maneuver. it is very close to the case of trapezoidal collocation, but the only difference is that it utilizes a quadratic spline instead of a linear spline in order to estimate the control and the dynamics equations. So, in this case, the separated form of the Hermite-Simpson approach will be used. This approach requires that collocation points for the state and the control must be included at the middle of each segment $t_{k+\frac{1}{2}}$.\\
+
+minimize:
+
+\begin{align}
+&J = \sum_{k=0}^{N-1} \frac{h_k}{6}(u_k^2 + 4 u_{k+\frac{1}{2}}^2 u^2_{k+1}) \textbf{ \hspace{4cm} objective function} \\
+&\text{decision variables:} \nonumber \\
+&\bm{x}_0, \bm{x}_{0+\frac{1}{2}} \ldots\bm{x}_N \text{\hspace{0.5cm}} u_0,u_{0+\frac{1}{2}} \ldots u_N \\
+\text{subject to:} \nonumber \\
+&\bm{x}_{k+\frac{1}{2}} = \frac{1}{2}(\bm{x}_k + \bm{x}_{k+1}) + \frac{h_k}{8}(\bm{f_k}-\bm{f}_{k+1}) \text{\hspace{0.5cm}} k\in 0 \ldots (N-1) \textbf{\hspace{0.5cm} interpolation constraints}\\
+&\frac{h_k}{6}(\bm{f}_k + 4 \bm{f}_{k+\frac{1}{2}} + \bm{f}_{k+1}) = \bm{x}_{k+1} - \bm{x}_k  \text{\hspace{1cm}} k\in 0 \ldots (N-1) \textbf{\hspace{1cm} collocation constraints}\\
+&-d_{max} \leq q_1(t) \leq d_{max} \textbf{\hspace{4cm} path constraints} \\
+&-u_{max} \leq u(t) \leq u_{max} \textbf{\hspace{4cm} path constraints} \\
+&\bm{x}_0 = \bm{0} \text{\hspace{0.5cm}} \bm{x}_N=[d,\pi,0,0]^{\intercal} \textbf{\hspace{3.5cm} boundary constraints}
+\end{align}
+
+\newpage
+
+\subsection{Initialization}
+
+In the cart-pole problem, the initial and final states are provided, and the goal is to calculate an optimal trajectory between the provided initial and final positions. A trivial and straight-forward initial guess is to assume that the system moves in a linear manner between the initial and final state without any control input. This straightforward guess functions greatly for this problem, even though this initial guess does not satisfy the system dynamics.
+
+\begin{equation}\label{initial_guess}
+\bm{x}_{guess}(t) =\frac{t}{\tau} \begin{bmatrix}
+d \\
+\pi \\
+0 \\
+0 \\
+\end{bmatrix} \text{\hspace{2cm}} u_{guess}(t)=0
+\end{equation}
+
+
+As stated earlier, the problem will be solved with a uniform grid, such that $t_k = k \frac{T}{N}$.  So, the initial guess for every single decision variable in the nonlinear program will be calculated using equation (\ref{initial_guess}) at each knot point $t_k$ (and also for the middle point $t_{k+\frac{1}{2}}$ for the Hermite-Simpson collocation method).
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{Images/Trajectory/cart_pole_solved}
+\caption{Representation of the optimal trajectory for the cart-pole swing-up example. The frames are uniformly spaced in time, moving from blue (dark) to yellow (light) as the trajectory advances\cite{Kelly2017}. }
+\label{trajectory_problem_solution_a}
+\end{figure}
+
+\newpage
+
+\subsection{Results}
+
+
+The optimal swing-up trajectory computed with the Hermite-Simpson collocation by utilizing 25 trajectory segments is presented in this section. The set of parameters that were used to solve the problem are found in \cite{Kelly2017}. The problem was solved by usingthe FMINCON function in MATLAB.
+
+Thus, figure \ref{trajectory_problem_solution_a} represents a stop-action animation of the swing-up movement that is being done, with frames that are uniformly spaced. The identical solution is shown in figure \ref{trajectory_problem_solution_b} which represents plot of the state and the control input in function of time. In the end, figure \ref{trajectory_problem_solution_c} represents the estimated error throughout the trajectory.
+
+It can be observed that the error measurements in the differential equations and the state  increases significantly next to the middle of the trajectory.  At this point, the system is varying quickly as the pole is swinging-up, and the uniform grid is not able to properly approximate the system dynamics. A more complex approach can be used to compute a new grid, given that the segments of the trajectory are smaller next to this point where a quick variation of the system exists.
+
+Parameters were selected in a specific way for this problem such that the system will behave properly. If small alterations are done to the initial guess or the direct transcription approach, then the same solution will still be obtained. However, if some problem parameters were changed, the problem can become much more harder to solve. For instance, if the duration along the trajectory $T$ is increased, then the optimal solution will include several swings of the pole (back and forth) before performing the final swing-up maneuver. Thus, the optimization problem contains many local minima, one for each inexact number of additional swings. The optimization problem can be made more difficult if the limits that are imposed on the actuator $u_{max}$ is reduced. if $u_{max}$ becomes sufficiently small, then the  optimal solution of the problem will no longer be smooth. To solve the problem in that case, the time grid must be re-mesh in order to include supplementary points next to the discontinuities in the trajectory of the input. Another way to solve the discontinuity in the control is to reformulate the problem as a multi-phase problem. However, this is beyond the scope of this master thesis. Interested readers are referred to \cite{Ernesto2013} for a more in-depth explanation. 
+
+\newpage
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.75\textwidth]{Images/Trajectory/cart_pole_solved_b}
+\caption{Plots showing the optimal trajectory for the cart-pole swing-up example \cite{Kelly2017}. }
+\label{trajectory_problem_solution_b}
+\end{figure}
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.75\textwidth]{Images/Trajectory/cart_pole_solved_c}
+\caption{Plots showing the optimal trajectory for the cart-pole swing-up example \cite{Kelly2017}. }
+\label{trajectory_problem_solution_c}
+\end{figure}
+
+
+\newpage
+
+\section{Existing Trajectory Optimization and Nonlinear Programming solvers}
+
+Some of the available tools that allow to solve the trajectory optimization problem are listed in table \ref{Trajectory_Optimization_software} below:
+
+
+\begin{table}[h]
+\caption{Trajectory Optimization Software}\label{Trajectory_Optimization_software}
+\centering
+\setlength{\tabcolsep}{10pt} % Default value: 6pt
+\renewcommand{\arraystretch}{1} % Default value: 1
+\begin{tabular}{||c | c |c |c||}
+\hline
+Name & License & Interface & Method \\
+\hline
+\hline
+GPOPS-II \cite{Patterson2013} & commerical & MATLAB & direct orthogonal collocation \\
+\hline
+PSOPT \cite{Becerra2011}& open source & C++ & direct collocation \\
+\hline
+SOS \cite{Astos2013} & commerical & GUI & direct collocation (methods from \cite{Betts2010}) \\
+\hline
+DIRCOL \cite{vonStryk1999} & free license & C & direct collocation \\
+\hline
+DIDO \cite{Elissar2021} & commercial & MATLAB & indirect orthogonal (pseudospectral) collocation\\
+\hline
+\hline
+\end{tabular}
+\end{table}
+
+Moreover, a list of non-linear programming solvers are also listed in table \ref{Nonlinear_Programming_Software} below:
+
+\begin{table}[h]
+\caption{Nonlinear Programming Solvers}\label{Nonlinear_Programming_Software}
+\centering
+\setlength{\tabcolsep}{10pt} % Default value: 6pt
+\renewcommand{\arraystretch}{1} % Default value: 1
+\begin{tabular}{||c |c |c||}
+\hline
+Name & License & Interface  \\
+\hline
+\hline
+FMINCON \cite{Mathworks2021} & commericial & MATLAB \\
+\hline
+SNOPT \cite{Gill2006} & commercial & C++ \\
+\hline
+IPOPT \cite{Wachter2006} & open source & C++  \\
+\hline
+\hline
+\end{tabular}
+\end{table}
+
+
+
+
+
+
 \newpage 
+ 
+ 
+ 
+ 
+ 
+ 
  
  \chapter*{Conclusion}
  \addcontentsline{toc}{chapter}{Conclusion}
@@ -3006,10 +3351,14 @@ As can be deduced from the previous chapters, performing multi-flip maneuvers wi
 First, the dynamic model of the quadrotor must be very thorough and robust in order to have a good representation of the system in simulations and to reduce the errors which result from aerodynamic effects that are usually hard to properly estimate. But, on the other hand, the complexity of the dynamics of the quadrotor must be reduced and simplified in order to satisfy the real-time limitations of the embedded control loop. This is why the very first step to do in this master thesis is to perform the identification of the base dynamic parameters for the quadrotor, since some of the standard parameters of the system have no effect on the dynamic model. So, these irrelevant dynamic parameters can be eliminated and other parameters can also be grouped together, which will greatly reduce the computational cost, regardless of which controller will be used.
 Furthermore, several control methods which can be used during this master thesis have been discussed. However, the most interesting control method to be used is model predictive control (MPC), since MPC is a closed-loop controller which will be able to account for modeling errors and disturbances on the system. In addition, MPC will solve an optimization problem at each time step in order to select the optimal control. However, MPC controllers must be properly tuned in order to be able to solve the optimization problem at each time step in real time. This is why simulations are required, since they will be very useful for tuning the control parameters in order to find the best balance between system stability, performance and robustness.
 Finally, the trajectory optimization method, which is an open-loop optimization method that was proven to be successful by Marino \cite{Marino2020} for a single-flip maneuver, can be revisited for further experimentation and to add the supplementary constraint of performing the multi-flip maneuvers in  constrained environments.
+
+
+
+
  
  \paragraph{Planning}
  
-The milestones for this master thesis are organized as follows:
+The tasks for this master thesis are organized as follows:
 
 \begin{itemize}
 	\item Perform the identification of the base dynamic parameters of the quadrotor that will be used for the experiments, namely the \textit{"Crazyflie 2.0"}.
@@ -3018,6 +3367,19 @@ The milestones for this master thesis are organized as follows:
 	\item Perform real experimentation in the LS2N lab.
 	\item Compare the performance of MPC to the performance of trajectory optimization techniques (Closed-loop Vs Open-loop).
 \end{itemize}
+A Gantt chart of the expected work is provided in figure \ref{Gantt_Chart} below.
+\newpage
+
+
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{Images/Planning/Gantt Chart}
+\caption{Representation of the expected work to be done during the Master thesis.}
+\label{Gantt_Chart}
+\end{figure}
+
 
 
  \addcontentsline{toc}{chapter}{Bibliography}
