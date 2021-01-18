@@ -37,7 +37,7 @@
 \newcolumntype{L}[1]{>{\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 
 % base beamer theme
-\usetheme{Madrid}
+\usetheme{frankfurt}
 \setbeamercovered{transparent}
 
 % some custom colors
