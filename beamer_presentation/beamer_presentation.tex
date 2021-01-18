@@ -470,7 +470,7 @@ What is MPC?
 \begin{itemize}[<+->]
 	\item It is a \textbf{feedback control} algorithm.
 	\item It uses a model to \textbf{precit} future outputs.
-	\item It \textbf{Solves an online optimization problem} to select the optimal control.
+	\item It \textbf{solves an online optimization problem} to select the optimal control.
 \end{itemize}
 \end{frame}
 
@@ -631,21 +631,16 @@ For \textbf{Nonlinear MPC}, useful if:
 \column{0.5\textwidth}
 
 \begin{block}{Nonlinear MPC}
-
 \vspace{0.5em}
 Most powerful methods: uses the most accurate representation of the plant $\Rightarrow$ \textbf{More accurate predictions}.
 \vspace{0.5em}
-
 \end{block}
 \end{columns}
-
 
 \begin{figure}
 	\centering	\includegraphics[width=0.4\textwidth]{Images/Control/MPC_Nonconvex_Equation_b}
 	\caption{Example of a non-convex optimization problem.}
 \end{figure}
-
-
 \end{frame}
 
 
@@ -659,13 +654,228 @@ Most powerful methods: uses the most accurate representation of the plant $\Righ
 %\subsection{Physics of a quadrotor flip}
 %\subsection{Shortcoming of Current Strategies}
 
+\begin{frame}[t]{Physics of a Quadrotor Flip}
+
+The physics of a quadrotor flip can be divided into 4 parts:
+
+\begin{itemize}[<+->]
+	\item \textbf{Climb phase}: Maximum vertical acceleration is applied.
+	\item \textbf{Multi-flip phase}: It ends when the desired $2n\pi$ are achieved.
+	\item \textbf{Descent phase}: Maximum thrust for descent compensation.
+	\item \textbf{Re-stabilization}: Altitude regulation to desired value. 
+\end{itemize}
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{Images/Flip/Physics}
+\caption{The phases needed for performing multi-flip maneuvers \cite{Castillo2018}.}
+\label{flipping_physics}
+\end{figure}
+\end{frame}
+
+\begin{frame}[t,allowframebreaks]{Closed-loop attitude control}
+In closed-loop attitude control:
+
+\begin{itemize}
+	\item Main focus is on the \textbf{attitude part} of the platform. 
+	\item \textbf{Main idea}: Reference on $\omega$ is planned and tracked in closed-loop with a nonlinear control law.
+\end{itemize}
+
+It has the following properties:
+
+\begin{enumerate}
+	\item A flipping angle $\phi_g$ is defined such that a flip around $\bm{a}$ through the UAV's CoG can be defined.
+	\item Angular speed planning is performed using cubic splines ( the desired $\omega_d$ is generated).
+	\begin{itemize}
+		\item The dynamics of actuation is respected by guaranteeing that $\omega_{max}$ is not exceeded.
+	\end{itemize}		
+	
+	 
+Given the desired amount of rotation accumulated during each stage $\Phi_{g,i}$ the duration
+of the stages is varied according to the current flipping angle $\phi_g$:
+
+\begin{equation}
+	\bm{\omega}_d(t) = \begin{cases}
+	\bm{\omega}_{d,1} \text{\hspace{0.5cm} if \hspace{0.5cm}} \phi_g \leq \Phi_{g,1} \\
+	\bm{\omega}_{d,2} \text{\hspace{0.5cm} if \hspace{0.5cm}} \Phi_{g,1} < \phi_g \leq \Phi_{g,1} + \Phi_{g,2} \\
+	\bm{\omega}_{d,3} \text{\hspace{0.5cm} if \hspace{0.5cm}} \Phi_{g,1} + \Phi_{g,2} < \phi_g \leq \Phi_{g,1} + \Phi_{g,2} + \Phi_{g,3} \\
+	\end{cases} 
+\end{equation}
+
+where: 
+
+\begin{equation}
+	\Phi_{g,1} + \Phi_{g,2} + \Phi_{g,3} = 2 n \pi 
+\end{equation}
+
+in order to carry-out the flip.
+\begin{figure}[h]
+     \centering
+     \begin{subfigure}[b]{0.4\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{Images/Flip/Closed_Loop_a}
+         \caption{Reference of the angular velocity.}
+         \label{closed_loop_a}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.4\textwidth}
+         \centering
+         \includegraphics[width=0.8\textwidth]{Images/Flip/Closed_Loop_b}
+         \caption{Stages of the multi-flip maneuver.}
+         \label{closed_loop_b}
+     \end{subfigure}
+        \caption{Reference of the flipping speed and the different flipping \\
+     phases \cite{Chen2016}.}
+        \label{closed_loop_c}
+\end{figure}
+	\item Different control approaches can then  used to track the angular speed reference.
+\end{enumerate}
+\end{frame}
+
+
+
+
+
+
 \section{Trajectory Optimization}
 %\subsection{Introduction}
 %\subsection{Trapezoidal collocation}
 %\subsection{Hermite-Simpson collocation}
 
 
+\begin{frame}{Trajectory Optimization}
 
+What is trajectory optimization?
+\begin{itemize}[<+->]
+	\item Set of techniques used to find the desired behavior of a dynamic system.
+	\item It is a class of methods that solves the optimal control problem.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t]{Trajectory Optimization}
+
+\textbf{Optimal Control:} Find the best control to achieve some desired goal.
+
+\begin{columns}
+\column{0.5\textwidth}
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{Images/Trajectory/closed_loop_solution}
+\caption{Closed-loop solution \cite{Kelly2017}.}
+\end{figure}
+
+\begin{itemize}
+	\item Global method and solution.
+	\item More difficult to compute.
+	\item Use: lower-dimension problems.
+\end{itemize}
+
+\column{0.5\textwidth}
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{Images/Trajectory/open_loop_solution}
+\caption{Open-loop solution \cite{Kelly2017}.}
+\end{figure}
+
+\begin{itemize}
+	\item Local method and solution.
+	\item Less difficult to compute.
+	\item Use: higher-dimensional problems.
+\end{itemize}
+
+
+
+\end{columns}
+
+
+
+
+\end{frame}
+
+
+
+\begin{frame}[t]{Trajectory Optimization}
+\begin{figure}
+\centering
+\includegraphics[width=0.9\textwidth]{Images/Trajectory optimization/5}
+\end{figure}
+\end{frame}
+
+\begin{frame}[t]{Trajectory Optimization}
+\begin{figure}
+\centering
+\includegraphics[width=0.9\textwidth]{Images/Trajectory optimization/6}
+\end{figure}
+\end{frame}
+
+\begin{frame}[t]{Trajectory Optimization}
+\begin{figure}
+\centering
+\includegraphics[width=0.9\textwidth]{Images/Trajectory optimization/7}
+\end{figure}
+\end{frame}
+
+
+\begin{comment}
+\begin{frame}[t]{Trajectory Optimization}
+\begin{figure}
+\centering
+\includegraphics[width=0.9\textwidth]{Images/Trajectory optimization/11}
+\end{figure}
+\end{frame}
+
+\begin{frame}[t]{Trajectory Optimization}
+\begin{figure}
+\centering
+\includegraphics[width=0.9\textwidth]{Images/Trajectory optimization/12}
+\end{figure}
+\end{frame}
+
+\begin{frame}[t]{Trajectory Optimization}
+\begin{figure}
+\centering
+\includegraphics[width=0.9\textwidth]{Images/Trajectory optimization/13}
+\end{figure}
+\end{frame}
+
+\begin{frame}[t]{Trajectory Optimization}
+\begin{figure}
+\centering
+\includegraphics[width=0.9\textwidth]{Images/Trajectory optimization/14}
+\end{figure}
+\end{frame}
+
+
+\begin{frame}[t]{Trajectory Optimization}
+
+\textbf{How to initialize a NLP?}\\
+
+
+General idea:
+
+\begin{itemize}
+	\item solve an easier problem, then use that to initialize the NLP.
+	\item for hard problems, construct a series of easier problems.
+\end{itemize}
+
+How to construct an easier problem? 
+\begin{itemize}
+	\item neglect dynamics.
+	\item replace a difficult objective with an easy one.
+	\item remove difficult constraints.
+	\item use a small number of grid points.
+\end{itemize}
+
+
+If initial guess at a trajectory exists:
+
+\begin{itemize}
+	\item interpolate the guess at the grid points to initialize NLP.
+\end{itemize}
+
+\end{frame}
+\end{comment}
 
 
 
@@ -698,6 +908,25 @@ Most powerful methods: uses the most accurate representation of the plant $\Righ
 \end{itemize}
 \end{frame}
 \end{comment}
+
+
+\section{Planning}
+
+
+\begin{frame}[t]{Planning} \vspace{4pt}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{Images/Planning/Gantt Chart}
+\caption{Preliminary plan for the master thesis}
+\end{figure}
+
+
+
+
+\end{frame}
+
+
 
 
 \section{References}
